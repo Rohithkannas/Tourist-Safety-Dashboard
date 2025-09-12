@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tourist Safety Dashboard</title>
+  <meta name="description" content="Real-time monitoring & incident response dashboard for tourism authorities." />
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { bgdark: '#000000' } } } };
+  </script>
+  <link rel="icon" href="./assets/images/favicon.png" />
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+  <style>
+    html, body { height: 100%; background: #000; }
+    .pill { border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); }
+    .hero-sphere { width: clamp(260px, 40vw, 520px); height: clamp(260px, 40vw, 520px); border-radius: 50%; overflow: hidden; position: relative; }
+    .hero-sphere img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .hero-title { font-size: clamp(2.2rem, 9vw, 7rem); line-height: 0.9; letter-spacing: -0.04em; }
+    .header-line { height: 1px; background: rgba(255,255,255,0.18); }
+    /* Force dark for landing page regardless of saved theme */
+    body { background:#000; color:#fff; }
+    body.light { background:#000 !important; color:#fff !important; }
+    body.light .topbar { background: rgba(0,0,0,0.6) !important; border-bottom:1px solid rgba(255,255,255,0.1) !important; color:#fff !important; }
+  </style>
+</head>
+<body class="min-h-screen text-white bg-black">
+  <!-- Thin border header with brand, availability pill, and right nav -->
+  <div class="header-line"></div>
+  <header class="topbar">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="text-sm tracking-wide text-white/80">Authority Dashboard</div>
+      <div class="pill rounded-full px-3 py-1 text-xs flex items-center gap-2">
+        <span class="h-2 w-2 rounded-full bg-green-500"></span>
+        <span>Available for incident response</span>
+      </div>
+      <nav class="text-sm flex items-center gap-3">
+        <a href="./dashboard.html" class="btn">Dashboard</a>
+        <a href="./login.html" class="btn">Login</a>
+      </nav>
+    </div>
+  </header>
+  <div class="header-line"></div>
+
+  <!-- Hero section mimicking the provided design -->
+  <main class="max-w-7xl mx-auto px-4 py-16 md:py-24">
+    <div class="relative grid md:grid-cols-2 gap-8 items-center">
+      <!-- Left: big stacked text -->
+      <div class="z-10">
+        <h1 class="hero-title font-extrabold">
+          <span class="block">REAL‑TIME</span>
+          <span class="block">TOURIST</span>
+          <span class="block">DASHBOARD</span>
+        </h1>
+        <p class="mt-6 text-white/70 max-w-md text-sm">Monitor clusters, manage SOS alerts, and verify identities — built for Police/Tourism authorities.</p>
+      </div>
+
+      <!-- Right: central sphere image -->
+      <div class="flex justify-center items-center">
+        <div class="hero-sphere">
+          <img alt="Tourism collage" src="./assets/images/landing-hero.jpg" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Minimal CTA under hero -->
+    <div class="mt-12 flex gap-3">
+      <a href="./login.html" class="btn">Enter</a>
+      <a href="./dashboard.html" class="btn btn-outline">Open Dashboard</a>
+    </div>
+  </main>
+
+  <footer class="text-center text-white/50 pb-10">© <span id="year"></span> Tourist Safety Dashboard</footer>
+
+  <script>
+    // Do NOT switch theme on landing page; keep dark
+    document.body.classList.remove('light');
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

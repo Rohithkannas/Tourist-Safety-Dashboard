@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Map Dashboard • Tourist Safety</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { bgdark: '#000000' } } } };
+  </script>
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <style>
+    body { background: #000; }
+    #map { height: calc(100vh - 64px); }
+    .glass { backdrop-filter: blur(12px); background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255,255,255,0.08); }
+    .leaflet-control-attribution { display: none; }
+    .card { border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); }
+    body.light .card { border: 1px solid rgba(0,0,0,0.1); background: rgba(0,0,0,0.04); }
+  </style>
+</head>
+<body class="text-white">
+  <!-- Top Bar -->
+  <header class="topbar h-16 px-4 md:px-6 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="h-8 w-8 rounded-md bg-white/80"></div>
+      <h1 class="font-semibold" data-i18n="app_title">Tourist Safety Dashboard</h1>
+    </div>
+    <div class="flex items-center gap-2 text-sm">
+      <a href="./alerts.html" class="btn" data-i18n="nav_alerts">Alerts</a>
+      <a href="./analytics.html" class="btn" data-i18n="nav_analytics">Analytics</a>
+      <a href="./geofence.html" class="btn" data-i18n="nav_geofence">Geofence</a>
+      <a href="./audit.html" class="btn" data-i18n="nav_audit">Audit</a>
+      <a href="./settings.html" class="btn" data-i18n="nav_settings">Settings</a>
+      <input id="searchInput" placeholder="Search by Tourist ID or phone" class="hidden md:block px-3 py-2 rounded-md bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-white w-80" />
+      <span id="authorityName" class="text-white/70 hidden md:inline">Logged in</span>
+      <button id="logoutBtn" class="btn-outline">Logout</button>
+      <button id="themeToggleGlobal" title="Toggle theme" class="btn-outline" aria-label="Toggle theme">Theme</button>
+    </div>
+  </header>
+
+  <!-- Filters row -->
+  <div class="px-4 md:px-6 py-3 border-b border-white/10 bg-black/40 flex flex-wrap gap-3 items-center">
+    <label class="text-xs text-white/70"><span data-i18n="filters_district">District</span>
+      <select id="filterDistrict" class="ml-2 px-2 py-1 rounded-md bg-white/5 border border-white/10">
+        <option value="all" data-i18n="type_all">All</option>
+        <option>East Khasi Hills</option>
+        <option>West Khasi Hills</option>
+        <option>South West Khasi Hills</option>
+        <option>Ri-Bhoi</option>
+        <option>East Jaintia Hills</option>
+        <option>West Jaintia Hills</option>
+        <option>North Garo Hills</option>
+        <option>East Garo Hills</option>
+        <option>South Garo Hills</option>
+        <option>South West Garo Hills</option>
+        <option>West Garo Hills</option>
+      </select>
+    </label>
+    <label class="text-xs text-white/70"><span data-i18n="filters_type">Type</span>
+      <select id="filterType" class="ml-2 px-2 py-1 rounded-md bg-white/5 border border-white/10">
+        <option value="all" data-i18n="type_all">All</option>
+        <option value="domestic" data-i18n="type_domestic">Domestic</option>
+        <option value="foreign" data-i18n="type_foreign">Foreign</option>
+      </select>
+    </label>
+    <label class="text-xs inline-flex items-center gap-2"><input id="filterHighRisk" type="checkbox" class="accent-white" /> <span data-i18n="filters_highrisk">High-risk zones only</span></label>
+  </div>
+
+  <!-- Risk Map Card -->
+  <section class="px-4 md:px-6 py-4">
+    <div class="card rounded-xl p-3">
+      <div class="flex items-center justify-between px-2 py-2">
+        <div class="font-semibold" data-i18n="risk_map">Risk Map</div>
+        <span class="text-xs px-2 py-1 rounded-md bg-white/10 border border-white/10" data-i18n="live">Live</span>
+      </div>
+      <div class="relative rounded-xl overflow-hidden border border-white/10">
+        <div id="map" style="height: 560px;"></div>
+        <!-- Legend bottom-left -->
+        <div class="absolute left-3 bottom-3 bg-white/10 backdrop-blur rounded-lg border border-white/10 p-3 text-sm">
+          <div class="font-semibold mb-2" data-i18n="flood_legend">Flood Risk</div>
+          <div class="flex items-center gap-2 mb-1"><span style="width:10px;height:10px;border-radius:50%;background:#22c55e;display:inline-block"></span> <span data-i18n="risk_low">Low Risk</span></div>
+          <div class="flex items-center gap-2 mb-1"><span style="width:10px;height:10px;border-radius:50%;background:#eab308;display:inline-block"></span> <span data-i18n="risk_medium">Medium Risk</span></div>
+          <div class="flex items-center gap-2"><span style="width:10px;height:10px;border-radius:50%;background:#ef4444;display:inline-block"></span> <span data-i18n="risk_high">High Risk</span></div>
+        </div>
+        <!-- Map layers top-right (static demo) -->
+        <div class="absolute right-3 top-3 bg-white/10 backdrop-blur rounded-lg border border-white/10 p-3 text-sm">
+          <div class="font-semibold mb-2" data-i18n="map_layers">Map Layers</div>
+          <label class="flex items-center gap-2 mb-1"><input type="checkbox" checked class="accent-white" /> <span data-i18n="layer_flood">Flood Risk</span></label>
+          <label class="flex items-center gap-2 mb-1"><input type="checkbox" class="accent-white" /> <span data-i18n="layer_rain">Rainfall Level</span></label>
+          <label class="flex items-center gap-2 mb-1"><input type="checkbox" class="accent-white" /> <span data-i18n="layer_water">Water Level</span></label>
+          <label class="flex items-center gap-2"><input type="checkbox" class="accent-white" /> <span data-i18n="layer_pop">Population Density</span></label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Side Panel: SOS Alerts -->
+  <aside class="border-t border-white/10 bg-black/20">
+      <div class="p-4 border-b border-white/10 flex items-center justify-between">
+        <h2 class="font-semibold" data-i18n="sos_active">Active SOS Alerts</h2>
+        <span class="text-xs px-2 py-1 rounded-md bg-red-500/20 text-red-300">Live</span>
+      </div>
+      <div id="sosList" class="p-4 space-y-3"></div>
+  </aside>
+
+  <!-- Tourist Profile Modal -->
+  <div id="profileModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4">
+    <div class="bg-[#0f1424] w-full max-w-2xl rounded-xl border border-white/10 overflow-hidden">
+      <div class="p-4 border-b border-white/10 flex items-center justify-between">
+        <h3 class="font-semibold">Tourist Profile</h3>
+        <button id="closeModal" class="px-2 py-1 rounded-md bg-white/10 hover:bg-white/15">✕</button>
+      </div>
+      <div class="p-4 grid md:grid-cols-2 gap-4">
+        <div>
+          <dl class="text-sm space-y-2">
+            <div class="flex justify-between"><dt class="text-white/70">Tourist ID</dt><dd id="p_id" class="font-semibold"></dd></div>
+            <div class="flex justify-between"><dt class="text-white/70">Name</dt><dd id="p_name"></dd></div>
+            <div class="flex justify-between"><dt class="text-white/70">Phone</dt><dd id="p_phone"></dd></div>
+            <div class="flex justify-between"><dt class="text-white/70">Emergency Contact</dt><dd id="p_emg"></dd></div>
+          </dl>
+          <div class="mt-4 flex gap-2">
+            <button id="ackBtn" class="px-3 py-2 rounded-md bg-yellow-500 text-black hover:bg-yellow-400">Acknowledge</button>
+            <button id="resolveBtn" class="px-3 py-2 rounded-md bg-green-500 text-black hover:bg-green-400">Resolve</button>
+          </div>
+        </div>
+        <div class="h-64 rounded-lg overflow-hidden border border-white/10">
+          <div id="trailMap" class="w-full h-full"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <!-- Firebase (optional) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <script src="./assets/js/firebase-config.js"></script>
+  <script src="./assets/js/data.js"></script>
+  <!-- Socket.IO client for realtime backend -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-DvGPp3BBczGQ3kvKQGd68g2jJwXNUyQH2VCTEnxgJY0+Sb4lWzM8tY3o1t8nZ+4S" crossorigin="anonymous"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/i18n.js"></script>
+  <script src="./assets/js/auth.js"></script>
+  <script src="./assets/js/dashboard.js"></script>
+  <script>
+    // Apply saved theme
+    (function(){ const t = localStorage.getItem('theme')||'dark'; if (t==='light') document.body.classList.add('light'); })();
+    // Apply i18n
+    I18N.apply();
+    // Global theme toggle (affects whole site because it persists)
+    document.getElementById('themeToggleGlobal').addEventListener('click', ()=>{
+      const isLight = document.body.classList.toggle('light');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+  </script>
+</body>
+</html>

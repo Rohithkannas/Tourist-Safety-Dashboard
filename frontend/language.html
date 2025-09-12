@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Language • Tourist Safety</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script> tailwind.config = { theme: { extend: { colors: { bgdark: '#000000' } } } } </script>
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+  <style>
+    body { background: #000; color:#fff; }
+    .header-line { height: 1px; background: rgba(255,255,255,0.18); }
+    /* Force dark like landing even if theme is light */
+    body.light { background:#000 !important; color:#fff !important; }
+    body.light .topbar { background: rgba(0,0,0,0.6) !important; border-bottom:1px solid rgba(255,255,255,0.1) !important; color:#fff !important; }
+  </style>
+</head>
+<body class="text-white min-h-screen flex flex-col">
+  <div class="header-line"></div>
+  <header class="topbar">
+    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="text-sm tracking-wide text-white/80" data-i18n="app_title">Tourist Safety Dashboard</div>
+      <nav class="text-sm flex items-center gap-2">
+        <a href="./dashboard.html" class="btn" data-i18n="nav_dashboard">Dashboard</a>
+      </nav>
+    </div>
+  </header>
+  <div class="header-line"></div>
+
+  <main class="flex-1 max-w-4xl mx-auto px-4 py-12">
+    <div class="mx-auto max-w-2xl p-8 rounded-2xl border border-white/10 bg-white/5 shadow-lg">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">🌐</div>
+        <h1 class="text-3xl font-semibold" data-i18n="lang_select_title">Choose Language</h1>
+      </div>
+      <p class="text-white/70 mb-6">Choose your preferred language for the dashboard.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <button id="btnEn" class="btn w-full py-5 text-lg" data-i18n="lang_english">English</button>
+        <button id="btnHi" class="btn w-full py-5 text-lg" data-i18n="lang_hindi">Hindi</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="./assets/js/i18n.js"></script>
+  <script>
+    // Keep dark regardless of saved theme
+    document.body.classList.remove('light');
+    // Apply i18n
+    I18N.apply();
+    document.getElementById('btnEn').addEventListener('click', ()=>{ I18N.setLang('en'); I18N.apply(); window.location.href = './dashboard.html'; });
+    document.getElementById('btnHi').addEventListener('click', ()=>{ I18N.setLang('hi'); I18N.apply(); window.location.href = './dashboard.html'; });
+  </script>
+</body>
+</html>

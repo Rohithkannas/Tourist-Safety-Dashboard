@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tourist Safety Dashboard</title>
+  <meta name="description" content="Real-time monitoring & incident response dashboard for tourism authorities." />
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#1E40AF',
+              dark: '#0B1736'
+            },
+            accent: '#F97316',
+            bgdark: '#0b0f1a'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="icon" href="./assets/images/favicon.png" />
+  <style>
+    html, body { height: 100%; }
+    #vanta-bg { position: fixed; inset: 0; z-index: -1; }
+    .glass { backdrop-filter: blur(12px); background: rgba(10, 13, 23, 0.45); border: 1px solid rgba(255,255,255,0.08); }
+    .gradient-ring {
+      background: radial-gradient(80% 80% at 20% 20%, rgba(30,64,175,0.35), rgba(0,0,0,0) 60%),
+                  radial-gradient(60% 60% at 90% 10%, rgba(249,115,22,0.18), rgba(0,0,0,0) 60%),
+                  radial-gradient(90% 120% at 50% 120%, rgba(2,6,23,0.9), rgba(0,0,0,0) 60%);
+    }
+  </style>
+</head>
+<body class="min-h-screen gradient-ring text-white">
+  <div id="vanta-bg"></div>
+
+  <header class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="h-9 w-9 rounded-md bg-accent/80 shadow-lg"></div>
+      <span class="font-semibold tracking-wide text-white/90">Tourist Safety Dashboard</span>
+    </div>
+    <nav class="flex items-center gap-3">
+      <a href="./login.html" class="px-4 py-2 rounded-md glass hover:bg-white/5 transition">Login</a>
+      <button id="gotoDashboard" class="px-4 py-2 rounded-md bg-accent hover:bg-orange-500 text-black font-semibold transition">Open Dashboard</button>
+    </nav>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 pt-10 pb-24 grid md:grid-cols-2 gap-10 items-center">
+    <section class="space-y-8">
+      <div class="inline-flex items-center gap-2 rounded-full px-3 py-1 glass text-xs text-white/70">
+        <span class="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse"></span>
+        Real-time monitoring • Incident response
+      </div>
+      <h1 class="text-5xl md:text-7xl font-extrabold leading-tight">
+        Safer Journeys.
+        <span class="text-accent">Smarter Response.</span>
+      </h1>
+      <p class="text-white/80 text-lg leading-relaxed max-w-xl">
+        Visualize tourist clusters, track SOS alerts live, and verify identities securely.
+        Built for police and tourism authorities to act fast, with confidence.
+      </p>
+      <div class="flex gap-4">
+        <a href="./login.html" class="px-6 py-3 rounded-lg bg-accent text-black font-semibold shadow-lg hover:bg-orange-500 transition">Get Started</a>
+        <a href="#features" class="px-6 py-3 rounded-lg glass hover:bg-white/5 transition">Learn More</a>
+      </div>
+      <div id="sessionBanner" class="hidden text-sm text-green-300">You are logged in — proceed to the dashboard.</div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 border border-white/10">
+      <div class="aspect-video rounded-xl overflow-hidden border border-white/10">
+        <img src="https://images.unsplash.com/photo-1554188572-9c68698fd08d?q=80&w=1600&auto=format&fit=crop" alt="Tourism Safety" class="w-full h-full object-cover opacity-80" />
+      </div>
+      <div class="grid grid-cols-3 gap-4 mt-6 text-center">
+        <div class="p-4 rounded-lg bg-white/5">
+          <div class="text-3xl font-bold text-accent">Live</div>
+          <div class="text-white/70 text-sm">SOS Alerts</div>
+        </div>
+        <div class="p-4 rounded-lg bg-white/5">
+          <div class="text-3xl font-bold text-blue-300">Clusters</div>
+          <div class="text-white/70 text-sm">on Map</div>
+        </div>
+        <div class="p-4 rounded-lg bg-white/5">
+          <div class="text-3xl font-bold text-orange-300">Verify</div>
+          <div class="text-white/70 text-sm">Tourist ID</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section id="features" class="max-w-7xl mx-auto px-6 pb-24 grid md:grid-cols-3 gap-6">
+    <div class="glass rounded-xl p-6">
+      <h3 class="font-semibold text-xl mb-2">Real-time Map</h3>
+      <p class="text-white/70">Leaflet-based map with clustering for dense areas and color-coded markers.</p>
+    </div>
+    <div class="glass rounded-xl p-6">
+      <h3 class="font-semibold text-xl mb-2">SOS Management</h3>
+      <p class="text-white/70">View, acknowledge, and resolve alerts with last known locations and trails.</p>
+    </div>
+    <div class="glass rounded-xl p-6">
+      <h3 class="font-semibold text-xl mb-2">Tourist Profiles</h3>
+      <p class="text-white/70">Search and verify identity with a basic digital ID and location trail.</p>
+    </div>
+  </section>
+
+  <footer class="text-center text-white/50 pb-10">© <span id="year"></span> Tourist Safety Dashboard</footer>
+
+  <!-- Three.js & Vanta.js Clouds -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.clouds.min.js"></script>
+  <script>
+    // Initialize VANTA Clouds background
+    window.addEventListener('load', () => {
+      VANTA.CLOUDS({
+        el: '#vanta-bg',
+        skyColor: 0x0b0f1a,
+        cloudColor: 0x1e40af,
+        cloudShadowColor: 0x0a0d17,
+        sunColor: 0xF97316,
+        sunGlareColor: 0xfaa356,
+        speed: 0.7,
+        zoom: 0.8
+      });
+      document.getElementById('year').textContent = new Date().getFullYear();
+    });
+
+    // Simple session check: if localStorage has demoAuth, show banner
+    const gotoBtn = document.getElementById('gotoDashboard');
+    const banner = document.getElementById('sessionBanner');
+    const isAuthed = !!localStorage.getItem('demoAuth');
+    if (isAuthed) banner.classList.remove('hidden');
+    gotoBtn.addEventListener('click', () => {
+      if (isAuthed) {
+        window.location.href = './dashboard.html';
+      } else {
+        window.location.href = './login.html';
+      }
+    });
+  </script>
+</body>
+</html>

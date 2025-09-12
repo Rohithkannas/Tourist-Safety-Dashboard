@@ -1,0 +1,41 @@
+/* Frontend custom styles */
+.custom-marker { transform: translate(-6px,-6px); }
+
+/* Buttons: global style for anchors and buttons */
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; padding:0.6rem 1rem; border-radius:0.5rem; background:#fff; color:#000; border:1px solid rgba(255,255,255,0.12); text-decoration:none; font-weight:600; }
+.btn:hover { background:#e5e5e5; text-decoration:none; }
+.btn-outline { background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.2); }
+.btn-outline:hover { background:rgba(255,255,255,0.1); }
+
+/* Ensure links don't underline on hover anywhere */
+a:hover { text-decoration:none; }
+
+/* Select dropdown theming: always black with white text (even in light mode) */
+select { background:#000 !important; color:#fff !important; border:1px solid rgba(255,255,255,0.2) !important; }
+body.light select { background:#000 !important; color:#fff !important; border:1px solid rgba(0,0,0,0.4) !important; }
+
+/* Light theme text/base overrides */
+body.light { color:#000; background:#fff; }
+/* In light mode, primary buttons remain white with black text for clarity */
+body.light .btn { background:#fff; color:#000; border-color:rgba(0,0,0,0.2); }
+body.light .btn:hover { background:#f2f2f2; color:#000; }
+body.light .btn-outline { color:#000; border-color:rgba(0,0,0,0.2); }
+body.light .btn-outline:hover { background:rgba(0,0,0,0.06); }
+
+/* Header separators in both themes */
+.header-line { height:1px; background:rgba(255,255,255,0.18); }
+body.light .header-line { background:rgba(0,0,0,0.18); }
+
+/* Light mode overrides for common Tailwind text utilities applied in markup */
+body.light, body.light a { color:#000; }
+body.light .text-white { color:#000 !important; }
+body.light .text-white\/70 { color: rgba(0,0,0,0.7) !important; }
+body.light .text-white\/60 { color: rgba(0,0,0,0.6) !important; }
+body.light .text-white\/50 { color: rgba(0,0,0,0.5) !important; }
+body.light .bg-black\/60 { background: rgba(255,255,255,0.9) !important; }
+body.light .bg-black\/40 { background: rgba(0,0,0,0.04) !important; }
+body.light .bg-black\/20 { background: rgba(0,0,0,0.06) !important; }
+
+/* Topbar helper for both themes */
+.topbar { background: rgba(0,0,0,0.6); border-bottom:1px solid rgba(255,255,255,0.1); }
+body.light .topbar { background: rgba(255,255,255,0.95) !important; border-bottom:1px solid rgba(0,0,0,0.12) !important; color:#000; }

@@ -1,0 +1,14 @@
+{
+  "name": "tourist-safety-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "dev:5510": "http-server . -p 5510 -c-1",
+    "dev:5520": "http-server . -p 5520 -c-1",
+    "start": "http-server . -p 5500 -c-1"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}

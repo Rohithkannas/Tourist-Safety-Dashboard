@@ -1,0 +1,23 @@
+{
+  "name": "tourist-safety-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.2.0",
+    "helmet": "^7.1.0",
+    "joi": "^17.12.0",
+    "morgan": "^1.10.0",
+    "socket.io": "^4.7.5",
+    "tourist-safety-dashboard": "file:.."
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
