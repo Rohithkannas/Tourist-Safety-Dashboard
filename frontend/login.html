@@ -3,117 +3,291 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login • Tourist Safety Dashboard</title>
+  <title>Authority Login - Tourist Monitoring System</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = { theme: { extend: { colors: { bgdark: '#000000' } } } };
+    tailwind.config = { 
+      theme: { 
+        extend: { 
+          colors: { 
+            primary: '#dc2626',
+            secondary: '#000000',
+            accent: '#ffffff'
+          }
+        } 
+      } 
+    };
   </script>
-  <link rel="stylesheet" href="./assets/css/styles.css" />
   <style>
-    body { background: radial-gradient(100% 100% at 0% 0%, rgba(255,255,255,0.06), rgba(0,0,0,0) 45%),
-                      radial-gradient(70% 100% at 100% 0%, rgba(255,255,255,0.03), rgba(0,0,0,0) 40%),
-                      #000; }
-    .glass { backdrop-filter: blur(12px); background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255,255,255,0.08); }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000000;
+      margin: 0;
+      padding: 0;
+      transition: all 0.3s ease;
+    }
+
+    /* Light Theme Support */
+    body.light {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    body.light .login-card {
+      background: #ffffff;
+      border-color: #e5e7eb;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    body.light .form-input {
+      background: #ffffff;
+      border-color: #d1d5db;
+      color: #000000;
+    }
+
+    body.light .form-input:focus {
+      border-color: #dc2626;
+    }
+
+    body.light .form-label {
+      color: #374151;
+    }
+
+    body.light .nav-link {
+      color: #000000;
+    }
+
+    body.light .nav-link:hover {
+      color: #374151;
+    }
+
+    body.light nav {
+      border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .login-card {
+      background: #1a1a1a;
+      border: 1px solid #333333;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .form-input {
+      background: #000000;
+      border: 1px solid #333333;
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #ffffff;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #dc2626;
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+    }
+
+    .form-input::placeholder {
+      color: #666666;
+    }
+
+    body.light .form-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .form-label {
+      color: #ffffff;
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .btn-login {
+      background: #dc2626;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+    }
+
+    .nav-link {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: #d1d5db;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center text-white">
-  <a href="./index.html" class="absolute top-6 left-6 text-white/70 hover:text-white">← Back</a>
-  <div class="w-full max-w-md p-8 rounded-2xl glass">
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold">Authority Login</h1>
-      <p class="text-white/70 text-sm">Use your email and password to access the dashboard.</p>
+<body class="bg-black text-white min-h-screen">
+  <!-- Top Navigation -->
+  <nav style="padding: 1rem 0; border-bottom: 1px solid #374151;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="color: #ffffff; font-weight: 600; font-size: 1.125rem;">
+          Authority Dashboard
+        </div>
+        <div style="display: flex; align-items: center; gap: 2rem;">
+          <div style="display: flex; align-items: center;">
+            <div class="status-indicator"></div>
+            <span style="color: #22c55e; font-size: 0.875rem; font-weight: 500;">Available for incident response</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <a href="./index.html" class="nav-link">Back to Home</a>
+          </div>
+        </div>
+      </div>
     </div>
+  </nav>
 
-    <form id="loginForm" class="space-y-5 text-base">
-      <div>
-        <label class="block text-sm mb-1">Email</label>
-        <input id="email" type="email" required class="w-full px-3 py-3 rounded-md bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-white" placeholder="name@agency.gov" />
+  <!-- Main Content -->
+  <div style="min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; padding: 2rem;">
+    <div class="login-card">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="font-size: 1.875rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem;">
+          Authority Login
+        </h1>
+        <p style="color: #9ca3af; font-size: 0.875rem;">
+          Secure access for authorized personnel only
+        </p>
       </div>
-      <div>
-        <label class="block text-sm mb-1">Password</label>
-        <input id="password" type="password" required class="w-full px-3 py-3 rounded-md bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-white" placeholder="••••••••" />
+
+      <form id="loginForm" style="space-y: 1.5rem;">
+        <div style="margin-bottom: 1.5rem;">
+          <label class="form-label" for="username">Username / Badge ID</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            class="form-input" 
+            placeholder="Enter your username or badge ID"
+            required
+          />
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <label class="form-label" for="password">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-input" 
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <label class="form-label" for="department">Department</label>
+          <select id="department" name="department" class="form-input" required>
+            <option value="">Select your department</option>
+            <option value="police">Police Department</option>
+            <option value="tourism">Tourism Authority</option>
+            <option value="emergency">Emergency Services</option>
+            <option value="admin">System Administrator</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-login">
+          Login to System
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #333333;">
+        <button id="demoBtn" class="btn-demo" style="background: #059669; color: #ffffff; padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; width: 100%; margin-bottom: 1rem; transition: all 0.3s ease;">
+          Demo Access (No Login Required)
+        </button>
+        <p style="color: #666666; font-size: 0.75rem;">
+          Authorized access only. All activities are monitored and logged.
+        </p>
       </div>
-      <div>
-        <label class="block text-sm mb-1">Role</label>
-        <select id="role" class="w-full px-3 py-3 rounded-md border border-white/10 focus:outline-none focus:ring-2 focus:ring-white">
-          <option>Police</option>
-          <option>Tourism Dept.</option>
-          <option>State Admin</option>
-          <option>NIC/Govt.</option>
-        </select>
-      </div>
-      <button class="btn w-full py-3 text-base" type="submit">Login</button>
-      <div class="flex gap-3">
-        <button id="demoBtn" class="btn-outline px-4 py-2 rounded-md" type="button">Demo</button>
-        <button id="resetBtn" type="button" class="btn-outline px-4 py-2 rounded-md">Forgot password</button>
-      </div>
-      <p id="error" class="text-red-400 text-sm hidden"></p>
-    </form>
+    </div>
   </div>
 
-  <!-- Firebase (optional for MVP) v9 compat -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <script src="./assets/js/firebase-config.js"></script>
   <script>
-    const form = document.getElementById('loginForm');
-    const err = document.getElementById('error');
-    const demoBtn = document.getElementById('demoBtn');
-    const resetBtn = document.getElementById('resetBtn');
-
-    function redirect() { window.location.href = './language.html'; }
-    function saveRole(){ const r = document.getElementById('role')?.value || 'Police'; localStorage.setItem('role', r); }
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      err.classList.add('hidden');
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      try {
-        if (window.firebase && window.firebase.apps && window.firebase.apps.length) {
-          const auth = firebase.auth();
-          const cred = await auth.signInWithEmailAndPassword(email, password);
-          localStorage.setItem('demoAuth', 'firebase');
-          localStorage.setItem('apiToken', 'dev-key');
-          saveRole();
-          // Save login metadata to Firestore if configured
-          try {
-            if (firebase.firestore) {
-              const db = firebase.firestore();
-              await db.collection('users').doc(cred.user.uid).set({
-                email,
-                role: localStorage.getItem('role') || 'Police',
-                lastLogin: new Date().toISOString()
-              }, { merge: true });
-            }
-          } catch(_) {}
-          redirect();
-        } else {
-          throw new Error('Firebase not configured. Use demo mode or add config.');
-        }
-      } catch (e) {
-        err.textContent = e.message;
-        err.classList.remove('hidden');
+    // Apply saved theme on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      if (savedTheme === 'light') {
+        document.body.classList.add('light');
       }
     });
 
-    demoBtn.addEventListener('click', () => {
-      localStorage.setItem('demoAuth', 'demo');
-      localStorage.setItem('apiToken', 'dev-key');
-      saveRole();
-      redirect();
+    // Handle login form submission
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const department = document.getElementById('department').value;
+      
+      if (username && password && department) {
+        // Store user info (in real app, this would be handled by backend)
+        localStorage.setItem('user', JSON.stringify({
+          username: username,
+          department: department,
+          loginTime: new Date().toISOString()
+        }));
+        
+        // Redirect to language preference page
+        window.location.href = './language.html';
+      } else {
+        alert('Please fill in all required fields.');
+      }
     });
 
-    resetBtn.addEventListener('click', async ()=>{
-      try {
-        const email = document.getElementById('email').value.trim();
-        if (!email) throw new Error('Enter email to reset');
-        if (window.firebase && firebase.apps && firebase.apps.length) {
-          await firebase.auth().sendPasswordResetEmail(email);
-          alert('Reset email sent. Check your inbox.');
-        } else { throw new Error('Firebase not configured'); }
-      } catch (e) { err.textContent = e.message; err.classList.remove('hidden'); }
+    // Handle demo button
+    document.getElementById('demoBtn').addEventListener('click', function() {
+      // Store demo user info
+      localStorage.setItem('user', JSON.stringify({
+        username: 'demo_user',
+        department: 'demo',
+        loginTime: new Date().toISOString(),
+        isDemo: true
+      }));
+      
+      // Redirect to language preference page
+      window.location.href = './language.html';
+    });
+
+    // Add hover effect for demo button
+    document.getElementById('demoBtn').addEventListener('mouseenter', function() {
+      this.style.background = '#047857';
+    });
+    
+    document.getElementById('demoBtn').addEventListener('mouseleave', function() {
+      this.style.background = '#059669';
     });
   </script>
 </body>

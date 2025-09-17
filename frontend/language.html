@@ -3,52 +3,298 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Language • Tourist Safety</title>
+  <title>Language Preference - Authority Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script> tailwind.config = { theme: { extend: { colors: { bgdark: '#000000' } } } } </script>
-  <link rel="stylesheet" href="./assets/css/styles.css" />
+  <script>
+    tailwind.config = { 
+      theme: { 
+        extend: { 
+          colors: { 
+            primary: '#dc2626',
+            secondary: '#000000',
+            accent: '#ffffff'
+          }
+        } 
+      } 
+    };
+  </script>
   <style>
-    body { background: #000; color:#fff; }
-    .header-line { height: 1px; background: rgba(255,255,255,0.18); }
-    /* Force dark like landing even if theme is light */
-    body.light { background:#000 !important; color:#fff !important; }
-    body.light .topbar { background: rgba(0,0,0,0.6) !important; border-bottom:1px solid rgba(255,255,255,0.1) !important; color:#fff !important; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000000;
+      margin: 0;
+      padding: 0;
+      transition: all 0.3s ease;
+    }
+
+    /* Light Theme Support */
+    body.light {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    body.light .language-card {
+      background: #ffffff;
+      border-color: #e5e7eb;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    body.light .language-option {
+      background: #ffffff;
+      border-color: #e5e7eb;
+      color: #000000;
+    }
+
+    body.light .language-option:hover {
+      background: #f9fafb;
+      border-color: #dc2626;
+    }
+
+    body.light .language-option.selected {
+      background: #fef2f2;
+      border-color: #dc2626;
+      color: #dc2626;
+    }
+
+    body.light .nav-link {
+      color: #000000;
+    }
+
+    body.light .nav-link:hover {
+      color: #374151;
+    }
+
+    body.light nav {
+      border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .language-card {
+      background: #1a1a1a;
+      border: 1px solid #333333;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .language-option {
+      background: #000000;
+      border: 2px solid #333333;
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .language-option:hover {
+      background: #1a1a1a;
+      border-color: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    .language-option.selected {
+      background: #1a0a0a;
+      border-color: #dc2626;
+      color: #dc2626;
+    }
+
+    .language-flag {
+      font-size: 1.5rem;
+      margin-right: 1rem;
+    }
+
+    .language-name {
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+
+    .language-native {
+      font-size: 0.875rem;
+      opacity: 0.7;
+    }
+
+    .btn-continue {
+      background: #dc2626;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      margin-top: 1.5rem;
+    }
+
+    .btn-continue:hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+    }
+
+    .btn-continue:disabled {
+      background: #666666;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .nav-link {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: #d1d5db;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
   </style>
 </head>
-<body class="text-white min-h-screen flex flex-col">
-  <div class="header-line"></div>
-  <header class="topbar">
-    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="text-sm tracking-wide text-white/80" data-i18n="app_title">Tourist Safety Dashboard</div>
-      <nav class="text-sm flex items-center gap-2">
-        <a href="./dashboard.html" class="btn" data-i18n="nav_dashboard">Dashboard</a>
-      </nav>
-    </div>
-  </header>
-  <div class="header-line"></div>
-
-  <main class="flex-1 max-w-4xl mx-auto px-4 py-12">
-    <div class="mx-auto max-w-2xl p-8 rounded-2xl border border-white/10 bg-white/5 shadow-lg">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">🌐</div>
-        <h1 class="text-3xl font-semibold" data-i18n="lang_select_title">Choose Language</h1>
-      </div>
-      <p class="text-white/70 mb-6">Choose your preferred language for the dashboard.</p>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <button id="btnEn" class="btn w-full py-5 text-lg" data-i18n="lang_english">English</button>
-        <button id="btnHi" class="btn w-full py-5 text-lg" data-i18n="lang_hindi">Hindi</button>
+<body class="bg-black text-white min-h-screen">
+  <!-- Top Navigation -->
+  <nav style="padding: 1rem 0; border-bottom: 1px solid #374151;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="color: #ffffff; font-weight: 600; font-size: 1.125rem;">
+          Authority Dashboard
+        </div>
+        <div style="display: flex; align-items: center; gap: 2rem;">
+          <div style="display: flex; align-items: center;">
+            <div class="status-indicator"></div>
+            <span style="color: #22c55e; font-size: 0.875rem; font-weight: 500;">Available for incident response</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <a href="./login.html" class="nav-link">Back to Login</a>
+          </div>
+        </div>
       </div>
     </div>
-  </main>
+  </nav>
 
-  <script src="./assets/js/i18n.js"></script>
+  <!-- Main Content -->
+  <div style="min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; padding: 2rem;">
+    <div class="language-card">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="font-size: 2rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem;">
+          Choose Your Language
+        </h1>
+        <p style="color: #9ca3af; font-size: 0.875rem;">
+          Select your preferred language for the dashboard interface
+        </p>
+      </div>
+
+      <div id="languageOptions">
+        <div class="language-option" data-lang="en" data-name="English">
+          <div style="display: flex; align-items: center;">
+            <span class="language-flag">🇺🇸</span>
+            <div>
+              <div class="language-name">English</div>
+              <div class="language-native">English</div>
+            </div>
+          </div>
+          <div style="width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 10px; height: 10px; background: #dc2626; border-radius: 50%; display: none;" class="selected-indicator"></div>
+          </div>
+        </div>
+
+        <div class="language-option" data-lang="hi" data-name="Hindi">
+          <div style="display: flex; align-items: center;">
+            <span class="language-flag">🇮🇳</span>
+            <div>
+              <div class="language-name">Hindi</div>
+              <div class="language-native">हिन्दी</div>
+            </div>
+          </div>
+          <div style="width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 10px; height: 10px; background: #dc2626; border-radius: 50%; display: none;" class="selected-indicator"></div>
+          </div>
+        </div>
+      </div>
+
+      <button id="continueBtn" class="btn-continue" disabled>
+        Continue to Dashboard
+      </button>
+
+      <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #333333;">
+        <p style="color: #666666; font-size: 0.75rem;">
+          You can change your language preference later in the settings.
+        </p>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Keep dark regardless of saved theme
-    document.body.classList.remove('light');
-    // Apply i18n
-    I18N.apply();
-    document.getElementById('btnEn').addEventListener('click', ()=>{ I18N.setLang('en'); I18N.apply(); window.location.href = './dashboard.html'; });
-    document.getElementById('btnHi').addEventListener('click', ()=>{ I18N.setLang('hi'); I18N.apply(); window.location.href = './dashboard.html'; });
+    let selectedLanguage = null;
+
+    // Apply saved theme on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      if (savedTheme === 'light') {
+        document.body.classList.add('light');
+      }
+
+      // Check if user is logged in
+      const user = localStorage.getItem('user');
+      if (!user) {
+        window.location.href = './login.html';
+        return;
+      }
+    });
+
+    // Handle language selection
+    document.querySelectorAll('.language-option').forEach(option => {
+      option.addEventListener('click', function() {
+        // Remove selection from all options
+        document.querySelectorAll('.language-option').forEach(opt => {
+          opt.classList.remove('selected');
+          opt.querySelector('.selected-indicator').style.display = 'none';
+        });
+
+        // Add selection to clicked option
+        this.classList.add('selected');
+        this.querySelector('.selected-indicator').style.display = 'block';
+
+        // Store selected language
+        selectedLanguage = {
+          code: this.dataset.lang,
+          name: this.dataset.name
+        };
+
+        // Enable continue button
+        document.getElementById('continueBtn').disabled = false;
+      });
+    });
+
+    // Handle continue button
+    document.getElementById('continueBtn').addEventListener('click', function() {
+      if (selectedLanguage) {
+        // Store language preference
+        localStorage.setItem('language', JSON.stringify(selectedLanguage));
+        
+        // Redirect to dashboard
+        window.location.href = './dashboard.html';
+      }
+    });
   </script>
 </body>
 </html>

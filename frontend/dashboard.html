@@ -3,108 +3,1115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Map Dashboard • Tourist Safety</title>
+  <title>Tourist Safety Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = { theme: { extend: { colors: { bgdark: '#000000' } } } };
+    tailwind.config = { 
+      theme: { 
+        extend: { 
+          colors: { 
+            primary: '#dc2626',
+            secondary: '#000000',
+            accent: '#ffffff',
+            dark: '#000000',
+            'dark-lighter': '#1a1a1a',
+            'dark-card': 'rgba(26, 26, 26, 0.9)'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-in-out',
+            'slide-up': 'slideUp 0.3s ease-out',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-subtle': 'bounceSubtle 2s infinite'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            bounceSubtle: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-2px)' }
+            }
+          }
+        } 
+      } 
+    };
   </script>
   <link rel="stylesheet" href="./assets/css/styles.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <style>
-    body { background: #000; }
-    #map { height: calc(100vh - 64px); }
-    .glass { backdrop-filter: blur(12px); background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255,255,255,0.08); }
+    /* Dark Theme (Default) */
+    body { 
+      background: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #ffffff;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar {
+      background: #1a1a1a;
+      border-right: 1px solid #333333;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 8px;
+      margin: 4px 12px;
+      transition: all 0.3s ease;
+      background: transparent;
+      border: 1px solid transparent;
+    }
+    
+    .nav-item:hover {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+      text-decoration: none;
+    }
+    
+    .nav-item.active {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+    
+    .nav-section-title {
+      padding: 12px 16px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #666666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .metric-card {
+      background: #1a1a1a;
+      border: 1px solid #333333;
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    .metric-card:hover {
+      transform: translateY(-2px);
+      border-color: #dc2626;
+      box-shadow: 0 8px 25px rgba(220, 38, 38, 0.2);
+    }
+    
+    .btn-primary {
+      background: #dc2626;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: 1px solid #dc2626;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-primary:hover {
+      background: #b91c1c;
+      border-color: #b91c1c;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+      text-decoration: none;
+      color: #ffffff;
+    }
+    
+    .btn-secondary {
+      background: #1a1a1a;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: 1px solid #333333;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-secondary:hover {
+      background: #333333;
+      border-color: #666666;
+      transform: translateY(-1px);
+      text-decoration: none;
+      color: #ffffff;
+    }
+
+    /* Light Theme Support */
+    body.light {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    body.light .sidebar {
+      background: #f8f9fa;
+      border-right: 1px solid #e5e7eb;
+    }
+
+    body.light .nav-item {
+      color: #000000;
+    }
+
+    body.light .nav-item:hover {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+
+    body.light .nav-item.active {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+
+    body.light .nav-section-title {
+      color: #6b7280;
+    }
+
+    body.light .metric-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    body.light .metric-card:hover {
+      border-color: #dc2626;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+    }
+
+    body.light .btn-secondary {
+      background: #ffffff;
+      color: #000000;
+      border-color: #e5e7eb;
+    }
+
+    body.light .btn-secondary:hover {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+      color: #000000;
+    }
+
+    body.light h1,
+    body.light h2,
+    body.light h3,
+    body.light h4,
+    body.light p,
+    body.light span {
+      color: #000000;
+    }
+
+    body.light .text-white {
+      color: #000000 !important;
+    }
+
+    body.light .text-white\/60 {
+      color: #6b7280 !important;
+    }
+
+    body.light .text-white\/70 {
+      color: #6b7280 !important;
+    }
+
+    body.light .text-white\/80 {
+      color: #374151 !important;
+    }
+
+    body.light .bg-black\/90 {
+      background: rgba(255, 255, 255, 0.95) !important;
+      color: #000000 !important;
+    }
+
+    body.light .border-gray-700 {
+      border-color: #e5e7eb !important;
+    }
+
+    body.light .bg-gray-800 {
+      background: #f3f4f6 !important;
+    }
+
+    body.light .bg-gray-700 {
+      background: #e5e7eb !important;
+    }
+
+    body.light input[type="checkbox"] {
+      background: #ffffff;
+      border-color: #d1d5db;
+    }
+
+    body.light select {
+      background: #ffffff;
+      border-color: #d1d5db;
+      color: #000000;
+    }
+
+    body.light .leaflet-popup-content-wrapper {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    body.light .leaflet-popup-tip {
+      background: #ffffff;
+    }
+    
+    .input-field {
+      background: #1a1a1a;
+      border: 1px solid #333333;
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #ffffff;
+      transition: all 0.3s ease;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: #dc2626;
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+    }
+    
+    .input-field::placeholder {
+      color: #666666;
+    }
+    
+    /* Light Theme */
+    body.light {
+      background: #ffffff;
+      color: #000000;
+    }
+    
+    body.light .sidebar {
+      background: #f5f5f5;
+      border-right: 1px solid #e0e0e0;
+    }
+    
+    body.light .nav-item {
+      color: #000000;
+    }
+    
+    body.light .nav-item:hover {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+    
+    body.light .nav-item.active {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+    
+    body.light .nav-section-title {
+      color: #666666;
+    }
+    
+    body.light .metric-card {
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      color: #000000;
+    }
+    
+    body.light .metric-card:hover {
+      border-color: #dc2626;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+    }
+    
+    body.light .btn-primary {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+    
+    body.light .btn-primary:hover {
+      background: #b91c1c;
+      border-color: #b91c1c;
+      color: #ffffff;
+    }
+    
+    body.light .btn-secondary {
+      background: #ffffff;
+      color: #000000;
+      border-color: #e0e0e0;
+    }
+    
+    body.light .btn-secondary:hover {
+      background: #f5f5f5;
+      border-color: #cccccc;
+      color: #000000;
+    }
+    
+    body.light .input-field {
+      background: #ffffff;
+      border-color: #e0e0e0;
+      color: #000000;
+    }
+    
+    body.light .input-field:focus {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+    }
+    
+    body.light .input-field::placeholder {
+      color: #666666;
+    }
+    
+    /* Header styles */
+    .header-dark {
+      background: #1a1a1a;
+      border-bottom: 1px solid #333333;
+    }
+    
+    body.light .header-dark {
+      background: #f5f5f5;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    /* Status indicators */
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    .status-online { background: #22c55e; }
+    .status-warning { background: #f59e0b; }
+    .status-error { background: #dc2626; }
+    
+    /* Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    
+    .floating { animation: float 6s ease-in-out infinite; }
+    
+    .grid-container {
+      display: grid;
+      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    
     .leaflet-control-attribution { display: none; }
-    .card { border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); }
-    body.light .card { border: 1px solid rgba(0,0,0,0.1); background: rgba(0,0,0,0.04); }
+    
+    /* Enhanced Map Controls Styling */
+    #mapControls, #mapLegend {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    #mapControls {
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    #mapLegend {
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      #mapControls {
+        min-width: 240px;
+        left: 4px !important;
+        top: 4px !important;
+      }
+      
+      #mapLegend {
+        min-width: 280px;
+        right: 4px !important;
+        bottom: 4px !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #mapControls {
+        min-width: 200px;
+        font-size: 12px;
+      }
+      
+      #mapLegend {
+        min-width: 240px;
+        font-size: 12px;
+      }
+      
+      #mapControls h4, #mapLegend h4 {
+        font-size: 14px;
+      }
+      
+      #mapControls h5, #mapLegend h5 {
+        font-size: 12px;
+      }
+    }
+
+    /* Custom scrollbar for legend and controls */
+    #mapControls::-webkit-scrollbar,
+    #mapLegend::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #mapControls::-webkit-scrollbar-track,
+    #mapLegend::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+    }
+
+    #mapControls::-webkit-scrollbar-thumb,
+    #mapLegend::-webkit-scrollbar-thumb {
+      background: rgba(220, 38, 38, 0.6);
+      border-radius: 2px;
+    }
+
+    #mapControls::-webkit-scrollbar-thumb:hover,
+    #mapLegend::-webkit-scrollbar-thumb:hover {
+      background: rgba(220, 38, 38, 0.8);
+    }
+
+    /* Emergency marker animation */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .emergency-marker {
+      animation: pulse 2s infinite;
+    }
+    
+    /* Text colors for light theme */
+    body.light h1,
+    body.light h2,
+    body.light h3,
+    body.light h4,
+    body.light p,
+    body.light span {
+      color: #000000;
+    }
+    
+    body.light .text-slate-400 {
+      color: #666666 !important;
+    }
+    
+    body.light .text-white {
+      color: #000000 !important;
+    }
+    
+    body.light .text-green-400 {
+      color: #22c55e !important;
+    }
+    
+    body.light .text-red-400 {
+      color: #dc2626 !important;
+    }
   </style>
 </head>
-<body class="text-white">
-  <!-- Top Bar -->
-  <header class="topbar h-16 px-4 md:px-6 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="h-8 w-8 rounded-md bg-white/80"></div>
-      <h1 class="font-semibold" data-i18n="app_title">Tourist Safety Dashboard</h1>
-    </div>
-    <div class="flex items-center gap-2 text-sm">
-      <a href="./alerts.html" class="btn" data-i18n="nav_alerts">Alerts</a>
-      <a href="./analytics.html" class="btn" data-i18n="nav_analytics">Analytics</a>
-      <a href="./geofence.html" class="btn" data-i18n="nav_geofence">Geofence</a>
-      <a href="./audit.html" class="btn" data-i18n="nav_audit">Audit</a>
-      <a href="./settings.html" class="btn" data-i18n="nav_settings">Settings</a>
-      <input id="searchInput" placeholder="Search by Tourist ID or phone" class="hidden md:block px-3 py-2 rounded-md bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-white w-80" />
-      <span id="authorityName" class="text-white/70 hidden md:inline">Logged in</span>
-      <button id="logoutBtn" class="btn-outline">Logout</button>
-      <button id="themeToggleGlobal" title="Toggle theme" class="btn-outline" aria-label="Toggle theme">Theme</button>
-    </div>
-  </header>
+<body class="textured-bg min-h-screen">
+  <div class="flex h-screen">
+    <!-- Left Sidebar -->
+    <aside class="sidebar w-72 flex-shrink-0 overflow-y-auto">
+      <div class="p-6">
+        <!-- Logo -->
+        <div class="flex items-center gap-3 mb-10 animate-fade-in">
+          <div class="w-10 h-10 bg-gradient-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center floating">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="font-bold text-xl text-white">SafeGuard</h1>
+            <p class="text-xs text-gray-400">Tourist Safety Platform</p>
+          </div>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="space-y-2">
+          <!-- Main Navigation -->
+          <div class="mb-6">
+            <a href="./dashboard.html" class="nav-item active">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+              </svg>
+              <span>Dashboard</span>
+              <div class="status-indicator status-online ml-auto"></div>
+            </a>
+            
+            <a href="./alerts.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+              <span>Emergency Alerts</span>
+              <span class="ml-auto bg-red-600 text-white text-xs px-2 py-1 rounded-full">3</span>
+            </a>
+            
+            <a href="./geofence.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+              </svg>
+              <span>Safety Zones</span>
+            </a>
+          </div>
 
-  <!-- Filters row -->
-  <div class="px-4 md:px-6 py-3 border-b border-white/10 bg-black/40 flex flex-wrap gap-3 items-center">
-    <label class="text-xs text-white/70"><span data-i18n="filters_district">District</span>
-      <select id="filterDistrict" class="ml-2 px-2 py-1 rounded-md bg-white/5 border border-white/10">
-        <option value="all" data-i18n="type_all">All</option>
-        <option>East Khasi Hills</option>
-        <option>West Khasi Hills</option>
-        <option>South West Khasi Hills</option>
-        <option>Ri-Bhoi</option>
-        <option>East Jaintia Hills</option>
-        <option>West Jaintia Hills</option>
-        <option>North Garo Hills</option>
-        <option>East Garo Hills</option>
-        <option>South Garo Hills</option>
-        <option>South West Garo Hills</option>
-        <option>West Garo Hills</option>
-      </select>
-    </label>
-    <label class="text-xs text-white/70"><span data-i18n="filters_type">Type</span>
-      <select id="filterType" class="ml-2 px-2 py-1 rounded-md bg-white/5 border border-white/10">
-        <option value="all" data-i18n="type_all">All</option>
-        <option value="domestic" data-i18n="type_domestic">Domestic</option>
-        <option value="foreign" data-i18n="type_foreign">Foreign</option>
-      </select>
-    </label>
-    <label class="text-xs inline-flex items-center gap-2"><input id="filterHighRisk" type="checkbox" class="accent-white" /> <span data-i18n="filters_highrisk">High-risk zones only</span></label>
+          <!-- Analytics Section -->
+          <div class="mb-6">
+            <div class="nav-section-title">Analytics & Reports</div>
+            <a href="./analytics.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+              </svg>
+              <span>Analytics Dashboard</span>
+            </a>
+            
+            <a href="#" class="nav-item" onclick="showComingSoon('Automations')">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3h4v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45-1.5a2.5 2.5 0 114.9 0 2.5 2.5 0 01-4.9 0z" clip-rule="evenodd"/>
+              </svg>
+              <span>Smart Automations</span>
+              <span class="ml-auto text-xs bg-red-600/20 text-red-400 px-2 py-1 rounded">Beta</span>
+            </a>
+          </div>
+
+          <!-- Management Section -->
+          <div class="mb-6">
+            <div class="nav-section-title">Management</div>
+            <a href="./audit.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span>Audit Logs</span>
+            </a>
+            
+            <a href="./settings.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+              </svg>
+              <span>System Settings</span>
+            </a>
+          </div>
+
+          <!-- Support Section -->
+          <div>
+            <div class="nav-section-title">Support</div>
+            <a href="#" class="nav-item" onclick="showComingSoon('Help Center')">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+              </svg>
+              <span>Help Center</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+      <!-- Top Header -->
+      <header class="header-dark px-8 py-6">
+        <div class="flex items-center justify-between">
+          <div class="animate-fade-in">
+            <h1 class="text-3xl font-bold text-white" data-i18n="dashboard_title">
+              Tourist Safety Dashboard
+            </h1>
+            <p class="text-white/60 text-sm mt-2" data-i18n="dashboard_subtitle">Real-time monitoring and risk management system</p>
+          </div>
+          <div class="flex items-center gap-4 animate-slide-up">
+            <div id="userInfo" class="text-white/80 text-sm hidden">
+              <span id="welcomeText">Welcome, </span><span id="userName" class="font-medium"></span>
+              <span class="mx-2">•</span>
+              <span id="userLanguage" class="text-white/60"></span>
+            </div>
+            <input 
+              id="searchInput" 
+              placeholder="Search by Tourist ID or phone..." 
+              class="input-field w-80"
+            />
+            <button id="logoutBtn" class="btn-secondary">
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+              </svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Dashboard Content -->
+      <section class="p-8">
+        <div class="flex gap-8">
+          <!-- Left Side - Map and Filters -->
+          <div class="flex-1">
+            <!-- Filter Options -->
+            <div class="metric-card mb-6">
+              <h3 class="font-semibold text-lg mb-4 text-white">Filter Options</h3>
+              <div class="flex flex-wrap gap-4">
+                <div class="flex items-center gap-2">
+                  <label class="text-slate-400 text-sm font-medium">District:</label>
+                  <select id="filterDistrict" class="input-field">
+                    <option value="all">All Districts</option>
+                    <option>East Khasi Hills</option>
+                    <option>West Khasi Hills</option>
+                    <option>South West Khasi Hills</option>
+                    <option>Ri-Bhoi</option>
+                    <option>East Jaintia Hills</option>
+                    <option>West Jaintia Hills</option>
+                    <option>North Garo Hills</option>
+                    <option>East Garo Hills</option>
+                    <option>South Garo Hills</option>
+                    <option>South West Garo Hills</option>
+                    <option>West Garo Hills</option>
+                  </select>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                  <label class="text-slate-400 text-sm font-medium">Tourist Type:</label>
+                  <select id="filterType" class="input-field">
+                    <option value="all">All Types</option>
+                    <option value="domestic">Domestic</option>
+                    <option value="foreign">International</option>
+                  </select>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                  <label class="text-slate-400 text-sm font-medium">Risk Level:</label>
+                  <select id="filterRisk" class="input-field">
+                    <option value="all">All Levels</option>
+                    <option value="low">Low Risk</option>
+                    <option value="medium">Medium Risk</option>
+                    <option value="high">High Risk</option>
+                  </select>
+                </div>
+                
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input id="filterHighRisk" type="checkbox" class="w-4 h-4 text-red-600 bg-slate-700 border-slate-600 rounded focus:ring-red-500" /> 
+                  <span class="text-slate-400 text-sm font-medium">High-risk zones only</span>
+                </label>
+                
+                <button id="applyFilters" class="btn-primary text-sm">
+                  <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd"/>
+                  </svg>
+                  Apply Filters
+                </button>
+              </div>
+            </div>
+
+            <!-- Live Risk Map -->
+            <div class="metric-card">
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <h3 class="font-semibold text-xl text-white">Live Risk Map</h3>
+                  <p class="text-white/60 text-sm">Real-time tourist locations and safety zones</p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="flex items-center gap-2">
+                    <div class="status-indicator status-online"></div>
+                    <span class="text-green-400 text-sm font-medium">Live Data</span>
+                  </div>
+                  <button class="btn-secondary text-sm">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                    </svg>
+                    Refresh
+                  </button>
+                </div>
+              </div>
+              
+              <div class="relative rounded-2xl overflow-hidden border border-gray-700" style="height: 600px;">
+                <div id="map" class="w-full h-full"></div>
+                
+                <!-- Enhanced Map Legend -->
+                <div id="mapLegend" class="absolute right-6 bottom-6 bg-black/90 backdrop-blur-xl rounded-xl border border-gray-700 p-4 shadow-2xl min-w-[320px] max-h-[400px] overflow-y-auto">
+                  <div class="flex items-center justify-between mb-4">
+                    <h4 class="font-bold text-white text-lg">Map Legend</h4>
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  </div>
+                  
+                  <!-- Alert Categories -->
+                  <div class="mb-4">
+                    <h5 class="text-white/80 text-sm font-semibold mb-2">Alert Categories</h5>
+                    <div class="space-y-2">
+                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
+                        <div class="w-4 h-4 rounded-full bg-red-500 shadow-lg border border-white/20 animate-pulse"></div>
+                        <span class="text-white text-sm">Emergency Alert</span>
+                        <span class="text-red-400 text-xs bg-red-500/20 px-2 py-1 rounded ml-auto">CRITICAL</span>
+                      </div>
+                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
+                        <div class="w-4 h-4 rounded-full bg-orange-500 shadow-lg border border-white/20"></div>
+                        <span class="text-white text-sm">Weather Alert</span>
+                        <span class="text-orange-400 text-xs bg-orange-500/20 px-2 py-1 rounded ml-auto">HIGH</span>
+                      </div>
+                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
+                        <div class="w-4 h-4 rounded-full bg-yellow-500 shadow-lg border border-white/20"></div>
+                        <span class="text-white text-sm">Wildlife Alert</span>
+                        <span class="text-yellow-400 text-xs bg-yellow-500/20 px-2 py-1 rounded ml-auto">MEDIUM</span>
+                      </div>
+                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
+                        <div class="w-4 h-4 rounded-full bg-purple-500 shadow-lg border border-white/20"></div>
+                        <span class="text-white text-sm">Traffic Alert</span>
+                        <span class="text-purple-400 text-xs bg-purple-500/20 px-2 py-1 rounded ml-auto">INFO</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Risk Zones -->
+                  <div class="mb-4">
+                    <h5 class="text-white/80 text-sm font-semibold mb-2">Risk Zones</h5>
+                    <div class="space-y-2">
+                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
+                        <div class="w-4 h-4 rounded-full bg-green-500 shadow-lg border border-white/20"></div>
+                        <div class="flex-1">
+                          <span class="text-white text-sm">Low Risk</span>
+                          <div class="text-green-400 text-xs">0-2 incidents/month</div>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
+                        <div class="w-4 h-4 rounded-full bg-yellow-500 shadow-lg border border-white/20"></div>
+                        <div class="flex-1">
+                          <span class="text-white text-sm">Medium Risk</span>
+                          <div class="text-yellow-400 text-xs">3-5 incidents/month</div>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
+                        <div class="w-4 h-4 rounded-full bg-red-500 shadow-lg border border-white/20"></div>
+                        <div class="flex-1">
+                          <span class="text-white text-sm">High Risk</span>
+                          <div class="text-red-400 text-xs">6+ incidents/month</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Map Markers -->
+                  <div class="mb-4">
+                    <h5 class="text-white/80 text-sm font-semibold mb-2">Map Markers</h5>
+                    <div class="space-y-2">
+                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
+                        <div class="w-4 h-4 rounded-full bg-blue-500 shadow-lg border border-white/20 flex items-center justify-center">
+                          <div class="w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                        <span class="text-white text-sm">Tourist Groups</span>
+                        <span class="text-blue-400 text-xs bg-blue-500/20 px-2 py-1 rounded ml-auto">ACTIVE</span>
+                      </div>
+                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
+                        <div class="w-4 h-4 bg-red-600 rounded flex items-center justify-center">
+                          <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92z" clip-rule="evenodd"/>
+                          </svg>
+                        </div>
+                        <span class="text-white text-sm">Emergency Points</span>
+                        <span class="text-red-400 text-xs bg-red-500/20 px-2 py-1 rounded ml-auto">URGENT</span>
+                      </div>
+                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
+                        <div class="w-4 h-4 bg-green-600 rounded flex items-center justify-center">
+                          <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                          </svg>
+                        </div>
+                        <span class="text-white text-sm">Safe Checkpoints</span>
+                        <span class="text-green-400 text-xs bg-green-500/20 px-2 py-1 rounded ml-auto">SAFE</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pt-3 border-t border-white/10">
+                    <div class="text-xs text-white/60 text-center">
+                      <span class="font-medium">Last Updated:</span> <span id="lastUpdateTime">Just now</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Enhanced Layer Controls -->
+                <div id="mapControls" class="absolute left-6 top-6 bg-black/90 backdrop-blur-xl rounded-xl border border-gray-700 p-4 shadow-2xl min-w-[280px]">
+                  <div class="flex items-center justify-between mb-4">
+                    <h4 class="font-bold text-white text-lg">Layer Controls</h4>
+                    <svg class="w-4 h-4 text-white/60" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  
+                  <!-- Base Map Layers -->
+                  <div class="mb-4">
+                    <h5 class="text-white/80 text-sm font-semibold mb-2">Base Map</h5>
+                    <div class="space-y-2">
+                      <label class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-all">
+                        <input type="radio" name="baseMap" checked class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500 focus:ring-2" id="baseMapStreet" /> 
+                        <div class="flex items-center gap-2 flex-1">
+                          <div class="w-3 h-3 bg-gray-500 rounded"></div>
+                          <span class="text-white text-sm">Street Map</span>
+                        </div>
+                        <span class="text-green-400 text-xs font-bold">ACTIVE</span>
+                      </label>
+                      <label class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-all">
+                        <input type="radio" name="baseMap" class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500 focus:ring-2" id="baseMapSatellite" /> 
+                        <div class="flex items-center gap-2 flex-1">
+                          <div class="w-3 h-3 bg-green-600 rounded"></div>
+                          <span class="text-white text-sm">Satellite</span>
+                        </div>
+                      </label>
+                      <label class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-all">
+                        <input type="radio" name="baseMap" class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500 focus:ring-2" id="baseMapTerrain" /> 
+                        <div class="flex items-center gap-2 flex-1">
+                          <div class="w-3 h-3 bg-brown-600 rounded"></div>
+                          <span class="text-white text-sm">Terrain</span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Data Overlays -->
+                  <div class="mb-4">
+                    <h5 class="text-white/80 text-sm font-semibold mb-2">Data Overlays</h5>
+                    <div class="space-y-2">
+                      <label class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-all">
+                        <input type="checkbox" checked class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500 focus:ring-2" id="layerTourists" /> 
+                        <div class="flex items-center gap-2 flex-1">
+                          <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <span class="text-white text-sm">Tourist Locations</span>
+                        </div>
+                        <span class="text-blue-400 text-xs font-bold bg-blue-500/20 px-2 py-1 rounded">ON</span>
+                      </label>
+                      <label class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-all">
+                        <input type="checkbox" checked class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500 focus:ring-2" id="layerRiskZones" /> 
+                        <div class="flex items-center gap-2 flex-1">
+                          <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                          <span class="text-white text-sm">Risk Zones</span>
+                        </div>
+                        <span class="text-red-400 text-xs font-bold bg-red-500/20 px-2 py-1 rounded">ON</span>
+                      </label>
+                      <label class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-all">
+                        <input type="checkbox" class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500 focus:ring-2" id="layerHeatmap" /> 
+                        <div class="flex items-center gap-2 flex-1">
+                          <div class="w-3 h-3 bg-orange-500 rounded-full"></div>
+                          <span class="text-white text-sm">Heatmap</span>
+                        </div>
+                        <span class="text-gray-400 text-xs font-bold">OFF</span>
+                      </label>
+                      <label class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-all">
+                        <input type="checkbox" class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500 focus:ring-2" id="layerWeather" /> 
+                        <div class="flex items-center gap-2 flex-1">
+                          <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                          <span class="text-white text-sm">Weather Alerts</span>
+                        </div>
+                        <span class="text-gray-400 text-xs font-bold">OFF</span>
+                      </label>
+                      <label class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-all">
+                        <input type="checkbox" class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500 focus:ring-2" id="layerTraffic" /> 
+                        <div class="flex items-center gap-2 flex-1">
+                          <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                          <span class="text-white text-sm">Traffic Density</span>
+                        </div>
+                        <span class="text-gray-400 text-xs font-bold">OFF</span>
+                      </label>
+                      <label class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-all">
+                        <input type="checkbox" class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500 focus:ring-2" id="layerEmergency" /> 
+                        <div class="flex items-center gap-2 flex-1">
+                          <div class="w-3 h-3 bg-red-600 rounded"></div>
+                          <span class="text-white text-sm">Emergency Alerts</span>
+                        </div>
+                        <span class="text-gray-400 text-xs font-bold">OFF</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="pt-3 border-t border-white/10">
+                    <button id="refreshAllLayers" class="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-3 rounded-lg transition-all mb-2">
+                      <svg class="w-3 h-3 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1z" clip-rule="evenodd"/>
+                      </svg>
+                      Refresh All Layers
+                    </button>
+                    <button id="resetView" class="w-full bg-gray-600 hover:bg-gray-700 text-white text-xs font-bold py-2 px-3 rounded-lg transition-all">
+                      <svg class="w-3 h-3 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"/>
+                      </svg>
+                      Reset View
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Live Stats Overlay -->
+                <div class="absolute left-6 top-6 bg-black/90 backdrop-blur-xl rounded-xl border border-gray-700 p-4">
+                  <h4 class="font-semibold text-white mb-3">Live Statistics</h4>
+                  <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                      <span class="text-white/70">Active Tourists:</span>
+                      <span class="text-white font-medium">2,847</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-white/70">High Risk Areas:</span>
+                      <span class="text-red-400 font-medium">3</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-white/70">Active Alerts:</span>
+                      <span class="text-yellow-400 font-medium">7</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-white/70">Response Teams:</span>
+                      <span class="text-green-400 font-medium">12</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Side - Vertical Metrics -->
+          <div class="w-80 space-y-6">
+            <!-- Active Tourists -->
+            <div class="metric-card animate-fade-in" style="animation-delay: 0.1s">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-white/70 text-sm font-medium">Active Tourists</h3>
+                    <p class="text-2xl font-bold text-white">2,847</p>
+                  </div>
+                </div>
+                <div class="text-white text-sm font-semibold">+12.5%</div>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-red-600 h-2 rounded-full" style="width: 75%"></div>
+              </div>
+            </div>
+
+            <!-- Safety Score -->
+            <div class="metric-card animate-fade-in" style="animation-delay: 0.2s">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-white/70 text-sm font-medium">Safety Score</h3>
+                    <p class="text-2xl font-bold text-white">87.3</p>
+                  </div>
+                </div>
+                <div class="text-white text-sm font-semibold">+2.1%</div>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-red-600 h-2 rounded-full" style="width: 87%"></div>
+              </div>
+            </div>
+
+            <!-- Active Alerts -->
+            <div class="metric-card animate-fade-in" style="animation-delay: 0.3s">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-white/70 text-sm font-medium">Active Alerts</h3>
+                    <p class="text-2xl font-bold text-white">7</p>
+                  </div>
+                </div>
+                <div class="text-red-400 text-sm font-semibold">3 Critical</div>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-red-600 h-2 rounded-full" style="width: 35%"></div>
+              </div>
+            </div>
+
+            <!-- Response Time -->
+            <div class="metric-card animate-fade-in" style="animation-delay: 0.4s">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 2L3 7v11a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V7l-7-5z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-white/70 text-sm font-medium">Response Time</h3>
+                    <p class="text-2xl font-bold text-white">4.2m</p>
+                  </div>
+                </div>
+                <div class="text-white text-sm font-semibold">-15%</div>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-red-600 h-2 rounded-full" style="width: 92%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <button onclick="window.location.href='./alerts.html'" class="btn-primary text-left p-6 h-auto">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg">Emergency Center</h3>
+                <p class="text-white/80 text-sm">Manage active alerts and incidents</p>
+              </div>
+            </div>
+          </button>
+
+          <button onclick="window.location.href='./analytics.html'" class="btn-primary text-left p-6 h-auto">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg">Analytics Hub</h3>
+                <p class="text-white/80 text-sm">View detailed reports and insights</p>
+              </div>
+            </div>
+          </button>
+
+          <button onclick="window.location.href='./settings.html'" class="btn-primary text-left p-6 h-auto">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg">System Control</h3>
+                <p class="text-white/80 text-sm">Configure system settings</p>
+              </div>
+            </div>
+          </button>
+        </div>
+      </section>
+    </main>
   </div>
 
-  <!-- Risk Map Card -->
-  <section class="px-4 md:px-6 py-4">
-    <div class="card rounded-xl p-3">
-      <div class="flex items-center justify-between px-2 py-2">
-        <div class="font-semibold" data-i18n="risk_map">Risk Map</div>
-        <span class="text-xs px-2 py-1 rounded-md bg-white/10 border border-white/10" data-i18n="live">Live</span>
-      </div>
-      <div class="relative rounded-xl overflow-hidden border border-white/10">
-        <div id="map" style="height: 560px;"></div>
-        <!-- Legend bottom-left -->
-        <div class="absolute left-3 bottom-3 bg-white/10 backdrop-blur rounded-lg border border-white/10 p-3 text-sm">
-          <div class="font-semibold mb-2" data-i18n="flood_legend">Flood Risk</div>
-          <div class="flex items-center gap-2 mb-1"><span style="width:10px;height:10px;border-radius:50%;background:#22c55e;display:inline-block"></span> <span data-i18n="risk_low">Low Risk</span></div>
-          <div class="flex items-center gap-2 mb-1"><span style="width:10px;height:10px;border-radius:50%;background:#eab308;display:inline-block"></span> <span data-i18n="risk_medium">Medium Risk</span></div>
-          <div class="flex items-center gap-2"><span style="width:10px;height:10px;border-radius:50%;background:#ef4444;display:inline-block"></span> <span data-i18n="risk_high">High Risk</span></div>
-        </div>
-        <!-- Map layers top-right (static demo) -->
-        <div class="absolute right-3 top-3 bg-white/10 backdrop-blur rounded-lg border border-white/10 p-3 text-sm">
-          <div class="font-semibold mb-2" data-i18n="map_layers">Map Layers</div>
-          <label class="flex items-center gap-2 mb-1"><input type="checkbox" checked class="accent-white" /> <span data-i18n="layer_flood">Flood Risk</span></label>
-          <label class="flex items-center gap-2 mb-1"><input type="checkbox" class="accent-white" /> <span data-i18n="layer_rain">Rainfall Level</span></label>
-          <label class="flex items-center gap-2 mb-1"><input type="checkbox" class="accent-white" /> <span data-i18n="layer_water">Water Level</span></label>
-          <label class="flex items-center gap-2"><input type="checkbox" class="accent-white" /> <span data-i18n="layer_pop">Population Density</span></label>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Side Panel: SOS Alerts -->
-  <aside class="border-t border-white/10 bg-black/20">
-      <div class="p-4 border-b border-white/10 flex items-center justify-between">
-        <h2 class="font-semibold" data-i18n="sos_active">Active SOS Alerts</h2>
-        <span class="text-xs px-2 py-1 rounded-md bg-red-500/20 text-red-300">Live</span>
-      </div>
-      <div id="sosList" class="p-4 space-y-3"></div>
-  </aside>
 
   <!-- Tourist Profile Modal -->
   <div id="profileModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4">
@@ -149,15 +1156,927 @@
   <script src="./assets/js/i18n.js"></script>
   <script src="./assets/js/auth.js"></script>
   <script src="./assets/js/dashboard.js"></script>
+  
   <script>
     // Apply saved theme
     (function(){ const t = localStorage.getItem('theme')||'dark'; if (t==='light') document.body.classList.add('light'); })();
-    // Apply i18n
-    I18N.apply();
-    // Global theme toggle (affects whole site because it persists)
-    document.getElementById('themeToggleGlobal').addEventListener('click', ()=>{
+    
+    // Apply i18n if available
+    if (typeof I18N !== 'undefined') {
+      I18N.apply();
+    }
+
+    // Initialize Leaflet map focused on Meghalaya with enhanced legends and labels
+    let map;
+    let markers = [];
+    let markerClusterGroup;
+    let riskZoneLayers = {};
+    let currentTheme = 'dark';
+    
+    function initializeMap() {
+      if (map) return;
+      
+      // Initialize map
+      map = L.map('map', {
+        center: [25.4670, 91.3662], // Shillong, Meghalaya
+        zoom: 8,
+        zoomControl: false,
+        attributionControl: false,
+        maxBounds: [[24.5, 89.5], [26.5, 93.5]], // Restrict to Meghalaya region
+        maxBoundsViscosity: 1.0
+      });
+
+      // Add custom zoom control
+      L.control.zoom({
+        position: 'bottomright'
+      }).addTo(map);
+
+      // Initialize marker cluster group
+      markerClusterGroup = L.markerClusterGroup({
+        chunkedLoading: true,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        maxClusterRadius: 50
+      });
+
+      // Add tile layer based on theme
+      updateMapTheme();
+
+      // Comprehensive Meghalaya tourist locations with enhanced data
+      const meghalayaLocations = [
+        // East Khasi Hills - Major Tourist Destinations
+        { lat: 25.5788, lng: 91.8933, name: "Cherrapunji Falls", risk: "medium", count: 24, district: "East Khasi Hills", type: "domestic", lastUpdate: "1 min ago" },
+        { lat: 25.4670, lng: 91.3662, name: "Shillong City Center", risk: "low", count: 67, district: "East Khasi Hills", type: "foreign", lastUpdate: "30 sec ago" },
+        { lat: 25.4625, lng: 91.3958, name: "Ward's Lake", risk: "low", count: 32, district: "East Khasi Hills", type: "domestic", lastUpdate: "2 min ago" },
+        { lat: 25.5744, lng: 91.8878, name: "Nohkalikai Falls", risk: "high", count: 18, district: "East Khasi Hills", type: "foreign", lastUpdate: "45 sec ago" },
+        { lat: 25.4500, lng: 91.3700, name: "Elephant Falls", risk: "medium", count: 28, district: "East Khasi Hills", type: "domestic", lastUpdate: "3 min ago" },
+        { lat: 25.4400, lng: 91.3800, name: "Shillong Peak", risk: "low", count: 41, district: "East Khasi Hills", type: "foreign", lastUpdate: "2 min ago" },
+        { lat: 25.4300, lng: 91.3900, name: "Don Bosco Museum", risk: "low", count: 29, district: "East Khasi Hills", type: "domestic", lastUpdate: "4 min ago" },
+        { lat: 25.5600, lng: 91.8700, name: "Seven Sisters Falls", risk: "medium", count: 21, district: "East Khasi Hills", type: "foreign", lastUpdate: "3 min ago" },
+        { lat: 25.5500, lng: 91.8600, name: "Mawsmai Cave", risk: "medium", count: 16, district: "East Khasi Hills", type: "domestic", lastUpdate: "5 min ago" },
+        
+        // West Khasi Hills
+        { lat: 25.5167, lng: 91.1333, name: "Nongstoin Market", risk: "low", count: 15, district: "West Khasi Hills", type: "domestic", lastUpdate: "4 min ago" },
+        { lat: 25.4800, lng: 91.0500, name: "Langshiang Falls", risk: "medium", count: 12, district: "West Khasi Hills", type: "foreign", lastUpdate: "6 min ago" },
+        { lat: 25.5000, lng: 91.1200, name: "Weinia Falls", risk: "low", count: 9, district: "West Khasi Hills", type: "domestic", lastUpdate: "8 min ago" },
+        { lat: 25.4900, lng: 91.1100, name: "Nongkhnum Island", risk: "low", count: 14, district: "West Khasi Hills", type: "foreign", lastUpdate: "7 min ago" },
+        
+        // West Jaintia Hills
+        { lat: 25.4522, lng: 92.2058, name: "Jowai Town", risk: "medium", count: 22, district: "West Jaintia Hills", type: "foreign", lastUpdate: "2 min ago" },
+        { lat: 25.4200, lng: 92.1800, name: "Krang Suri Falls", risk: "high", count: 16, district: "West Jaintia Hills", type: "domestic", lastUpdate: "1 min ago" },
+        { lat: 25.4100, lng: 92.1900, name: "Tyrshi Falls", risk: "medium", count: 11, district: "West Jaintia Hills", type: "foreign", lastUpdate: "4 min ago" },
+        { lat: 25.4300, lng: 92.2200, name: "Thadlaskein Lake", risk: "low", count: 18, district: "West Jaintia Hills", type: "domestic", lastUpdate: "6 min ago" },
+        
+        // East Jaintia Hills
+        { lat: 25.4800, lng: 92.3500, name: "Khliehriat", risk: "low", count: 9, district: "East Jaintia Hills", type: "domestic", lastUpdate: "8 min ago" },
+        { lat: 25.4600, lng: 92.3300, name: "Ialong Park", risk: "low", count: 7, district: "East Jaintia Hills", type: "foreign", lastUpdate: "10 min ago" },
+        { lat: 25.4700, lng: 92.3400, name: "Syntu Ksiar", risk: "medium", count: 5, district: "East Jaintia Hills", type: "domestic", lastUpdate: "12 min ago" },
+        
+        // West Garo Hills
+        { lat: 25.5900, lng: 90.2167, name: "Tura Hill Station", risk: "high", count: 11, district: "West Garo Hills", type: "domestic", lastUpdate: "1 min ago" },
+        { lat: 25.5200, lng: 90.1500, name: "Nokrek National Park", risk: "medium", count: 8, district: "West Garo Hills", type: "foreign", lastUpdate: "12 min ago" },
+        { lat: 25.5800, lng: 90.2000, name: "Tura Peak", risk: "medium", count: 6, district: "West Garo Hills", type: "domestic", lastUpdate: "15 min ago" },
+        { lat: 25.5700, lng: 90.1900, name: "Pelga Falls", risk: "low", count: 4, district: "West Garo Hills", type: "foreign", lastUpdate: "18 min ago" },
+        
+        // East Garo Hills
+        { lat: 25.4167, lng: 90.6333, name: "Williamnagar", risk: "low", count: 19, district: "East Garo Hills", type: "foreign", lastUpdate: "3 min ago" },
+        { lat: 25.3800, lng: 90.7200, name: "Simsang River", risk: "medium", count: 14, district: "East Garo Hills", type: "domestic", lastUpdate: "5 min ago" },
+        { lat: 25.4000, lng: 90.6500, name: "Dikge Valley", risk: "low", count: 8, district: "East Garo Hills", type: "foreign", lastUpdate: "9 min ago" },
+        { lat: 25.3900, lng: 90.6800, name: "Siju Cave", risk: "medium", count: 12, district: "East Garo Hills", type: "domestic", lastUpdate: "7 min ago" },
+        
+        // South Garo Hills
+        { lat: 25.2500, lng: 90.4700, name: "Baghmara", risk: "low", count: 7, district: "South Garo Hills", type: "domestic", lastUpdate: "15 min ago" },
+        { lat: 25.2300, lng: 90.4500, name: "Balpakram National Park", risk: "medium", count: 5, district: "South Garo Hills", type: "foreign", lastUpdate: "20 min ago" },
+        { lat: 25.2400, lng: 90.4600, name: "Baghmara Reserve Forest", risk: "low", count: 3, district: "South Garo Hills", type: "domestic", lastUpdate: "25 min ago" },
+        
+        // North Garo Hills
+        { lat: 25.8000, lng: 90.5000, name: "Resubelpara", risk: "medium", count: 6, district: "North Garo Hills", type: "domestic", lastUpdate: "18 min ago" },
+        { lat: 25.8200, lng: 90.5200, name: "Mendipathar", risk: "low", count: 4, district: "North Garo Hills", type: "foreign", lastUpdate: "22 min ago" },
+        
+        // Ri-Bhoi
+        { lat: 25.8167, lng: 91.7667, name: "Nongpoh Junction", risk: "medium", count: 13, district: "Ri-Bhoi", type: "domestic", lastUpdate: "2 min ago" },
+        { lat: 25.7500, lng: 91.8000, name: "Umiam Lake", risk: "low", count: 35, district: "Ri-Bhoi", type: "foreign", lastUpdate: "1 min ago" },
+        { lat: 25.7800, lng: 91.7800, name: "Lum Nehru Park", risk: "low", count: 17, district: "Ri-Bhoi", type: "domestic", lastUpdate: "4 min ago" },
+        { lat: 25.7600, lng: 91.7900, name: "Umiam Orchid Lake Resort", risk: "low", count: 23, district: "Ri-Bhoi", type: "foreign", lastUpdate: "3 min ago" },
+        
+        // South West Khasi Hills
+        { lat: 25.3000, lng: 91.2000, name: "Mawkyrwat", risk: "low", count: 8, district: "South West Khasi Hills", type: "domestic", lastUpdate: "10 min ago" },
+        { lat: 25.2800, lng: 91.1800, name: "Ranikor", risk: "low", count: 6, district: "South West Khasi Hills", type: "foreign", lastUpdate: "14 min ago" },
+        { lat: 25.2900, lng: 91.1900, name: "Mawlynnong Village", risk: "low", count: 26, district: "South West Khasi Hills", type: "foreign", lastUpdate: "2 min ago" },
+        
+        // South West Garo Hills
+        { lat: 25.1500, lng: 90.2500, name: "Ampati", risk: "low", count: 5, district: "South West Garo Hills", type: "domestic", lastUpdate: "22 min ago" },
+        { lat: 25.1300, lng: 90.2300, name: "Mahendraganj", risk: "low", count: 3, district: "South West Garo Hills", type: "foreign", lastUpdate: "28 min ago" },
+        
+        // Border Areas - Special Monitoring
+        { lat: 25.2200, lng: 92.0000, name: "Dawki Border", risk: "high", count: 12, district: "West Jaintia Hills", type: "foreign", lastUpdate: "3 min ago" },
+        { lat: 25.4000, lng: 92.3800, name: "Tamabil Border", risk: "medium", count: 8, district: "East Jaintia Hills", type: "foreign", lastUpdate: "7 min ago" },
+        
+        // Additional Popular Tourist Spots
+        { lat: 25.4800, lng: 91.3500, name: "Golf Course Shillong", risk: "low", count: 19, district: "East Khasi Hills", type: "domestic", lastUpdate: "5 min ago" },
+        { lat: 25.4750, lng: 91.3550, name: "Lady Hydari Park", risk: "low", count: 22, district: "East Khasi Hills", type: "foreign", lastUpdate: "4 min ago" },
+        { lat: 25.4850, lng: 91.3450, name: "All Saints Cathedral", risk: "low", count: 15, district: "East Khasi Hills", type: "domestic", lastUpdate: "6 min ago" },
+        { lat: 25.4900, lng: 91.3600, name: "Police Bazar", risk: "medium", count: 38, district: "East Khasi Hills", type: "foreign", lastUpdate: "2 min ago" },
+        { lat: 25.5900, lng: 91.8800, name: "Eco Park Cherrapunji", risk: "low", count: 13, district: "East Khasi Hills", type: "domestic", lastUpdate: "8 min ago" }
+      ];
+
+      // Create enhanced markers with proper labels and popups
+      meghalayaLocations.forEach((location, index) => {
+        const color = location.risk === 'high' ? '#dc2626' : 
+                     location.risk === 'medium' ? '#f59e0b' : '#22c55e';
+        
+        // Create risk zone circle
+        const riskZone = L.circle([location.lat, location.lng], {
+          radius: 3000 + (location.count * 100), // Radius based on tourist count
+          color: color,
+          fillColor: color,
+          fillOpacity: 0.2,
+          weight: 2,
+          opacity: 0.8
+        });
+
+        // Create custom marker icon
+        const markerIcon = L.divIcon({
+          className: 'custom-marker',
+          html: `
+            <div class="marker-container" style="background: ${color}; border: 2px solid #ffffff; border-radius: 50%; width: ${20 + (location.count / 3)}px; height: ${20 + (location.count / 3)}px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+              <span style="color: white; font-weight: bold; font-size: 10px;">${location.count}</span>
+            </div>
+          `,
+          iconSize: [20 + (location.count / 3), 20 + (location.count / 3)],
+          iconAnchor: [10 + (location.count / 6), 10 + (location.count / 6)]
+        });
+
+        // Create marker
+        const marker = L.marker([location.lat, location.lng], { icon: markerIcon });
+
+        // Enhanced popup with detailed information
+        const popupContent = `
+          <div class="custom-popup" style="background: ${currentTheme === 'dark' ? '#1a1a1a' : '#ffffff'}; color: ${currentTheme === 'dark' ? '#ffffff' : '#000000'}; padding: 15px; border-radius: 8px; min-width: 250px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+            <div style="border-bottom: 1px solid ${currentTheme === 'dark' ? '#333' : '#eee'}; padding-bottom: 10px; margin-bottom: 10px;">
+              <h3 style="margin: 0; font-size: 16px; font-weight: bold; color: ${color};">${location.name}</h3>
+              <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.7;">District: ${location.district}</p>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+              <div>
+                <p style="margin: 0; font-size: 11px; opacity: 0.7;">Active Tourists</p>
+                <p style="margin: 2px 0 0 0; font-size: 18px; font-weight: bold;">${location.count}</p>
+              </div>
+              <div>
+                <p style="margin: 0; font-size: 11px; opacity: 0.7;">Risk Level</p>
+                <p style="margin: 2px 0 0 0; font-size: 14px; font-weight: bold; color: ${color};">${location.risk.toUpperCase()}</p>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+              <div>
+                <p style="margin: 0; font-size: 11px; opacity: 0.7;">Tourist Type</p>
+                <p style="margin: 2px 0 0 0; font-size: 12px; text-transform: capitalize;">${location.type}</p>
+              </div>
+              <div>
+                <p style="margin: 0; font-size: 11px; opacity: 0.7;">Last Update</p>
+                <p style="margin: 2px 0 0 0; font-size: 12px;">${location.lastUpdate}</p>
+              </div>
+            </div>
+            <div style="border-top: 1px solid ${currentTheme === 'dark' ? '#333' : '#eee'}; padding-top: 10px;">
+              <button onclick="viewDetails('${location.name}')" style="background: ${color}; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-right: 8px;">View Details</button>
+              <button onclick="trackLocation('${location.name}')" style="background: transparent; color: ${color}; border: 1px solid ${color}; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">Track</button>
+            </div>
+          </div>
+        `;
+
+        marker.bindPopup(popupContent, {
+          maxWidth: 300,
+          className: 'custom-popup-container'
+        });
+
+        riskZone.bindPopup(popupContent, {
+          maxWidth: 300,
+          className: 'custom-popup-container'
+        });
+
+        // Store markers and layers for filtering
+        markers.push({
+          marker: marker,
+          riskZone: riskZone,
+          data: location
+        });
+
+        // Add to cluster group
+        markerClusterGroup.addLayer(marker);
+        
+        // Store risk zone layers
+        riskZoneLayers[`zone-${index}`] = riskZone;
+      });
+
+      // Add marker cluster to map
+      map.addLayer(markerClusterGroup);
+
+      // Add all risk zones to map initially
+      Object.values(riskZoneLayers).forEach(layer => {
+        map.addLayer(layer);
+      });
+
+      // Add Meghalaya state boundary with enhanced styling
+      const meghalayaBoundary = [
+        [25.0, 89.8], [25.0, 92.8], [26.0, 92.8], [26.0, 89.8], [25.0, 89.8]
+      ];
+      
+      const boundaryLayer = L.polygon(meghalayaBoundary, {
+        color: '#dc2626',
+        weight: 3,
+        opacity: 0.8,
+        fillOpacity: 0.1,
+        fillColor: '#dc2626',
+        dashArray: '10, 5'
+      }).addTo(map);
+
+      // Add boundary label
+      const boundaryCenter = [25.5, 91.4];
+      const boundaryLabel = L.marker(boundaryCenter, {
+        icon: L.divIcon({
+          className: 'boundary-label',
+          html: '<div style="background: rgba(220, 38, 38, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; white-space: nowrap;">MEGHALAYA STATE</div>',
+          iconSize: [120, 20],
+          iconAnchor: [60, 10]
+        })
+      }).addTo(map);
+
+      // Add district labels
+      const districtLabels = [
+        { name: "East Khasi Hills", lat: 25.5, lng: 91.7 },
+        { name: "West Khasi Hills", lat: 25.5, lng: 91.1 },
+        { name: "West Jaintia Hills", lat: 25.4, lng: 92.2 },
+        { name: "West Garo Hills", lat: 25.6, lng: 90.2 },
+        { name: "East Garo Hills", lat: 25.4, lng: 90.6 },
+        { name: "Ri-Bhoi", lat: 25.8, lng: 91.7 }
+      ];
+
+      districtLabels.forEach(district => {
+        L.marker([district.lat, district.lng], {
+          icon: L.divIcon({
+            className: 'district-label',
+            html: `<div style="background: rgba(0, 0, 0, 0.7); color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; white-space: nowrap; border: 1px solid #333;">${district.name}</div>`,
+            iconSize: [100, 16],
+            iconAnchor: [50, 8]
+          })
+        }).addTo(map);
+      });
+    }
+
+    // Function to update map theme
+    function updateMapTheme() {
+      if (!map) return;
+      
+      // Remove existing tile layers
+      map.eachLayer(function(layer) {
+        if (layer._url) {
+          map.removeLayer(layer);
+        }
+      });
+      
+      // Add appropriate tile layer based on theme
+      const tileUrl = currentTheme === 'light' ? 
+        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png' :
+        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+        
+      L.tileLayer(tileUrl, {
+        attribution: '© OpenStreetMap contributors © CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19,
+        minZoom: 7
+      }).addTo(map);
+    }
+
+    // Helper functions for popup buttons
+    function viewDetails(locationName) {
+      alert(`Viewing details for ${locationName}`);
+      // Here you would typically open a detailed view or modal
+    }
+
+    function trackLocation(locationName) {
+      alert(`Tracking location: ${locationName}`);
+      // Here you would typically start real-time tracking
+    }
+
+    // Update last update time
+    function updateLastUpdateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      const updateElement = document.getElementById('lastUpdateTime');
+      if (updateElement) {
+        updateElement.textContent = timeString;
+      }
+    }
+
+    // Layer control variables
+    let baseLayers = {};
+    let overlayLayers = {};
+    let heatmapLayer = null;
+    let weatherLayer = null;
+    let trafficLayer = null;
+    let emergencyLayer = null;
+
+    // Initialize layer controls
+    function initializeLayerControls() {
+      // Base map layers
+      baseLayers.street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+      });
+
+      baseLayers.satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '© Esri',
+        maxZoom: 19
+      });
+
+      baseLayers.terrain = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenTopoMap contributors',
+        maxZoom: 17
+      });
+
+      // Initialize with street map
+      baseLayers.street.addTo(map);
+
+      // Create overlay layers
+      createOverlayLayers();
+
+      // Add event listeners for layer controls
+      setupLayerControlEvents();
+    }
+
+    // Create overlay layers
+    function createOverlayLayers() {
+      // Heatmap layer (simulated)
+      const heatmapData = meghalayaLocations.map(loc => [loc.lat, loc.lng, loc.count / 10]);
+      
+      // Weather layer (simulated weather alerts)
+      weatherLayer = L.layerGroup();
+      const weatherAlerts = [
+        { lat: 25.5788, lng: 91.8933, type: 'Heavy Rain', severity: 'high' },
+        { lat: 25.4670, lng: 91.3662, type: 'Fog', severity: 'medium' },
+        { lat: 25.7500, lng: 91.8000, type: 'Clear', severity: 'low' }
+      ];
+
+      weatherAlerts.forEach(alert => {
+        const color = alert.severity === 'high' ? '#dc2626' : alert.severity === 'medium' ? '#f59e0b' : '#10b981';
+        const weatherMarker = L.circleMarker([alert.lat, alert.lng], {
+          radius: 15,
+          fillColor: color,
+          color: color,
+          weight: 2,
+          opacity: 0.8,
+          fillOpacity: 0.3
+        }).bindPopup(`<strong>Weather Alert</strong><br>${alert.type}<br>Severity: ${alert.severity}`);
+        
+        weatherLayer.addLayer(weatherMarker);
+      });
+
+      // Traffic layer (simulated)
+      trafficLayer = L.layerGroup();
+      const trafficData = [
+        { lat: 25.4670, lng: 91.3662, density: 'high', color: '#dc2626' },
+        { lat: 25.7500, lng: 91.8000, density: 'medium', color: '#f59e0b' },
+        { lat: 25.5788, lng: 91.8933, density: 'low', color: '#10b981' }
+      ];
+
+      trafficData.forEach(traffic => {
+        const trafficMarker = L.circleMarker([traffic.lat, traffic.lng], {
+          radius: 20,
+          fillColor: traffic.color,
+          color: traffic.color,
+          weight: 3,
+          opacity: 0.6,
+          fillOpacity: 0.2
+        }).bindPopup(`<strong>Traffic Density</strong><br>Level: ${traffic.density}`);
+        
+        trafficLayer.addLayer(trafficMarker);
+      });
+
+      // Emergency layer
+      emergencyLayer = L.layerGroup();
+      const emergencyPoints = [
+        { lat: 25.5788, lng: 91.8933, type: 'Medical Emergency', priority: 'critical' },
+        { lat: 25.4200, lng: 92.1800, type: 'Missing Tourist', priority: 'high' }
+      ];
+
+      emergencyPoints.forEach(emergency => {
+        const emergencyIcon = L.divIcon({
+          className: 'emergency-marker',
+          html: `<div style="background: #dc2626; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; animation: pulse 2s infinite;">${emergency.type}</div>`,
+          iconSize: [100, 20],
+          iconAnchor: [50, 10]
+        });
+        
+        const emergencyMarker = L.marker([emergency.lat, emergency.lng], { icon: emergencyIcon })
+          .bindPopup(`<strong>Emergency Alert</strong><br>${emergency.type}<br>Priority: ${emergency.priority}`);
+        
+        emergencyLayer.addLayer(emergencyMarker);
+      });
+    }
+
+    // Setup layer control event listeners
+    function setupLayerControlEvents() {
+      // Base map controls
+      document.getElementById('baseMapStreet').addEventListener('change', function() {
+        if (this.checked) {
+          map.eachLayer(layer => {
+            if (layer === baseLayers.satellite || layer === baseLayers.terrain) {
+              map.removeLayer(layer);
+            }
+          });
+          baseLayers.street.addTo(map);
+          updateLayerStatus('baseMapStreet', true);
+        }
+      });
+
+      document.getElementById('baseMapSatellite').addEventListener('change', function() {
+        if (this.checked) {
+          map.eachLayer(layer => {
+            if (layer === baseLayers.street || layer === baseLayers.terrain) {
+              map.removeLayer(layer);
+            }
+          });
+          baseLayers.satellite.addTo(map);
+          updateLayerStatus('baseMapSatellite', true);
+        }
+      });
+
+      document.getElementById('baseMapTerrain').addEventListener('change', function() {
+        if (this.checked) {
+          map.eachLayer(layer => {
+            if (layer === baseLayers.street || layer === baseLayers.satellite) {
+              map.removeLayer(layer);
+            }
+          });
+          baseLayers.terrain.addTo(map);
+          updateLayerStatus('baseMapTerrain', true);
+        }
+      });
+
+      // Overlay controls
+      document.getElementById('layerTourists').addEventListener('change', function() {
+        if (this.checked) {
+          map.addLayer(markerClusterGroup);
+        } else {
+          map.removeLayer(markerClusterGroup);
+        }
+        updateLayerStatus('layerTourists', this.checked);
+      });
+
+      document.getElementById('layerRiskZones').addEventListener('change', function() {
+        Object.values(riskZoneLayers).forEach(layer => {
+          if (this.checked) {
+            map.addLayer(layer);
+          } else {
+            map.removeLayer(layer);
+          }
+        });
+        updateLayerStatus('layerRiskZones', this.checked);
+      });
+
+      document.getElementById('layerHeatmap').addEventListener('change', function() {
+        if (this.checked && heatmapLayer) {
+          map.addLayer(heatmapLayer);
+        } else if (heatmapLayer) {
+          map.removeLayer(heatmapLayer);
+        }
+        updateLayerStatus('layerHeatmap', this.checked);
+      });
+
+      document.getElementById('layerWeather').addEventListener('change', function() {
+        if (this.checked) {
+          map.addLayer(weatherLayer);
+        } else {
+          map.removeLayer(weatherLayer);
+        }
+        updateLayerStatus('layerWeather', this.checked);
+      });
+
+      document.getElementById('layerTraffic').addEventListener('change', function() {
+        if (this.checked) {
+          map.addLayer(trafficLayer);
+        } else {
+          map.removeLayer(trafficLayer);
+        }
+        updateLayerStatus('layerTraffic', this.checked);
+      });
+
+      document.getElementById('layerEmergency').addEventListener('change', function() {
+        if (this.checked) {
+          map.addLayer(emergencyLayer);
+        } else {
+          map.removeLayer(emergencyLayer);
+        }
+        updateLayerStatus('layerEmergency', this.checked);
+      });
+
+      // Control buttons
+      document.getElementById('refreshAllLayers').addEventListener('click', function() {
+        // Refresh all layers
+        createOverlayLayers();
+        updateLastUpdateTime();
+        
+        // Show feedback
+        this.innerHTML = '<svg class="w-3 h-3 mr-2 inline animate-spin" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1z" clip-rule="evenodd"/></svg>Refreshing...';
+        
+        setTimeout(() => {
+          this.innerHTML = '<svg class="w-3 h-3 mr-2 inline" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1z" clip-rule="evenodd"/></svg>Refresh All Layers';
+        }, 2000);
+      });
+
+      document.getElementById('resetView').addEventListener('click', function() {
+        map.setView([25.4670, 91.3662], 8);
+      });
+    }
+
+    // Update layer status indicators
+    function updateLayerStatus(layerId, isActive) {
+      const label = document.querySelector(`label[for="${layerId}"] span:last-child`);
+      if (label) {
+        if (isActive) {
+          label.textContent = layerId.includes('baseMap') ? 'ACTIVE' : 'ON';
+          label.className = layerId.includes('baseMap') ? 'text-green-400 text-xs font-bold' : 'text-blue-400 text-xs font-bold bg-blue-500/20 px-2 py-1 rounded';
+        } else {
+          label.textContent = 'OFF';
+          label.className = 'text-gray-400 text-xs font-bold';
+        }
+      }
+    }
+
+    // Initialize map when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check user authentication
+      const user = localStorage.getItem('user');
+      const language = localStorage.getItem('language');
+      
+      if (!user) {
+        // Redirect to login if no user session
+        window.location.href = './login.html';
+        return;
+      }
+      
+      if (!language) {
+        // Redirect to language selection if no language preference
+        window.location.href = './language.html';
+        return;
+      }
+      
+      // Display user info
+      try {
+        const userData = JSON.parse(user);
+        const languageData = JSON.parse(language);
+        
+        // Update user info in header
+        const userNameElement = document.getElementById('userName');
+        const userLanguageElement = document.getElementById('userLanguage');
+        const userInfoElement = document.getElementById('userInfo');
+        
+        if (userNameElement && userLanguageElement && userInfoElement) {
+          userNameElement.textContent = userData.username || 'User';
+          userLanguageElement.textContent = languageData.name || 'English';
+          userInfoElement.classList.remove('hidden');
+        }
+        
+        console.log('User logged in:', userData.username, 'Language:', languageData.name);
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+      }
+      
+      setTimeout(() => {
+        initializeMap();
+        setTimeout(initializeLayerControls, 1000);
+      }, 500);
+      
+      // Apply current theme to elements
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      currentTheme = savedTheme;
+      if (savedTheme === 'light') {
+        document.body.classList.add('light');
+      }
+      setTimeout(updateThemeElements, 1000);
+      
+      // Update time every 30 seconds
+      updateLastUpdateTime();
+      setInterval(updateLastUpdateTime, 30000);
+    });
+
+    // Coming soon notification
+    function showComingSoon(feature) {
+      alert(`${feature} feature is coming soon! Stay tuned for updates.`);
+    }
+
+    // Button functionality
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      if (confirm('Are you sure you want to logout?')) {
+        // Clear user session and preferences
+        localStorage.removeItem('user');
+        localStorage.removeItem('language');
+        
+        // Redirect to index page
+        window.location.href = './index.html';
+      }
+    });
+
+    // Theme toggle removed - only available in settings page
+    // document.getElementById('themeToggleGlobal').addEventListener('click', function() {
       const isLight = document.body.classList.toggle('light');
-      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      currentTheme = isLight ? 'light' : 'dark';
+      localStorage.setItem('theme', currentTheme);
+      
+      // Update theme icon
+      const themeIcon = document.getElementById('themeIcon');
+      const themeButton = document.getElementById('themeToggleGlobal');
+      
+      if (isLight) {
+        // Moon icon for light theme
+        themeIcon.innerHTML = '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>';
+        themeIcon.className = 'w-5 h-5 text-gray-600';
+        themeButton.className = 'w-10 h-10 rounded-lg bg-white hover:bg-gray-100 border border-gray-300 flex items-center justify-center transition-all';
+      } else {
+        // Sun icon for dark theme
+        themeIcon.innerHTML = '<path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>';
+        themeIcon.className = 'w-5 h-5 text-yellow-400';
+        themeButton.className = 'w-10 h-10 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-600 flex items-center justify-center transition-all';
+      }
+      
+      // Update map theme
+      if (map) {
+        updateMapTheme();
+      }
+      
+      // Update all theme-dependent elements
+      updateThemeElements();
+    });
+
+    // Function to update theme-dependent elements
+    function updateThemeElements() {
+      const isLight = currentTheme === 'light';
+      
+      // Update map overlays background
+      const overlays = document.querySelectorAll('.bg-black\\/90');
+      overlays.forEach(overlay => {
+        if (isLight) {
+          overlay.classList.remove('bg-black/90');
+          overlay.classList.add('bg-white/90');
+          overlay.style.color = '#000000';
+        } else {
+          overlay.classList.remove('bg-white/90');
+          overlay.classList.add('bg-black/90');
+          overlay.style.color = '#ffffff';
+        }
+      });
+
+      // Update text colors in overlays
+      const overlayTexts = document.querySelectorAll('.bg-black\\/90 .text-white, .bg-white\\/90 .text-white');
+      overlayTexts.forEach(text => {
+        if (isLight) {
+          text.style.color = '#000000';
+        } else {
+          text.style.color = '#ffffff';
+        }
+      });
+
+      // Update checkbox styles for light theme
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(checkbox => {
+        if (isLight) {
+          checkbox.classList.remove('bg-gray-700', 'border-gray-600');
+          checkbox.classList.add('bg-white', 'border-gray-300');
+        } else {
+          checkbox.classList.remove('bg-white', 'border-gray-300');
+          checkbox.classList.add('bg-gray-700', 'border-gray-600');
+        }
+      });
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        const query = this.value.trim();
+        if (query) {
+          // Add search logic here
+          alert(`Searching for: ${query}`);
+        }
+      }
+    });
+
+    // Enhanced filter functionality
+    function applyFilters() {
+      const districtFilter = document.getElementById('filterDistrict').value;
+      const typeFilter = document.getElementById('filterType').value;
+      const riskFilter = document.getElementById('filterRisk').value;
+      const highRiskOnly = document.getElementById('filterHighRisk').checked;
+
+      let visibleCount = 0;
+      let filteredMarkers = [];
+
+      markers.forEach(markerObj => {
+        const location = markerObj.data;
+        let visible = true;
+
+        // Apply district filter
+        if (districtFilter !== 'all' && location.district !== districtFilter) {
+          visible = false;
+        }
+
+        // Apply type filter
+        if (typeFilter !== 'all' && location.type !== typeFilter) {
+          visible = false;
+        }
+
+        // Apply risk filter
+        if (riskFilter !== 'all' && location.risk !== riskFilter) {
+          visible = false;
+        }
+
+        // Apply high risk only filter
+        if (highRiskOnly && location.risk !== 'high') {
+          visible = false;
+        }
+
+        // Show/hide marker and risk zone
+        if (visible) {
+          if (!markerClusterGroup.hasLayer(markerObj.marker)) {
+            markerClusterGroup.addLayer(markerObj.marker);
+          }
+          if (!map.hasLayer(markerObj.riskZone)) {
+            map.addLayer(markerObj.riskZone);
+          }
+          visibleCount++;
+          filteredMarkers.push(markerObj);
+        } else {
+          if (markerClusterGroup.hasLayer(markerObj.marker)) {
+            markerClusterGroup.removeLayer(markerObj.marker);
+          }
+          if (map.hasLayer(markerObj.riskZone)) {
+            map.removeLayer(markerObj.riskZone);
+          }
+        }
+      });
+
+      // Update live statistics based on filtered results
+      updateLiveStats(filteredMarkers);
+      
+      console.log(`Filter applied: ${visibleCount} locations visible`);
+    }
+
+    // Update live statistics
+    function updateLiveStats(filteredMarkers) {
+      const totalTourists = filteredMarkers.reduce((sum, marker) => sum + marker.data.count, 0);
+      const highRiskAreas = filteredMarkers.filter(marker => marker.data.risk === 'high').length;
+      const activeAlerts = Math.floor(highRiskAreas * 1.5) + Math.floor(Math.random() * 3);
+      
+      // Update the live stats overlay
+      const statsOverlay = document.querySelector('.absolute.left-6.top-6');
+      if (statsOverlay) {
+        const statsContent = statsOverlay.querySelector('div.space-y-2');
+        if (statsContent) {
+          statsContent.innerHTML = `
+            <div class="flex justify-between">
+              <span class="text-white/70">Active Tourists:</span>
+              <span class="text-white font-medium">${totalTourists.toLocaleString()}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-white/70">High Risk Areas:</span>
+              <span class="text-red-400 font-medium">${highRiskAreas}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-white/70">Active Alerts:</span>
+              <span class="text-yellow-400 font-medium">${activeAlerts}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-white/70">Response Teams:</span>
+              <span class="text-green-400 font-medium">12</span>
+            </div>
+          `;
+        }
+      }
+    }
+
+    // Layer controls functionality
+    function toggleLayer(layerId, isVisible) {
+      markers.forEach(markerObj => {
+        switch(layerId) {
+          case 'tourists':
+            if (isVisible) {
+              markerObj.marker.addTo(map);
+            } else {
+              markerObj.marker.remove();
+            }
+            break;
+          case 'riskZones':
+            if (map.getLayer(markerObj.layerId)) {
+              map.setLayoutProperty(markerObj.layerId, 'visibility', isVisible ? 'visible' : 'none');
+            }
+            break;
+          case 'weather':
+            // Weather layer logic would go here
+            console.log('Weather layer toggled:', isVisible);
+            break;
+          case 'traffic':
+            // Traffic layer logic would go here
+            console.log('Traffic layer toggled:', isVisible);
+            break;
+        }
+      });
+    }
+
+    // Event listeners for filters
+    document.getElementById('filterDistrict').addEventListener('change', applyFilters);
+    document.getElementById('filterType').addEventListener('change', applyFilters);
+    document.getElementById('filterRisk').addEventListener('change', applyFilters);
+    document.getElementById('filterHighRisk').addEventListener('change', applyFilters);
+    document.getElementById('applyFilters').addEventListener('click', applyFilters);
+
+    // Event listeners for layer controls
+    document.getElementById('layerTourists').addEventListener('change', function() {
+      toggleLayer('tourists', this.checked);
+    });
+
+    document.getElementById('layerRiskZones').addEventListener('change', function() {
+      toggleLayer('riskZones', this.checked);
+    });
+
+    document.getElementById('layerWeather').addEventListener('change', function() {
+      toggleLayer('weather', this.checked);
+    });
+
+    document.getElementById('layerTraffic').addEventListener('change', function() {
+      toggleLayer('traffic', this.checked);
+    });g('Type filter changed to:', this.value);
+      // Add filter logic here
+    });
+
+    document.getElementById('filterHighRisk').addEventListener('change', function() {
+      console.log('High risk filter:', this.checked);
+      // Add filter logic here
+    });
+
+    // Coming soon notification
+    function showComingSoon(feature) {
+      alert(`${feature} feature is coming soon! Stay tuned for updates.`);
+    }
+
+    // Animate metrics on load
+    function animateMetrics() {
+      const metrics = document.querySelectorAll('.metric-card');
+      metrics.forEach((metric, index) => {
+        setTimeout(() => {
+          metric.style.opacity = '0';
+          metric.style.transform = 'translateY(20px)';
+          metric.style.transition = 'all 0.5s ease-out';
+          
+          setTimeout(() => {
+            metric.style.opacity = '1';
+            metric.style.transform = 'translateY(0)';
+          }, 100);
+        }, index * 100);
+      });
+    }
+
+    // Auto-update metrics (demo)
+    function updateMetrics() {
+      const metrics = [
+        { selector: '.metric-card:nth-child(1) .text-2xl', base: 2847, variance: 50 },
+        { selector: '.metric-card:nth-child(2) .text-2xl', base: 87.3, variance: 2, decimal: true },
+        { selector: '.metric-card:nth-child(3) .text-2xl', base: 7, variance: 3 },
+        { selector: '.metric-card:nth-child(4) .text-2xl', base: 4.2, variance: 0.5, decimal: true, suffix: 'm' }
+      ];
+
+      metrics.forEach(metric => {
+        const element = document.querySelector(metric.selector);
+        if (element) {
+          const variation = (Math.random() - 0.5) * metric.variance;
+          const newValue = metric.base + variation;
+          const displayValue = metric.decimal ? 
+            newValue.toFixed(1) : 
+            Math.round(newValue);
+          element.textContent = displayValue + (metric.suffix || '');
+        }
+      });
+    }
+
+    // Initialize animations and updates
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(animateMetrics, 500);
+      
+      // Update metrics every 30 seconds
+      setInterval(updateMetrics, 30000);
+    });
+
+    // Add smooth scrolling for internal links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
     });
   </script>
 </body>
