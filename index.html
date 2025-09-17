@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tourist Safety Dashboard</title>
   <meta name="description" content="Real-time monitoring & incident response dashboard for tourism authorities." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://images.unsplash.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' http://localhost:4000 http://127.0.0.1:4000; font-src 'self' data:; frame-ancestors 'none'; upgrade-insecure-requests">
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -106,14 +107,16 @@
     </div>
   </section>
 
-  <footer class="text-center text-white/50 pb-10">© <span id="year"></span> Tourist Safety Dashboard</footer>
+  <footer class="text-center text-white/50 pb-10">  <span id="year"></span> Tourist Safety Dashboard</footer>
 
   <!-- Three.js & Vanta.js Clouds -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.clouds.min.js"></script>
   <script>
+    const API_BASE = 'http://localhost:4000';
+    async function me(){ try{ const r=await fetch(API_BASE+'/auth/me', { credentials:'include', cache:'no-store' }); if(!r.ok) return {user:null}; return r.json(); } catch(_) { return {user:null}; } }
     // Initialize VANTA Clouds background
-    window.addEventListener('load', () => {
+    window.addEventListener('load', async () => {
       VANTA.CLOUDS({
         el: '#vanta-bg',
         skyColor: 0x0b0f1a,
@@ -125,15 +128,15 @@
         zoom: 0.8
       });
       document.getElementById('year').textContent = new Date().getFullYear();
+      // session banner based on backend session
+      const { user } = await me();
+      if (user) document.getElementById('sessionBanner').classList.remove('hidden');
     });
 
-    // Simple session check: if localStorage has demoAuth, show banner
     const gotoBtn = document.getElementById('gotoDashboard');
-    const banner = document.getElementById('sessionBanner');
-    const isAuthed = !!localStorage.getItem('demoAuth');
-    if (isAuthed) banner.classList.remove('hidden');
-    gotoBtn.addEventListener('click', () => {
-      if (isAuthed) {
+    gotoBtn.addEventListener('click', async () => {
+      const { user } = await me();
+      if (user) {
         window.location.href = './dashboard.html';
       } else {
         window.location.href = './login.html';
