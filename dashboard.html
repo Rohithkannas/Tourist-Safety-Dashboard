@@ -30,7 +30,7 @@
       <span id="authorityName" class="text-white/70 hidden md:inline">Logged in</span>
       <button id="analyticsToggle" class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/15">Analytics</button>
       <button id="investigationToggle" class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/15">Investigation</button>
-      <button id="logoutBtn" class="px-4 py-2 rounded-md bg-white/10 hover:bg-white/15 text-sm md:text-base">Logout</button>
+      <button id="logout-button" class="px-4 py-2 rounded-md bg-white/10 hover:bg-white/15 text-sm md:text-base">Logout</button>
     </div>
   </header>
 
@@ -215,5 +215,14 @@
   <script src="./assets/js/api.js"></script>
   <script src="./assets/js/auth.js"></script>
   <script src="./assets/js/dashboard.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = JSON.parse(sessionStorage.getItem("loggedInUser"));
+      if (user) {
+        const authorityName = document.getElementById("authorityName");
+        authorityName.textContent = `Logged in as ${user.email}`;
+      }
+    });
+  </script>
 </body>
 </html>

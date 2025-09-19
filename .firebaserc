@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "stsm-924d2"
+  },
+  "targets": {
+    "stsm-924d2": {
+      "hosting": {
+        "stsmauthoritydashboard": [
+          "stsm-924d2"
+        ]
+      }
+    }
+  }
+}

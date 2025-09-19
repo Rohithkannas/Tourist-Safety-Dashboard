@@ -25,56 +25,18 @@
       <p class="text-white/70 text-sm">Use your email and password to access the dashboard.</p>
     </div>
 
-    <form id="loginForm" class="space-y-4">
-      <div>
-        <label class="block text-sm mb-1">Email</label>
-        <input id="email" type="email" required class="w-full px-3 py-2 rounded-md bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-accent" placeholder="name@agency.gov" />
-      </div>
-      <div>
-        <label class="block text-sm mb-1">Password</label>
-        <input id="password" type="password" required class="w-full px-3 py-2 rounded-md bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-accent" placeholder="••••••••" />
-      </div>
-      <button class="w-full py-2.5 rounded-md bg-accent text-black font-semibold hover:bg-orange-500 transition" type="submit">Login</button>
-      <button id="demoBtn" class="w-full py-2.5 rounded-md bg-white/10 border border-white/10 hover:bg-white/15 transition" type="button">Demo without Firebase</button>
+    <div class="space-y-4">
+      <button id="login-firebase" class="w-full py-2.5 rounded-md bg-accent text-black font-semibold hover:bg-orange-500 transition" type="button">Login with Firebase</button>
+      <button id="login-demo" class="w-full py-2.5 rounded-md bg-white/10 border border-white/10 hover:bg-white/15 transition" type="button">Demo without Firebase</button>
       <p id="error" class="text-red-400 text-sm hidden"></p>
-    </form>
+    </div>
   </div>
 
-  <!-- Firebase (optional for MVP) v9 compat -->
+  <!-- Firebase v9 compat -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <script src="./assets/js/firebase-config.js"></script>
-  <script>
-    const form = document.getElementById('loginForm');
-    const err = document.getElementById('error');
-    const demoBtn = document.getElementById('demoBtn');
-
-    function redirect() { window.location.href = './dashboard.html'; }
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      err.classList.add('hidden');
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      try {
-        if (window.firebase && window.firebase.apps && window.firebase.apps.length) {
-          const auth = firebase.auth();
-          await auth.signInWithEmailAndPassword(email, password);
-          localStorage.setItem('demoAuth', 'firebase');
-          redirect();
-        } else {
-          throw new Error('Firebase not configured. Use demo mode or add config.');
-        }
-      } catch (e) {
-        err.textContent = e.message;
-        err.classList.remove('hidden');
-      }
-    });
-
-    demoBtn.addEventListener('click', () => {
-      localStorage.setItem('demoAuth', 'demo');
-      redirect();
-    });
-  </script>
+  <script src="./assets/js/auth.js"></script>
 </body>
 </html>

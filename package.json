@@ -7,9 +7,13 @@
     "dev:server": "npm --prefix backend run dev",
     "start:server": "npm --prefix backend start",
     "dev:web": "python -m http.server 5500 --directory frontend",
-    "dev": "concurrently \"npm:dev:server\" \"npm:dev:web\""
+    "dev": "concurrently \"npm:dev:server\" \"npm:dev:web\"",
+    "deploy": "firebase deploy --only hosting"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "firebase": "^12.3.0"
   }
 }
