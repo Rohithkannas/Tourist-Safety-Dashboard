@@ -3,99 +3,511 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Audit • Tourist Safety</title>
+  <title>Audit Logs • Tourist Safety</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script> tailwind.config = { theme: { extend: { colors: { bgdark: '#000000' } } } } </script>
+  <script> 
+    tailwind.config = { 
+      theme: { 
+        extend: { 
+          colors: { 
+            primary: '#dc2626',
+            secondary: '#000000',
+            accent: '#ffffff'
+          } 
+        } 
+      } 
+    } 
+  </script>
   <link rel="stylesheet" href="./assets/css/styles.css" />
   <style>
-    body { background:#000; }
-    .header-line { height:1px; background:rgba(255,255,255,0.18); }
+    /* Dark Theme (Default) */
+    body { 
+      background: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #ffffff;
+      transition: all 0.3s ease;
+      min-height: 100vh;
+    }
+    
+    .sidebar {
+      background: #1a1a1a;
+      border-right: 1px solid #333333;
+      width: 280px;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 8px;
+      margin: 4px 12px;
+      transition: all 0.3s ease;
+      background: transparent;
+      border: 1px solid transparent;
+    }
+    
+    .nav-item:hover {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+      text-decoration: none;
+    }
+    
+    .nav-item.active {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+    
+    .nav-section-title {
+      padding: 12px 16px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #666666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .audit-card {
+      background: #1a1a1a;
+      border: 1px solid #333333;
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    .audit-card:hover {
+      transform: translateY(-2px);
+      border-color: #dc2626;
+      box-shadow: 0 8px 25px rgba(220, 38, 38, 0.2);
+    }
+    
+    .btn-primary {
+      background: #dc2626;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: 1px solid #dc2626;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-primary:hover {
+      background: #b91c1c;
+      border-color: #b91c1c;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+      text-decoration: none;
+      color: #ffffff;
+    }
+    
+    .btn-secondary {
+      background: #1a1a1a;
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: 1px solid #333333;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-secondary:hover {
+      background: #333333;
+      border-color: #666666;
+      transform: translateY(-1px);
+      text-decoration: none;
+      color: #ffffff;
+    }
+    
+    /* Light Theme */
+    body.light {
+      background: #ffffff;
+      color: #000000;
+    }
+    
+    body.light .sidebar {
+      background: #f5f5f5;
+      border-right: 1px solid #e0e0e0;
+    }
+    
+    body.light .nav-item {
+      color: #000000;
+    }
+    
+    body.light .nav-item:hover {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+    
+    body.light .nav-item.active {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+    
+    body.light .nav-section-title {
+      color: #666666;
+    }
+    
+    body.light .audit-card {
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      color: #000000;
+    }
+    
+    body.light .audit-card:hover {
+      border-color: #dc2626;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+    }
+    
+    /* Header styles */
+    .header-dark {
+      background: #1a1a1a;
+      border-bottom: 1px solid #333333;
+    }
+    
+    body.light .header-dark {
+      background: #f5f5f5;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    /* Text colors for light theme */
+    body.light h1,
+    body.light h2,
+    body.light h3,
+    body.light h4,
+    body.light p,
+    body.light span {
+      color: #000000;
+    }
+    
+    body.light .text-white {
+      color: #000000 !important;
+    }
+    
+    body.light .text-white\/60 {
+      color: #666666 !important;
+    }
+    
+    body.light .text-white\/70 {
+      color: #555555 !important;
+    }
+
+    body.light .btn-primary {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+    
+    body.light .btn-primary:hover {
+      background: #b91c1c;
+      border-color: #b91c1c;
+      color: #ffffff;
+    }
+
+    body.light .btn-secondary {
+      background: #ffffff;
+      color: #000000;
+      border-color: #e0e0e0;
+    }
+    
+    body.light .btn-secondary:hover {
+      background: #f5f5f5;
+      border-color: #cccccc;
+      color: #000000;
+    }
   </style>
 </head>
-<body class="text-white">
-  <div class="header-line"></div>
-  <header class="topbar">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="text-sm tracking-wide text-white/80" data-i18n="app_title">Tourist Safety Dashboard</div>
-      <nav class="text-sm flex items-center gap-2">
-        <a href="./dashboard.html" class="btn" data-i18n="nav_dashboard">Dashboard</a>
-        <a href="./alerts.html" class="btn" data-i18n="nav_alerts">Alerts</a>
-        <a href="./geofence.html" class="btn" data-i18n="nav_geofence">Geofence</a>
-        <a href="./analytics.html" class="btn" data-i18n="nav_analytics">Analytics</a>
-        <a href="./settings.html" class="btn" data-i18n="nav_settings">Settings</a>
-      </nav>
-    </div>
-  </header>
-  <div class="header-line"></div>
-
-  <main class="max-w-7xl mx-auto px-4 py-8 space-y-6">
-    <section class="p-4 border border-white/10 rounded-lg bg-white/5">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="font-semibold">Audit Logs (Demo)</h2>
-        <div class="flex gap-2 text-sm">
-          <select id="filterActor" class="px-2 py-1 rounded-md bg-white/5 border border-white/10">
-            <option value="all">All Actors</option>
-            <option>Admin</option>
-            <option>Police</option>
-            <option>Tourism</option>
-          </select>
-          <select id="filterAction" class="px-2 py-1 rounded-md bg-white/5 border border-white/10">
-            <option value="all">All Actions</option>
-            <option>ACK_ALERT</option>
-            <option>RESOLVE_ALERT</option>
-            <option>LOGIN</option>
-            <option>GEOFENCE_UPDATE</option>
-          </select>
+<body>
+  <div class="flex min-h-screen">
+    <!-- Left Sidebar -->
+    <aside class="sidebar flex-shrink-0 overflow-y-auto">
+      <div class="p-6">
+        <!-- Logo -->
+        <div class="flex items-center gap-3 mb-8">
+          <div class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="font-bold text-xl text-white">SafeGuard</h1>
+            <p class="text-xs text-gray-400">Tourist Safety Platform</p>
+          </div>
         </div>
+        
+        <!-- Navigation -->
+        <nav class="space-y-2">
+          <!-- Main Navigation -->
+          <div class="mb-6">
+            <a href="./dashboard.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1H4z"/>
+              </svg>
+              <span>Dashboard</span>
+            </a>
+            
+            <a href="./alerts.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+              <span>Emergency Alerts</span>
+              <span class="ml-auto bg-red-600 text-white text-xs px-2 py-1 rounded-full">3</span>
+            </a>
+            
+            <a href="./geofence.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+              </svg>
+              <span>Geofence Section</span>
+            </a>
+          </div>
+
+          <!-- Analytics Section -->
+          <div class="mb-6">
+            <div class="nav-section-title">Analytics & Reports</div>
+            <a href="./analytics.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H4a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+              </svg>
+              <span>Analytics Dashboard</span>
+            </a>
+            
+            <a href="#" class="nav-item" onclick="showComingSoon('Automations')">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3h4v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45-1.5a2.5 2.5 0 114.9 0 2.5 2.5 0 01-4.9 0z" clip-rule="evenodd"/>
+              </svg>
+              <span>Smart Automations</span>
+              <span class="ml-auto text-xs bg-red-600/20 text-red-400 px-2 py-1 rounded">Beta</span>
+            </a>
+          </div>
+
+          <!-- Management Section -->
+          <div class="mb-6">
+            <div class="nav-section-title">Management</div>
+            <a href="./audit.html" class="nav-item active">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span>Audit Logs</span>
+            </a>
+            
+            <a href="./settings.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+              </svg>
+              <span>System Settings</span>
+            </a>
+          </div>
+
+          <!-- Support Section -->
+          <div>
+            <div class="nav-section-title">Support</div>
+            <a href="#" class="nav-item" onclick="showComingSoon('Help Center')">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+              </svg>
+              <span>Help Center</span>
+            </a>
+          </div>
+        </nav>
       </div>
-      <div class="overflow-auto">
-        <table class="min-w-full text-sm">
-          <thead class="text-white/70">
-            <tr>
-              <th class="text-left py-2 pr-4">Time</th>
-              <th class="text-left py-2 pr-4">Actor</th>
-              <th class="text-left py-2 pr-4">Action</th>
-              <th class="text-left py-2 pr-4">Details</th>
-            </tr>
-          </thead>
-          <tbody id="auditBody"></tbody>
-        </table>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+      <!-- Top Header -->
+      <header class="header-dark px-8 py-4 sticky top-0 z-10">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-white">System Audit Logs</h1>
+            <p class="text-white/60 text-sm mt-1">Monitor system activities and user actions</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="btn-primary">
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+              Export Logs
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="p-8 space-y-8">
+        <!-- Audit Logs Section -->
+        <section>
+          <div class="audit-card">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h3 class="font-semibold text-xl text-white">System Audit Trail</h3>
+                <p class="text-white/60 text-sm">Track all system activities and user interactions</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span class="text-green-400 text-sm font-medium">Live Monitoring</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-semibold text-white">Recent Activities</h4>
+              <div class="flex gap-2 text-sm">
+                <select id="filterActor" class="px-3 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white">
+                  <option value="all">All Actors</option>
+                  <option>Admin</option>
+                  <option>Police</option>
+                  <option>Tourism</option>
+                </select>
+                <select id="filterAction" class="px-3 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white">
+                  <option value="all">All Actions</option>
+                  <option>ACK_ALERT</option>
+                  <option>RESOLVE_ALERT</option>
+                  <option>LOGIN</option>
+                  <option>GEOFENCE_UPDATE</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="overflow-auto">
+              <table class="min-w-full text-sm">
+                <thead class="text-white/70 border-b border-gray-700">
+                  <tr>
+                    <th class="text-left py-3 pr-4 font-medium">Timestamp</th>
+                    <th class="text-left py-3 pr-4 font-medium">Actor</th>
+                    <th class="text-left py-3 pr-4 font-medium">Action</th>
+                    <th class="text-left py-3 pr-4 font-medium">Details</th>
+                    <th class="text-left py-3 pr-4 font-medium">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="auditBody" class="divide-y divide-gray-700"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
       </div>
-    </section>
-  </main>
+    </main>
+  </div>
 
   <script src="./assets/js/i18n.js"></script>
   <script>
     // Apply theme + language
-    (function(){ const t = localStorage.getItem('theme')||'dark'; if (t==='light') document.body.classList.add('light'); })();
-    I18N.apply();
+    (function(){ 
+      const t = localStorage.getItem('theme')||'dark'; 
+      if (t==='light') document.body.classList.add('light'); 
+    })();
+    
+    if (typeof I18N !== 'undefined') {
+      I18N.apply();
+    }
 
-    // Demo audit data
-    const actors = ['Admin','Police','Tourism'];
-    const actions = ['ACK_ALERT','RESOLVE_ALERT','LOGIN','GEOFENCE_UPDATE'];
+    // Coming soon functionality
+    function showComingSoon(feature) {
+      alert(`${feature} feature is coming soon!`);
+    }
+
+    // Demo audit data with enhanced details
+    const actors = ['Admin','Police','Tourism','System'];
+    const actions = ['ACK_ALERT','RESOLVE_ALERT','LOGIN','LOGOUT','GEOFENCE_UPDATE','USER_CREATE','ZONE_DELETE','EXPORT_DATA'];
+    const statuses = ['Success', 'Failed', 'Pending', 'Warning'];
     const body = document.getElementById('auditBody');
     const rows = [];
-    for (let i=0;i<40;i++){
+    
+    for (let i=0;i<50;i++){
       const when = new Date(Date.now() - i*3600*1000);
       const actor = actors[Math.floor(Math.random()*actors.length)];
       const action = actions[Math.floor(Math.random()*actions.length)];
-      const details = action==='LOGIN' ? 'Successful login' : (action==='GEOFENCE_UPDATE' ? 'Updated risk polygon' : `Alert ${Math.floor(Math.random()*5)+1}`);
-      rows.push({ when, actor, action, details });
+      const status = statuses[Math.floor(Math.random()*statuses.length)];
+      
+      let details = '';
+      switch(action) {
+        case 'LOGIN':
+          details = 'User authentication successful';
+          break;
+        case 'LOGOUT':
+          details = 'User session terminated';
+          break;
+        case 'GEOFENCE_UPDATE':
+          details = `Updated safety zone ${Math.floor(Math.random()*5)+1}`;
+          break;
+        case 'ACK_ALERT':
+          details = `Alert TUR-${Math.floor(Math.random()*9999)+1000} acknowledged`;
+          break;
+        case 'RESOLVE_ALERT':
+          details = `Emergency TUR-${Math.floor(Math.random()*9999)+1000} resolved`;
+          break;
+        case 'USER_CREATE':
+          details = 'New user account created';
+          break;
+        case 'ZONE_DELETE':
+          details = `Safety zone ${Math.floor(Math.random()*5)+1} deleted`;
+          break;
+        case 'EXPORT_DATA':
+          details = 'System data exported to CSV';
+          break;
+        default:
+          details = 'System operation completed';
+      }
+      
+      rows.push({ when, actor, action, details, status });
+    }
+
+    function getStatusClass(status) {
+      switch(status) {
+        case 'Success': return 'text-green-400 bg-green-400/20';
+        case 'Failed': return 'text-red-400 bg-red-400/20';
+        case 'Pending': return 'text-yellow-400 bg-yellow-400/20';
+        case 'Warning': return 'text-orange-400 bg-orange-400/20';
+        default: return 'text-gray-400 bg-gray-400/20';
+      }
     }
 
     function render(){
       const fa = document.getElementById('filterActor').value;
       const fc = document.getElementById('filterAction').value;
       body.innerHTML = '';
+      
       rows.filter(r => (fa==='all'||r.actor===fa) && (fc==='all'||r.action===fc)).forEach(r => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td class="py-2 pr-4 text-white/70">${r.when.toLocaleString()}</td>
-                        <td class="py-2 pr-4">${r.actor}</td>
-                        <td class="py-2 pr-4">${r.action}</td>
-                        <td class="py-2 pr-4 text-white/70">${r.details}</td>`;
+        tr.className = 'hover:bg-white/5 transition-colors';
+        tr.innerHTML = `
+          <td class="py-3 pr-4 text-white/70">${r.when.toLocaleString()}</td>
+          <td class="py-3 pr-4">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-400/20 text-blue-400">
+              ${r.actor}
+            </span>
+          </td>
+          <td class="py-3 pr-4 font-medium text-white">${r.action}</td>
+          <td class="py-3 pr-4 text-white/70">${r.details}</td>
+          <td class="py-3 pr-4">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(r.status)}">
+              ${r.status}
+            </span>
+          </td>
+        `;
         body.appendChild(tr);
       });
     }
+    
     render();
     document.getElementById('filterActor').addEventListener('change', render);
     document.getElementById('filterAction').addEventListener('change', render);
