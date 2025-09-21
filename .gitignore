@@ -1,1 +1,4 @@
-node_modules
+backend/serviceAccountKey.json
+.env
+node_modules/
+patches
