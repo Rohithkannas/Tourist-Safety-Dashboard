@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E FIR Registration - Tourist Safety Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { 
+      theme: { 
+        extend: { 
+          colors: { 
+            primary: '#dc2626',
+            secondary: '#000000',
+            accent: '#ffffff',
+            dark: '#000000',
+            'dark-lighter': '#1a1a1a',
+            'dark-card': 'rgba(26, 26, 26, 0.9)'
+          }
+        } 
+      } 
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+  <style>
+    body { 
+      background: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar {
+      background: #1a1a1a;
+      border-right: 1px solid #333333;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      margin-bottom: 4px;
+      border: 1px solid transparent;
+    }
+    
+    .nav-item:hover {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+      text-decoration: none;
+    }
+    
+    .nav-item.active {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+
+    .form-section {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      color: #ffffff;
+      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #000000;
+      border: 1px solid #444;
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 14px;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #dc2626;
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1);
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .section-title {
+      color: #dc2626;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      border-bottom: 2px solid #dc2626;
+      padding-bottom: 8px;
+    }
+
+    .download-btn {
+      background: #dc2626;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .download-btn:hover {
+      background: #b91c1c;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen">
+  <div class="flex h-screen">
+    <!-- Left Sidebar -->
+    <aside class="sidebar w-72 flex-shrink-0 overflow-y-auto">
+      <div class="p-6">
+        <!-- Logo -->
+        <div class="flex items-center gap-3 mb-10">
+          <div class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-white">SafeGuard</h1>
+            <p class="text-sm text-gray-400">Tourist Safety</p>
+          </div>
+        </div>
+
+        <nav class="space-y-2">
+          <!-- Main Navigation -->
+          <div class="mb-6">
+            <a href="./dashboard.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+              </svg>
+              <span>Dashboard</span>
+            </a>
+            
+            <a href="./alerts.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+              </svg>
+              <span>Emergency Alerts</span>
+            </a>
+            
+            <a href="./geofence.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"/>
+              </svg>
+              <span>Geofence Section</span>
+            </a>
+
+            <a href="./efir.html" class="nav-item active">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+              </svg>
+              <span>E FIR Registration</span>
+            </a>
+          </div>
+
+          <!-- Analytics Section -->
+          <div class="mb-6">
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Analytics & Reports</div>
+            <a href="./analytics.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+              </svg>
+              <span>Analytics Dashboard</span>
+            </a>
+          </div>
+
+          <!-- Management Section -->
+          <div class="mb-6">
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Management</div>
+            <a href="./audit.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span>Audit Logs</span>
+            </a>
+            
+            <a href="./settings.html" class="nav-item">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+              </svg>
+              <span>Settings</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-black">
+      <!-- Header -->
+      <header class="bg-dark-lighter border-b border-gray-800 px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-white">E FIR Registration</h1>
+            <p class="text-gray-400 mt-1">First Information Report (Under Section 154 Cr.P.C)</p>
+          </div>
+          <div id="downloadSection" class="hidden">
+            <button id="downloadPDF" class="download-btn">
+              <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+              Download E FIR
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Form Container -->
+      <div class="p-6">
+        <form id="efirForm" class="max-w-6xl mx-auto">
+          <!-- Basic Information Section -->
+          <div class="form-section">
+            <h2 class="section-title">FORM – IF1 (Integrated Form)</h2>
+            <h3 class="text-lg font-semibold text-white mb-4">FIRST INFORMATION REPORT</h3>
+            <p class="text-gray-400 mb-6">(Under Section 154 Cr.P.C)</p>
+            
+            <div class="grid-3">
+              <div class="form-group">
+                <label class="form-label">District</label>
+                <input type="text" class="form-input" id="district" name="district" placeholder="Enter District">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Police Station</label>
+                <input type="text" class="form-input" id="policeStation" name="policeStation" placeholder="Enter P.S.">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Year</label>
+                <input type="number" class="form-input" id="year" name="year" placeholder="Enter Year" value="2024">
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">F.I.R. No.</label>
+                <input type="text" class="form-input" id="firNo" name="firNo" placeholder="Enter F.I.R. No.">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-input" id="firDate" name="firDate">
+              </div>
+            </div>
+          </div>
+
+          <!-- Acts and Sections -->
+          <div class="form-section">
+            <h3 class="section-title">Acts and Sections</h3>
+            
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">(i) *Act</label>
+                <input type="text" class="form-input" id="act1" name="act1" placeholder="Enter Act">
+              </div>
+              <div class="form-group">
+                <label class="form-label">*Sections</label>
+                <input type="text" class="form-input" id="sections1" name="sections1" placeholder="Enter Sections">
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">(ii) *Act</label>
+                <input type="text" class="form-input" id="act2" name="act2" placeholder="Enter Act">
+              </div>
+              <div class="form-group">
+                <label class="form-label">*Sections</label>
+                <input type="text" class="form-input" id="sections2" name="sections2" placeholder="Enter Sections">
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">(iii) *Act</label>
+                <input type="text" class="form-input" id="act3" name="act3" placeholder="Enter Act">
+              </div>
+              <div class="form-group">
+                <label class="form-label">*Sections</label>
+                <input type="text" class="form-input" id="sections3" name="sections3" placeholder="Enter Sections">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">(iv) *Other Acts & Sections</label>
+              <textarea class="form-input form-textarea" id="otherActs" name="otherActs" placeholder="Enter other Acts & Sections"></textarea>
+            </div>
+          </div>
+
+          <!-- Occurrence Details -->
+          <div class="form-section">
+            <h3 class="section-title">3. Occurrence of Offence</h3>
+            
+            <div class="grid-3">
+              <div class="form-group">
+                <label class="form-label">(a) *Occurrence of Offence: *Day</label>
+                <select class="form-input" id="occurrenceDay" name="occurrenceDay">
+                  <option value="">Select Day</option>
+                  <option value="Monday">Monday</option>
+                  <option value="Tuesday">Tuesday</option>
+                  <option value="Wednesday">Wednesday</option>
+                  <option value="Thursday">Thursday</option>
+                  <option value="Friday">Friday</option>
+                  <option value="Saturday">Saturday</option>
+                  <option value="Sunday">Sunday</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">*Date</label>
+                <input type="date" class="form-input" id="occurrenceDate" name="occurrenceDate">
+              </div>
+              <div class="form-group">
+                <label class="form-label">*Time</label>
+                <input type="time" class="form-input" id="occurrenceTime" name="occurrenceTime">
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">(b) Information received at P.S. Date</label>
+                <input type="date" class="form-input" id="infoReceivedDate" name="infoReceivedDate">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Time</label>
+                <input type="time" class="form-input" id="infoReceivedTime" name="infoReceivedTime">
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">(c) General Diary Reference: Entry No(s)</label>
+                <input type="text" class="form-input" id="gdEntryNo" name="gdEntryNo" placeholder="Enter Entry No(s)">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Time</label>
+                <input type="time" class="form-input" id="gdTime" name="gdTime">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Type of Information</label>
+              <div class="flex gap-4 mt-2">
+                <label class="flex items-center text-white">
+                  <input type="radio" name="infoType" value="Written" class="mr-2">
+                  <span>*Written</span>
+                </label>
+                <label class="flex items-center text-white">
+                  <input type="radio" name="infoType" value="Oral" class="mr-2">
+                  <span>Oral</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Place of Occurrence -->
+          <div class="form-section">
+            <h3 class="section-title">4. Place of Occurrence</h3>
+            
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">(a) Direction and Distance from P.S.</label>
+                <input type="text" class="form-input" id="directionDistance" name="directionDistance" placeholder="Enter Direction and Distance">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Beat No.</label>
+                <input type="text" class="form-input" id="beatNo" name="beatNo" placeholder="Enter Beat No.">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">(b) *Address</label>
+              <textarea class="form-input form-textarea" id="occurrenceAddress" name="occurrenceAddress" placeholder="Enter complete address of occurrence"></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">(c) In case outside limit of this Police Station, then the name of P.S.</label>
+                <input type="text" class="form-input" id="outsidePS" name="outsidePS" placeholder="Enter P.S. Name">
+              </div>
+              <div class="form-group">
+                <label class="form-label">District</label>
+                <input type="text" class="form-input" id="outsideDistrict" name="outsideDistrict" placeholder="Enter District">
+              </div>
+            </div>
+          </div>
+
+          <!-- Complainant/Informant Details -->
+          <div class="form-section">
+            <h3 class="section-title">5. Complainant / Information</h3>
+            
+            <div class="form-group">
+              <label class="form-label">(a) Name</label>
+              <input type="text" class="form-input" id="complainantName" name="complainantName" placeholder="Enter full name of complainant">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">(b) Father's / Husband's Name</label>
+              <input type="text" class="form-input" id="fatherHusbandName" name="fatherHusbandName" placeholder="Enter Father's / Husband's Name">
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">(c) Date / Year of Birth</label>
+                <input type="date" class="form-input" id="dateOfBirth" name="dateOfBirth">
+              </div>
+              <div class="form-group">
+                <label class="form-label">(d) Nationality</label>
+                <input type="text" class="form-input" id="nationality" name="nationality" placeholder="Enter Nationality">
+              </div>
+            </div>
+
+            <div class="grid-3">
+              <div class="form-group">
+                <label class="form-label">(e) Passport No.</label>
+                <input type="text" class="form-input" id="passportNo" name="passportNo" placeholder="Enter Passport No.">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Date of Issue</label>
+                <input type="date" class="form-input" id="passportIssueDate" name="passportIssueDate">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Place of Issue</label>
+                <input type="text" class="form-input" id="passportIssuePlace" name="passportIssuePlace" placeholder="Enter Place of Issue">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">(f) Occupation</label>
+              <input type="text" class="form-input" id="occupation" name="occupation" placeholder="Enter Occupation">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">(g) Address</label>
+              <textarea class="form-input form-textarea" id="complainantAddress" name="complainantAddress" placeholder="Enter complete address of complainant"></textarea>
+            </div>
+          </div>
+
+          <!-- Accused Details -->
+          <div class="form-section">
+            <h3 class="section-title">6. Details of known / suspected / unknown / accused with full particulars</h3>
+            <p class="text-gray-400 text-sm mb-4">(Attach separate sheet if necessary)</p>
+            
+            <div class="form-group">
+              <textarea class="form-input form-textarea" id="accusedDetails" name="accusedDetails" placeholder="Enter details of known / suspected / unknown / accused with full particulars" style="min-height: 120px;"></textarea>
+            </div>
+          </div>
+
+          <!-- Delay Reasons -->
+          <div class="form-section">
+            <h3 class="section-title">7. Reasons for delay in reporting by the complainant / Informant</h3>
+            
+            <div class="form-group">
+              <textarea class="form-input form-textarea" id="delayReasons" name="delayReasons" placeholder="Enter reasons for delay in reporting" style="min-height: 100px;"></textarea>
+            </div>
+          </div>
+
+          <!-- Property Details -->
+          <div class="form-section">
+            <h3 class="section-title">8. Particulars of properties stolen / involved</h3>
+            <p class="text-gray-400 text-sm mb-4">(Attach separate sheet if necessary)</p>
+            
+            <div class="form-group">
+              <textarea class="form-input form-textarea" id="propertyDetails" name="propertyDetails" placeholder="Enter particulars of properties stolen / involved" style="min-height: 120px;"></textarea>
+            </div>
+          </div>
+
+          <!-- Property Value -->
+          <div class="form-section">
+            <h3 class="section-title">10. Total value of the properties stolen / involved</h3>
+            
+            <div class="form-group">
+              <input type="text" class="form-input" id="propertyValue" name="propertyValue" placeholder="Enter total value of properties">
+            </div>
+          </div>
+
+          <!-- Inquest Report -->
+          <div class="form-section">
+            <h3 class="section-title">11. Inquest Report / U.D. Case No., if any</h3>
+            
+            <div class="form-group">
+              <input type="text" class="form-input" id="inquestReport" name="inquestReport" placeholder="Enter Inquest Report / U.D. Case No.">
+            </div>
+          </div>
+
+          <!-- FIR Contents -->
+          <div class="form-section">
+            <h3 class="section-title">12. F.I.R. Contents</h3>
+            <p class="text-gray-400 text-sm mb-4">(Attach separate sheets, if required)</p>
+            
+            <div class="form-group">
+              <textarea class="form-input form-textarea" id="firContents" name="firContents" placeholder="Enter F.I.R. Contents" style="min-height: 150px;"></textarea>
+            </div>
+          </div>
+
+          <!-- Action Taken -->
+          <div class="form-section">
+            <h3 class="section-title">13. Action Taken</h3>
+            
+            <div class="form-group">
+              <label class="form-label">Standard Text</label>
+              <textarea class="form-input form-textarea" id="actionTaken" name="actionTaken" readonly style="min-height: 100px;">Since the above report reveals commission of offence (s) u/s as mentioned at Item No. 2., registered the case and took up the investigation / direction / ………. Rank ……… to take up the investigation transferred to P.S. ……………………. on point of jurisdiction.</textarea>
+            </div>
+
+            <div class="grid-3">
+              <div class="form-group">
+                <label class="form-label">Officer's Name</label>
+                <input type="text" class="form-input" id="officerName" name="officerName" placeholder="Enter Officer's Name">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Rank</label>
+                <input type="text" class="form-input" id="officerRank" name="officerRank" placeholder="Enter Rank">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Number</label>
+                <input type="text" class="form-input" id="officerNumber" name="officerNumber" placeholder="Enter Number">
+              </div>
+            </div>
+          </div>
+
+          <!-- Signature Section -->
+          <div class="form-section">
+            <h3 class="section-title">14. Signature / Thumb-impression of the complainant/informant</h3>
+            
+            <div class="form-group">
+              <label class="form-label">Upload Signature/Thumb-impression</label>
+              <input type="file" class="form-input" id="signature" name="signature" accept="image/*">
+              <p class="text-gray-400 text-sm mt-2">Upload image file (JPG, PNG, etc.)</p>
+            </div>
+          </div>
+
+          <!-- Despatch Details -->
+          <div class="form-section">
+            <h3 class="section-title">15. Date & time of despatch to the court</h3>
+            
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-input" id="despatchDate" name="despatchDate">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Time</label>
+                <input type="time" class="form-input" id="despatchTime" name="despatchTime">
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="form-section">
+            <div class="flex gap-4 justify-end">
+              <button type="button" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                Save Draft
+              </button>
+              <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                Submit E FIR
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Show download button for authority users (placeholder logic)
+    document.getElementById('downloadSection').classList.remove('hidden');
+    
+    // PDF export functionality
+    document.getElementById('downloadPDF').addEventListener('click', function() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Set font
+      doc.setFont('helvetica');
+      
+      // Title and Header
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('FORM – IF1 (Integrated Form)', 105, 20, { align: 'center' });
+      doc.text('FIRST INFORMATION REPORT', 105, 30, { align: 'center' });
+      doc.setFontSize(12);
+      doc.text('(Under Section 154 Cr.P.C)', 105, 40, { align: 'center' });
+      
+      // Reset font
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      
+      let yPos = 55;
+      const leftMargin = 15;
+      const pageWidth = 180;
+      
+      // Helper function to add form data
+      function addFormField(label, value, x = leftMargin, width = pageWidth) {
+        doc.text(label + ': ' + (value || '________________________'), x, yPos);
+        yPos += 8;
+        
+        // Check if we need a new page
+        if (yPos > 270) {
+          doc.addPage();
+          yPos = 20;
+        }
+      }
+      
+      function addFormFieldInline(label1, value1, label2, value2, x1 = leftMargin, x2 = 105) {
+        doc.text(label1 + ': ' + (value1 || '____________'), x1, yPos);
+        doc.text(label2 + ': ' + (value2 || '____________'), x2, yPos);
+        yPos += 8;
+        
+        if (yPos > 270) {
+          doc.addPage();
+          yPos = 20;
+        }
+      }
+      
+      function addSectionHeader(title) {
+        yPos += 5;
+        doc.setFont('helvetica', 'bold');
+        doc.text(title, leftMargin, yPos);
+        doc.setFont('helvetica', 'normal');
+        yPos += 10;
+      }
+      
+      // Get form values
+      const formData = {
+        district: document.getElementById('district').value,
+        policeStation: document.getElementById('policeStation').value,
+        year: document.getElementById('year').value,
+        firNo: document.getElementById('firNo').value,
+        firDate: document.getElementById('firDate').value,
+        act1: document.getElementById('act1').value,
+        sections1: document.getElementById('sections1').value,
+        act2: document.getElementById('act2').value,
+        sections2: document.getElementById('sections2').value,
+        act3: document.getElementById('act3').value,
+        sections3: document.getElementById('sections3').value,
+        otherActs: document.getElementById('otherActs').value,
+        occurrenceDay: document.getElementById('occurrenceDay').value,
+        occurrenceDate: document.getElementById('occurrenceDate').value,
+        occurrenceTime: document.getElementById('occurrenceTime').value,
+        infoReceivedDate: document.getElementById('infoReceivedDate').value,
+        infoReceivedTime: document.getElementById('infoReceivedTime').value,
+        gdEntryNo: document.getElementById('gdEntryNo').value,
+        gdTime: document.getElementById('gdTime').value,
+        infoType: document.querySelector('input[name="infoType"]:checked')?.value || '',
+        directionDistance: document.getElementById('directionDistance').value,
+        beatNo: document.getElementById('beatNo').value,
+        occurrenceAddress: document.getElementById('occurrenceAddress').value,
+        outsidePS: document.getElementById('outsidePS').value,
+        outsideDistrict: document.getElementById('outsideDistrict').value,
+        complainantName: document.getElementById('complainantName').value,
+        fatherHusbandName: document.getElementById('fatherHusbandName').value,
+        dateOfBirth: document.getElementById('dateOfBirth').value,
+        nationality: document.getElementById('nationality').value,
+        passportNo: document.getElementById('passportNo').value,
+        passportIssueDate: document.getElementById('passportIssueDate').value,
+        passportIssuePlace: document.getElementById('passportIssuePlace').value,
+        occupation: document.getElementById('occupation').value,
+        complainantAddress: document.getElementById('complainantAddress').value,
+        accusedDetails: document.getElementById('accusedDetails').value,
+        delayReasons: document.getElementById('delayReasons').value,
+        propertyDetails: document.getElementById('propertyDetails').value,
+        propertyValue: document.getElementById('propertyValue').value,
+        inquestReport: document.getElementById('inquestReport').value,
+        firContents: document.getElementById('firContents').value,
+        officerName: document.getElementById('officerName').value,
+        officerRank: document.getElementById('officerRank').value,
+        officerNumber: document.getElementById('officerNumber').value,
+        despatchDate: document.getElementById('despatchDate').value,
+        despatchTime: document.getElementById('despatchTime').value
+      };
+      
+      // Basic Information
+      addFormFieldInline('Dist.', formData.district, 'P.S.', formData.policeStation);
+      addFormFieldInline('Year', formData.year, 'F.I.R. No.', formData.firNo);
+      addFormField('Date', formData.firDate);
+      
+      // Acts and Sections
+      yPos += 5;
+      addFormFieldInline('(i) *Act', formData.act1, '*Sections', formData.sections1);
+      addFormFieldInline('(ii) *Act', formData.act2, '*Sections', formData.sections2);
+      addFormFieldInline('(iii) *Act', formData.act3, '*Sections', formData.sections3);
+      addFormField('(iv) *Other Acts & Sections', formData.otherActs);
+      
+      // Occurrence Details
+      addSectionHeader('3. Occurrence of Offence');
+      addFormField('(a) *Occurrence of Offence: *Day', formData.occurrenceDay);
+      addFormFieldInline('*Date', formData.occurrenceDate, '*Time', formData.occurrenceTime);
+      addFormFieldInline('(b) Information received at P.S. Date', formData.infoReceivedDate, 'Time', formData.infoReceivedTime);
+      addFormFieldInline('(c) General Diary Reference: Entry No(s)', formData.gdEntryNo, 'Time', formData.gdTime);
+      addFormField('Type of Information: *Written / Oral', formData.infoType);
+      
+      // Place of Occurrence
+      addSectionHeader('4. Place of Occurrence');
+      addFormFieldInline('(a) Direction and Distance from P.S.', formData.directionDistance, 'Beat No.', formData.beatNo);
+      addFormField('(b) *Address', formData.occurrenceAddress);
+      addFormFieldInline('(c) In case outside limit of this Police Station, then the name of P.S.', formData.outsidePS, 'District', formData.outsideDistrict);
+      
+      // Complainant Information
+      addSectionHeader('5. Complainant / Information');
+      addFormField('(a) Name', formData.complainantName);
+      addFormField('(b) Father\'s / Husband\'s Name', formData.fatherHusbandName);
+      addFormFieldInline('(c) Date / Year of Birth', formData.dateOfBirth, '(d) Nationality', formData.nationality);
+      addFormField('(e) Passport No.', formData.passportNo);
+      addFormFieldInline('Date of Issue', formData.passportIssueDate, 'Place of Issue', formData.passportIssuePlace);
+      addFormField('(f) Occupation', formData.occupation);
+      addFormField('(g) Address', formData.complainantAddress);
+      
+      // Accused Details
+      addSectionHeader('6. Details of known / suspected / unknown / accused with full particulars');
+      if (formData.accusedDetails) {
+        const accusedLines = doc.splitTextToSize(formData.accusedDetails, pageWidth - 20);
+        doc.text(accusedLines, leftMargin, yPos);
+        yPos += accusedLines.length * 5 + 10;
+      } else {
+        yPos += 20;
+        doc.text('_'.repeat(80), leftMargin, yPos);
+        yPos += 10;
+      }
+      
+      // Delay Reasons
+      addSectionHeader('7. Reasons for delay in reporting by the complainant / Informant');
+      if (formData.delayReasons) {
+        const delayLines = doc.splitTextToSize(formData.delayReasons, pageWidth - 20);
+        doc.text(delayLines, leftMargin, yPos);
+        yPos += delayLines.length * 5 + 10;
+      } else {
+        yPos += 15;
+        doc.text('_'.repeat(80), leftMargin, yPos);
+        yPos += 10;
+      }
+      
+      // Property Details
+      addSectionHeader('8. Particulars of properties stolen / involved');
+      if (formData.propertyDetails) {
+        const propertyLines = doc.splitTextToSize(formData.propertyDetails, pageWidth - 20);
+        doc.text(propertyLines, leftMargin, yPos);
+        yPos += propertyLines.length * 5 + 10;
+      } else {
+        yPos += 15;
+        doc.text('_'.repeat(80), leftMargin, yPos);
+        yPos += 10;
+      }
+      
+      // Property Value
+      addFormField('10. Total value of the properties stolen / involved', formData.propertyValue);
+      
+      // Inquest Report
+      addFormField('11. Inquest Report / U.D. Case No., if any', formData.inquestReport);
+      
+      // FIR Contents
+      addSectionHeader('12. F.I.R. Contents');
+      if (formData.firContents) {
+        const firLines = doc.splitTextToSize(formData.firContents, pageWidth - 20);
+        doc.text(firLines, leftMargin, yPos);
+        yPos += firLines.length * 5 + 10;
+      } else {
+        yPos += 20;
+        doc.text('_'.repeat(80), leftMargin, yPos);
+        yPos += 10;
+      }
+      
+      // Action Taken
+      addSectionHeader('13. Action Taken');
+      const actionText = 'Since the above report reveals commission of offence (s) u/s as mentioned at Item No. 2., registered the case and took up the investigation / direction / ………. Rank ……… to take up the investigation transferred to P.S. ……………………. on point of jurisdiction.';
+      const actionLines = doc.splitTextToSize(actionText, pageWidth - 20);
+      doc.text(actionLines, leftMargin, yPos);
+      yPos += actionLines.length * 5 + 15;
+      
+      addFormField('Officer\'s Name', formData.officerName);
+      addFormFieldInline('Rank', formData.officerRank, 'Number', formData.officerNumber);
+      
+      // Signature
+      addSectionHeader('14. Signature / Thumb-impression of the complainant/informant');
+      yPos += 20;
+      doc.text('_'.repeat(40), leftMargin, yPos);
+      yPos += 10;
+      
+      // Despatch Details
+      addSectionHeader('15. Date & time of despatch to the court');
+      addFormFieldInline('Date', formData.despatchDate, 'Time', formData.despatchTime);
+      
+      // Save the PDF
+      const fileName = `E_FIR_${formData.firNo || 'DRAFT'}_${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+    });
+    
+    // Form validation
+    document.getElementById('efirForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Basic validation
+      const requiredFields = [
+        'district', 'policeStation', 'year', 'firNo', 'firDate',
+        'complainantName', 'occurrenceDate', 'occurrenceTime'
+      ];
+      
+      let isValid = true;
+      const errors = [];
+      
+      requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (!field.value.trim()) {
+          isValid = false;
+          errors.push(field.previousElementSibling.textContent);
+          field.style.borderColor = '#dc2626';
+        } else {
+          field.style.borderColor = '#444';
+        }
+      });
+      
+      if (!isValid) {
+        alert('Please fill in the following required fields:\n' + errors.join('\n'));
+        return;
+      }
+      
+      // If validation passes, show success message
+      alert('E FIR submitted successfully!');
+    });
+    
+    // Auto-save functionality (localStorage)
+    function saveFormData() {
+      const formData = new FormData(document.getElementById('efirForm'));
+      const data = {};
+      for (let [key, value] of formData.entries()) {
+        data[key] = value;
+      }
+      localStorage.setItem('efir_draft', JSON.stringify(data));
+    }
+    
+    function loadFormData() {
+      const savedData = localStorage.getItem('efir_draft');
+      if (savedData) {
+        const data = JSON.parse(savedData);
+        Object.keys(data).forEach(key => {
+          const field = document.getElementById(key);
+          if (field && field.type !== 'file') {
+            field.value = data[key];
+          }
+        });
+      }
+    }
+    
+    // Load saved data on page load
+    document.addEventListener('DOMContentLoaded', loadFormData);
+    
+    // Save data on input change
+    document.getElementById('efirForm').addEventListener('input', saveFormData);
+    
+    // Save Draft button functionality
+    document.querySelector('button[type="button"]').addEventListener('click', function() {
+      saveFormData();
+      alert('Draft saved successfully!');
+    });
+  </script>
+</body>
+</html>
