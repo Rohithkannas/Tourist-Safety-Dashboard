@@ -374,7 +374,7 @@
           <div class="mb-6">
             <a href="./dashboard.html" class="nav-item">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1H4z"/>
               </svg>
               <span>Dashboard</span>
             </a>
@@ -400,7 +400,7 @@
             <div class="nav-section-title">Analytics & Reports</div>
             <a href="./analytics.html" class="nav-item active">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H4a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z" clip-rule="evenodd"/>
               </svg>
               <span>Analytics Dashboard</span>
             </a>
@@ -420,14 +420,14 @@
             <div class="nav-section-title">Management</div>
             <a href="./audit.html" class="nav-item">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z" clip-rule="evenodd"/>
               </svg>
               <span>Audit Logs</span>
             </a>
             
             <a href="./efir.html" class="nav-item">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
               </svg>
               <span>E FIR Registration</span>
             </a>
@@ -593,39 +593,163 @@
             </div>
           </div>
 
-          <!-- Risk Zone Activity -->
+          <!-- Population Density Heatmap -->
           <div class="chart-container mb-8">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="font-semibold text-white" data-i18n="risk_zone_activity">Risk Zone Activity</h3>
+              <h3 class="font-semibold text-white" data-i18n="population_density_heatmap">Population Density Heatmap - Meghalaya</h3>
               <div class="flex items-center gap-2">
                 <span class="text-xs text-white/60" data-i18n="live_data">Live data</span>
                 <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
               </div>
             </div>
-            <div class="relative" style="height: 400px;">
-              <div id="riskZoneMap" class="w-full h-full rounded-lg overflow-hidden border border-gray-700"></div>
+            <div class="relative" style="height: 500px;">
+              <div id="populationHeatmap" class="w-full h-full rounded-lg overflow-hidden border border-gray-700"></div>
               
-              <!-- Map Legend -->
-              <div class="absolute left-4 bottom-4 bg-black/90 backdrop-blur-xl rounded-lg border border-gray-700 p-3">
-                <h4 class="font-semibold text-white mb-2 text-sm" data-i18n="risk_levels">Risk Levels</h4>
-                <div class="space-y-1">
+              <!-- Heatmap Legend in Top-Right -->
+              <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-xl rounded-lg border border-gray-300 p-4 z-10 shadow-lg">
+                <h4 class="font-semibold text-gray-800 mb-3 text-sm">Percentage at high risk</h4>
+                <div class="space-y-3">
+                  <!-- Color Gradient Bar -->
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span class="text-white text-xs" data-i18n="risk_low">Low Risk</span>
+                    <div class="w-6 h-20 bg-gradient-to-t from-blue-500 via-cyan-400 via-green-400 via-yellow-400 via-orange-400 to-red-600 rounded border border-gray-300"></div>
+                    <div class="flex flex-col justify-between h-20 text-xs text-gray-700">
+                      <span class="font-medium">13.8</span>
+                      <span class="font-medium">5.1</span>
+                    </div>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
-                    <span class="text-white text-xs" data-i18n="risk_medium">Medium Risk</span>
+                  
+                  <!-- Risk Level Indicators -->
+                  <div class="space-y-1 text-xs border-t border-gray-300 pt-2">
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 rounded bg-red-600"></div>
+                      <span class="text-gray-700">Critical Risk (13.8%)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 rounded bg-orange-500"></div>
+                      <span class="text-gray-700">High Risk (10-13%)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 rounded bg-yellow-500"></div>
+                      <span class="text-gray-700">Medium Risk (7-10%)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 rounded bg-green-500"></div>
+                      <span class="text-gray-700">Low Risk (4-7%)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 rounded bg-blue-500"></div>
+                      <span class="text-gray-700">Very Low (5.1%)</span>
+                    </div>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                    <span class="text-white text-xs" data-i18n="risk_high">High Risk</span>
+                  
+                  <!-- Data Source -->
+                  <div class="border-t border-gray-300 pt-2 text-xs text-gray-500">
+                    <div>Data: Population Census 2024</div>
+                    <div>Updated: Live</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
+          <!-- High-Density Risk Analysis -->
+          <div class="chart-container mb-8">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold text-white">High-Density Risk Analysis</h3>
+              <span class="text-xs text-white/60">Updated 5 minutes ago</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <!-- Case 1 -->
+              <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                  <span class="text-red-400 font-semibold text-sm">CRITICAL</span>
+                </div>
+                <h4 class="text-white font-medium mb-2">Festival Overcrowding</h4>
+                <p class="text-white/70 text-sm mb-2">Police Bazar Street, Shillong</p>
+                <p class="text-white/60 text-xs">Wangala Festival causing severe overcrowding with 15,000+ people in 0.5km² area. Traffic completely blocked, emergency access compromised.</p>
+                <div class="mt-3 flex items-center justify-between">
+                  <span class="text-xs text-red-400">Density: 850 per km²</span>
+                  <span class="text-xs text-white/50">Active: 2h 15m</span>
+                </div>
+              </div>
+
+              <!-- Case 2 -->
+              <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                  <span class="text-red-400 font-semibold text-sm">CRITICAL</span>
+                </div>
+                <h4 class="text-white font-medium mb-2">Civil Unrest</h4>
+                <p class="text-white/70 text-sm mb-2">Iewduh Market Area, Shillong</p>
+                <p class="text-white/60 text-xs">Protest gathering escalating with 8,000+ people. Stone pelting reported. Multiple road blockades affecting tourist movement.</p>
+                <div class="mt-3 flex items-center justify-between">
+                  <span class="text-xs text-red-400">Density: 720 per km²</span>
+                  <span class="text-xs text-white/50">Active: 45m</span>
+                </div>
+              </div>
+
+              <!-- Case 3 -->
+              <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                  <span class="text-red-400 font-semibold text-sm">CRITICAL</span>
+                </div>
+                <h4 class="text-white font-medium mb-2">Landslide Emergency</h4>
+                <p class="text-white/70 text-sm mb-2">Mawkdok Valley, Cherrapunji</p>
+                <p class="text-white/60 text-xs">Major landslide blocking NH-44. 200+ vehicles stranded with 1,200+ tourists. Rescue operations underway in dangerous terrain.</p>
+                <div class="mt-3 flex items-center justify-between">
+                  <span class="text-xs text-red-400">Density: 650 per km²</span>
+                  <span class="text-xs text-white/50">Active: 3h 30m</span>
+                </div>
+              </div>
+
+              <!-- Case 4 -->
+              <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <span class="text-yellow-400 font-semibold text-sm">HIGH</span>
+                </div>
+                <h4 class="text-white font-medium mb-2">Tourist Rush</h4>
+                <p class="text-white/70 text-sm mb-2">Elephant Falls, Shillong</p>
+                <p class="text-white/60 text-xs">Weekend tourist influx creating parking shortage and overcrowding at viewpoints. 5,000+ visitors in small area causing safety concerns.</p>
+                <div class="mt-3 flex items-center justify-between">
+                  <span class="text-xs text-yellow-400">Density: 420 per km²</span>
+                  <span class="text-xs text-white/50">Active: 1h 20m</span>
+                </div>
+              </div>
+
+              <!-- Case 5 -->
+              <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <span class="text-yellow-400 font-semibold text-sm">HIGH</span>
+                </div>
+                <h4 class="text-white font-medium mb-2">Market Congestion</h4>
+                <p class="text-white/70 text-sm mb-2">Bara Bazar, Shillong</p>
+                <p class="text-white/60 text-xs">Saturday market day causing severe congestion. 3,500+ people in narrow lanes. Pickpocketing incidents reported among tourists.</p>
+                <div class="mt-3 flex items-center justify-between">
+                  <span class="text-xs text-yellow-400">Density: 380 per km²</span>
+                  <span class="text-xs text-white/50">Active: 2h 45m</span>
+                </div>
+              </div>
+
+              <!-- Case 6 -->
+              <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <span class="text-yellow-400 font-semibold text-sm">HIGH</span>
+                </div>
+                <h4 class="text-white font-medium mb-2">Weather Alert</h4>
+                <p class="text-white/70 text-sm mb-2">Sohra (Cherrapunji) Town</p>
+                <p class="text-white/60 text-xs">Heavy rainfall warning issued. 2,800+ tourists stranded in hotels and guesthouses. Flash flood risk in low-lying areas.</p>
+                <div class="mt-3 flex items-center justify-between">
+                  <span class="text-xs text-yellow-400">Density: 350 per km²</span>
+                  <span class="text-xs text-white/50">Active: 4h 10m</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
         </section>
 
@@ -702,7 +826,7 @@
                 
                 <button onclick="window.location.href='./dashboard.html'" class="w-full btn-primary text-left">
                   <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1H4z"/>
                   </svg>
                   Live Dashboard
                 </button>
@@ -851,101 +975,237 @@
       }
     });
 
-    // Risk Zone Map
-    let riskZoneMap;
-    function initializeRiskZoneMap() {
-      riskZoneMap = L.map('riskZoneMap', {
-        center: [25.4670, 91.3662], // Shillong, Meghalaya
-        zoom: 9,
-        zoomControl: true,
-        attributionControl: false,
-        maxBounds: [[24.5, 89.5], [26.5, 93.5]], // Restrict to Meghalaya region
-        maxBoundsViscosity: 1.0
-      });
-
-      // Add dark tile layer
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap contributors © CARTO',
-        subdomains: 'abcd',
-        maxZoom: 19,
-        minZoom: 7
-      }).addTo(riskZoneMap);
-
-      // Risk zones with tourist activity
-      const riskZones = [
-        // High Risk Zones
-        { lat: 25.5788, lng: 91.8933, risk: 'high', tourists: 8, name: 'Cherrapunji Flood Zone' },
-        { lat: 25.5900, lng: 90.2167, risk: 'high', tourists: 5, name: 'Tura Hill Landslide Area' },
-        
-        // Medium Risk Zones
-        { lat: 25.4522, lng: 92.2058, risk: 'medium', tourists: 15, name: 'Jowai Construction Zone' },
-        { lat: 25.8167, lng: 91.7667, risk: 'medium', tourists: 12, name: 'Nongpoh Traffic Area' },
-        { lat: 25.5167, lng: 91.1333, risk: 'medium', tourists: 10, name: 'Nongstoin Weather Zone' },
-        
-        // Low Risk Zones
-        { lat: 25.4670, lng: 91.3662, risk: 'low', tourists: 45, name: 'Shillong Safe Zone' },
-        { lat: 25.4167, lng: 90.6333, risk: 'low', tourists: 20, name: 'Williamnagar Tourist Center' },
-        { lat: 25.3000, lng: 91.5000, risk: 'low', tourists: 18, name: 'Mawkyrwat Safe Area' }
-      ];
-
-      riskZones.forEach(zone => {
-        const color = zone.risk === 'high' ? '#dc2626' : 
-                     zone.risk === 'medium' ? '#f59e0b' : '#22c55e';
-        
-        // Create risk zone circle
-        const circle = L.circle([zone.lat, zone.lng], {
-          radius: 3000 + (zone.tourists * 50), // Radius based on tourist count
-          color: color,
-          fillColor: color,
-          fillOpacity: 0.2,
-          weight: 2,
-          opacity: 0.8
-        }).addTo(riskZoneMap);
-
-        // Add tourist marker in the center
-        const marker = L.circleMarker([zone.lat, zone.lng], {
-          radius: 4 + (zone.tourists / 5),
-          fillColor: color,
-          color: '#ffffff',
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.9
-        }).addTo(riskZoneMap);
-
-        // Popup with zone information
-        const popupContent = `
-          <div class="p-3 bg-black text-white rounded">
-            <h3 class="font-semibold text-sm mb-1">${zone.name}</h3>
-            <p class="text-xs mb-1">Risk Level: <span class="font-medium" style="color: ${color}">${zone.risk.toUpperCase()}</span></p>
-            <p class="text-xs mb-1">Tourists: <span class="font-medium">${zone.tourists}</span></p>
-            <p class="text-xs text-gray-300">Zone Radius: ${(3000 + (zone.tourists * 50))/1000}km</p>
-          </div>
-        `;
-        
-        circle.bindPopup(popupContent);
-        marker.bindPopup(popupContent);
-      });
-
-      // Add Meghalaya state boundary
-      const meghalayaBoundary = [
-        [25.0, 89.8], [25.0, 92.8], [26.0, 92.8], [26.0, 89.8], [25.0, 89.8]
-      ];
+    // Population Density Heatmap
+    let populationHeatmap;
+    function initializePopulationHeatmap() {
+      // Set Mapbox access token
+      mapboxgl.accessToken = 'pk.eyJ1IjoicnJvaGl0aGthbm5hYSIsImEiOiJjbWZ0cWFqNzgwOGRqMmlwaG91aHpjbW9oIn0.ULz30NvUuWYgzuxQ_WPLGQ';
       
-      L.polygon(meghalayaBoundary, {
-        color: '#dc2626',
-        weight: 2,
-        opacity: 0.4,
-        fillOpacity: 0.05,
-        fillColor: '#dc2626'
-      }).addTo(riskZoneMap);
+      populationHeatmap = new mapboxgl.Map({
+        container: 'populationHeatmap',
+        style: 'mapbox://styles/mapbox/light-v11', // Light style to match the sample
+        center: [91.3662, 25.4670], // Shillong, Meghalaya
+        zoom: 8.5,
+        maxBounds: [[89.2, 24.2], [93.8, 26.8]], // Restrict to Meghalaya region
+        maxZoom: 16,
+        minZoom: 6
+      });
+
+      populationHeatmap.on('load', function() {
+        // Enhanced population density data points for Meghalaya to match sample intensity
+        const populationData = {
+          type: 'FeatureCollection',
+          features: [
+            // Very High Density Areas (Urban Centers) - Red zones
+            { type: 'Feature', properties: { density: 13.8, risk: 'critical' }, geometry: { type: 'Point', coordinates: [91.8933, 25.5788] } }, // Shillong Central
+            { type: 'Feature', properties: { density: 13.5, risk: 'critical' }, geometry: { type: 'Point', coordinates: [91.8826, 25.5744] } }, // Laitumkhrah
+            { type: 'Feature', properties: { density: 13.2, risk: 'critical' }, geometry: { type: 'Point', coordinates: [91.8900, 25.5820] } }, // Nongthymmai
+            { type: 'Feature', properties: { density: 12.8, risk: 'critical' }, geometry: { type: 'Point', coordinates: [91.9100, 25.5900] } }, // Mawlai
+            { type: 'Feature', properties: { density: 12.5, risk: 'critical' }, geometry: { type: 'Point', coordinates: [91.8750, 25.5650] } }, // Lumdiengjri
+            
+            // High Density Areas - Orange zones
+            { type: 'Feature', properties: { density: 11.8, risk: 'high' }, geometry: { type: 'Point', coordinates: [91.7000, 25.3000] } }, // Cherrapunji Town
+            { type: 'Feature', properties: { density: 11.2, risk: 'high' }, geometry: { type: 'Point', coordinates: [90.2167, 25.5167] } }, // Tura
+            { type: 'Feature', properties: { density: 10.8, risk: 'high' }, geometry: { type: 'Point', coordinates: [92.2058, 25.4522] } }, // Jowai
+            { type: 'Feature', properties: { density: 10.5, risk: 'high' }, geometry: { type: 'Point', coordinates: [91.8833, 25.8167] } }, // Nongpoh
+            { type: 'Feature', properties: { density: 10.2, risk: 'high' }, geometry: { type: 'Point', coordinates: [91.2667, 25.5167] } }, // Nongstoin
+            
+            // Medium-High Density Areas - Yellow zones
+            { type: 'Feature', properties: { density: 9.5, risk: 'medium-high' }, geometry: { type: 'Point', coordinates: [90.6167, 25.4833] } }, // Williamnagar
+            { type: 'Feature', properties: { density: 9.2, risk: 'medium-high' }, geometry: { type: 'Point', coordinates: [91.6333, 25.5667] } }, // Mairang
+            { type: 'Feature', properties: { density: 8.8, risk: 'medium-high' }, geometry: { type: 'Point', coordinates: [92.0667, 25.2167] } }, // Khliehriat
+            { type: 'Feature', properties: { density: 8.5, risk: 'medium-high' }, geometry: { type: 'Point', coordinates: [91.9167, 25.9833] } }, // Byrnihat
+            { type: 'Feature', properties: { density: 8.2, risk: 'medium-high' }, geometry: { type: 'Point', coordinates: [90.0167, 25.1667] } }, // Ampati
+            
+            // Medium Density Areas - Green-Yellow zones
+            { type: 'Feature', properties: { density: 7.8, risk: 'medium' }, geometry: { type: 'Point', coordinates: [92.2833, 25.4167] } }, // Thadlaskein
+            { type: 'Feature', properties: { density: 7.5, risk: 'medium' }, geometry: { type: 'Point', coordinates: [90.6333, 25.1833] } }, // Baghmara
+            { type: 'Feature', properties: { density: 7.2, risk: 'medium' }, geometry: { type: 'Point', coordinates: [91.5000, 25.3000] } }, // Mawkyrwat
+            { type: 'Feature', properties: { density: 6.8, risk: 'medium' }, geometry: { type: 'Point', coordinates: [90.5333, 25.4167] } }, // Rongjeng
+            { type: 'Feature', properties: { density: 6.5, risk: 'medium' }, geometry: { type: 'Point', coordinates: [90.3167, 25.4833] } }, // Resubelpara
+            
+            // Low-Medium Density Areas - Green zones
+            { type: 'Feature', properties: { density: 6.2, risk: 'low-medium' }, geometry: { type: 'Point', coordinates: [91.9500, 25.7500] } }, // Umling
+            { type: 'Feature', properties: { density: 5.8, risk: 'low-medium' }, geometry: { type: 'Point', coordinates: [90.1167, 25.4833] } }, // Betasing
+            { type: 'Feature', properties: { density: 5.5, risk: 'low-medium' }, geometry: { type: 'Point', coordinates: [92.2167, 25.2833] } }, // Amlarem
+            { type: 'Feature', properties: { density: 5.2, risk: 'low-medium' }, geometry: { type: 'Point', coordinates: [90.4167, 25.5500] } }, // Bajengdoba
+            { type: 'Feature', properties: { density: 4.8, risk: 'low-medium' }, geometry: { type: 'Point', coordinates: [90.5833, 25.0833] } }, // Chokpot
+            
+            // Low Density Areas - Blue-Green zones
+            { type: 'Feature', properties: { density: 4.5, risk: 'low' }, geometry: { type: 'Point', coordinates: [90.1833, 25.2500] } }, // Tikrikilla
+            { type: 'Feature', properties: { density: 4.2, risk: 'low' }, geometry: { type: 'Point', coordinates: [90.7167, 25.3833] } }, // Samanda
+            { type: 'Feature', properties: { density: 3.8, risk: 'low' }, geometry: { type: 'Point', coordinates: [91.1833, 25.4167] } }, // Ranikor
+            { type: 'Feature', properties: { density: 3.5, risk: 'low' }, geometry: { type: 'Point', coordinates: [92.3333, 25.1833] } }, // Saipung
+            { type: 'Feature', properties: { density: 3.2, risk: 'low' }, geometry: { type: 'Point', coordinates: [91.1833, 25.2833] } }, // Ranikor South
+            { type: 'Feature', properties: { density: 2.8, risk: 'low' }, geometry: { type: 'Point', coordinates: [90.1167, 25.2167] } }, // Betasing South
+            
+            // Very Low Density Areas - Blue zones
+            { type: 'Feature', properties: { density: 2.5, risk: 'very-low' }, geometry: { type: 'Point', coordinates: [91.0000, 25.6000] } },
+            { type: 'Feature', properties: { density: 2.2, risk: 'very-low' }, geometry: { type: 'Point', coordinates: [90.8000, 25.3500] } },
+            { type: 'Feature', properties: { density: 1.8, risk: 'very-low' }, geometry: { type: 'Point', coordinates: [92.1000, 25.6000] } },
+            { type: 'Feature', properties: { density: 1.5, risk: 'very-low' }, geometry: { type: 'Point', coordinates: [90.5000, 25.7000] } },
+            { type: 'Feature', properties: { density: 1.2, risk: 'very-low' }, geometry: { type: 'Point', coordinates: [92.5000, 25.3500] } },
+            { type: 'Feature', properties: { density: 0.8, risk: 'very-low' }, geometry: { type: 'Point', coordinates: [89.8000, 25.2000] } },
+            { type: 'Feature', properties: { density: 0.5, risk: 'very-low' }, geometry: { type: 'Point', coordinates: [92.8000, 25.8000] } }
+          ]
+        };
+
+        // Add Meghalaya state boundary first
+        const meghalayaBoundary = {
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[
+              [89.744, 25.008], [89.744, 25.319], [89.867, 25.319], [89.867, 25.441],
+              [89.990, 25.441], [89.990, 25.564], [90.113, 25.564], [90.113, 25.686],
+              [90.236, 25.686], [90.236, 25.809], [90.359, 25.809], [90.359, 25.931],
+              [90.482, 25.931], [90.482, 26.054], [90.605, 26.054], [90.605, 26.176],
+              [90.728, 26.176], [90.728, 26.299], [90.851, 26.299], [90.851, 26.421],
+              [90.974, 26.421], [90.974, 26.544], [91.097, 26.544], [91.097, 26.666],
+              [91.220, 26.666], [91.220, 26.789], [91.343, 26.789], [91.343, 26.911],
+              [91.466, 26.911], [91.466, 27.034], [91.589, 27.034], [91.589, 26.911],
+              [91.712, 26.911], [91.712, 26.789], [91.835, 26.789], [91.835, 26.666],
+              [91.958, 26.666], [91.958, 26.544], [92.081, 26.544], [92.081, 26.421],
+              [92.204, 26.421], [92.204, 26.299], [92.327, 26.299], [92.327, 26.176],
+              [92.450, 26.176], [92.450, 26.054], [92.573, 26.054], [92.573, 25.931],
+              [92.696, 25.931], [92.696, 25.809], [92.819, 25.809], [92.819, 25.686],
+              [92.942, 25.686], [92.942, 25.564], [93.065, 25.564], [93.065, 25.441],
+              [93.188, 25.441], [93.188, 25.319], [93.311, 25.319], [93.311, 25.196],
+              [93.434, 25.196], [93.434, 25.074], [93.311, 25.074], [93.311, 24.951],
+              [93.188, 24.951], [93.188, 24.829], [93.065, 24.829], [93.065, 24.706],
+              [92.942, 24.706], [92.942, 24.584], [92.819, 24.584], [92.819, 24.461],
+              [92.696, 24.461], [92.696, 24.339], [92.573, 24.339], [92.573, 24.216],
+              [92.450, 24.216], [92.450, 24.094], [92.327, 24.094], [92.327, 23.971],
+              [92.204, 23.971], [92.204, 23.849], [92.081, 23.849], [92.081, 23.726],
+              [91.958, 23.726], [91.958, 23.604], [91.835, 23.604], [91.835, 23.481],
+              [91.712, 23.481], [91.712, 23.359], [91.589, 23.359], [91.589, 23.236],
+              [91.466, 23.236], [91.466, 23.114], [91.343, 23.114], [91.343, 22.991],
+              [91.220, 22.991], [91.220, 22.869], [91.097, 22.869], [91.097, 22.746],
+              [90.974, 22.746], [90.974, 22.624], [90.851, 22.624], [90.851, 22.501],
+              [90.728, 22.501], [90.728, 22.379], [90.605, 22.379], [90.605, 22.256],
+              [90.482, 22.256], [90.482, 22.134], [90.359, 22.134], [90.359, 22.011],
+              [90.236, 22.011], [90.236, 21.889], [90.113, 21.889], [90.113, 21.766],
+              [89.990, 21.766], [89.990, 21.644], [89.867, 21.644], [89.867, 21.521],
+              [89.744, 21.521], [89.744, 25.008]
+            ]]
+          }
+        };
+
+        // Add boundary source and layer
+        populationHeatmap.addSource('meghalaya-boundary', {
+          type: 'geojson',
+          data: meghalayaBoundary
+        });
+
+        populationHeatmap.addLayer({
+          id: 'meghalaya-boundary-fill',
+          type: 'fill',
+          source: 'meghalaya-boundary',
+          paint: {
+            'fill-color': 'transparent',
+            'fill-opacity': 0
+          }
+        });
+
+        populationHeatmap.addLayer({
+          id: 'meghalaya-boundary-line',
+          type: 'line',
+          source: 'meghalaya-boundary',
+          paint: {
+            'line-color': '#000000',
+            'line-width': 2,
+            'line-opacity': 0.8
+          }
+        });
+
+        // Add population density heatmap source
+        populationHeatmap.addSource('population-density', {
+          type: 'geojson',
+          data: populationData
+        });
+
+        // Add heatmap layer with colors matching the sample image
+        populationHeatmap.addLayer({
+          id: 'population-heatmap',
+          type: 'heatmap',
+          source: 'population-density',
+          maxzoom: 15,
+          paint: {
+            'heatmap-weight': [
+              'interpolate',
+              ['linear'],
+              ['get', 'density'],
+              0, 0,
+              13.8, 1
+            ],
+            'heatmap-intensity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              6, 2,
+              15, 4
+            ],
+            // Color ramp matching the sample image: Blue (low) -> Cyan -> Green -> Yellow -> Orange -> Red (high)
+            'heatmap-color': [
+              'interpolate',
+              ['linear'],
+              ['heatmap-density'],
+              0, 'rgba(0,0,255,0)',        // Transparent
+              0.1, 'rgba(0,100,255,0.6)',  // Blue (5.1% equivalent)
+              0.2, 'rgba(0,200,255,0.7)',  // Light Blue
+              0.3, 'rgba(0,255,200,0.8)',  // Cyan
+              0.4, 'rgba(100,255,100,0.8)', // Light Green
+              0.5, 'rgba(200,255,0,0.9)',  // Yellow-Green
+              0.6, 'rgba(255,255,0,0.9)',  // Yellow
+              0.7, 'rgba(255,200,0,0.9)',  // Orange-Yellow
+              0.8, 'rgba(255,100,0,1.0)',  // Orange
+              0.9, 'rgba(255,50,0,1.0)',   // Red-Orange
+              1.0, 'rgba(255,0,0,1.0)'     // Red (13.8% equivalent)
+            ],
+            'heatmap-radius': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              6, 15,
+              15, 35
+            ],
+            'heatmap-opacity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              6, 0.9,
+              15, 0.7
+            ]
+          }
+        });
+
+        // Add click handlers for the map
+        populationHeatmap.on('click', (e) => {
+          // Find the nearest data point
+          const features = populationHeatmap.queryRenderedFeatures(e.point, {
+            layers: ['population-heatmap']
+          });
+          
+          if (features.length > 0) {
+            new mapboxgl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(`
+                <div class="p-3 bg-white text-gray-900 rounded-lg border border-gray-300 shadow-lg">
+                  <h3 class="font-semibold text-sm mb-2">Population Risk Analysis</h3>
+                  <p class="text-xs text-gray-700 mb-1">Location: ${e.lngLat.lat.toFixed(4)}, ${e.lngLat.lng.toFixed(4)}</p>
+                  <p class="text-xs text-gray-600">Click on specific areas for detailed density information</p>
+                </div>
+              `)
+              .addTo(populationHeatmap);
+          }
+        });
+      });
     }
 
-    // Initialize risk zone map when page loads
+    // Initialize population heatmap when page loads
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(initializeRiskZoneMap, 1000);
+      setTimeout(initializePopulationHeatmap, 1000);
     });
-
-
 
     // Coming soon notification
     function showComingSoon(feature) {
