@@ -42,7 +42,10 @@
     };
   </script>
   <link rel="stylesheet" href="./assets/css/styles.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
   <style>
     /* Dark Theme (Default) */
     body { 
@@ -262,13 +265,9 @@
       color: #000000;
     }
 
-    body.light .leaflet-popup-content-wrapper {
+    body.light .mapboxgl-popup-content {
       background: #ffffff;
       color: #000000;
-    }
-
-    body.light .leaflet-popup-tip {
-      background: #ffffff;
     }
     
     .input-field {
@@ -409,7 +408,7 @@
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
     
-    .leaflet-control-attribution { display: none; }
+    .mapboxgl-ctrl-attrib { display: none; }
     
     /* Enhanced Map Controls Styling */
     #mapControls, #mapLegend {
@@ -666,65 +665,43 @@
           <div class="flex-1">
             <!-- Filter Options -->
             <div class="metric-card mb-6">
-              <h3 class="font-semibold text-lg mb-4 text-white">Filter Options</h3>
-              <div class="flex flex-wrap gap-4">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold text-lg text-white">Emergency Services Filter</h3>
                 <div class="flex items-center gap-2">
-                  <label class="text-slate-400 text-sm font-medium">District:</label>
-                  <select id="filterDistrict" class="input-field">
-                    <option value="all">All Districts</option>
-                    <option>East Khasi Hills</option>
-                    <option>West Khasi Hills</option>
-                    <option>South West Khasi Hills</option>
-                    <option>Ri-Bhoi</option>
-                    <option>East Jaintia Hills</option>
-                    <option>West Jaintia Hills</option>
-                    <option>North Garo Hills</option>
-                    <option>East Garo Hills</option>
-                    <option>South Garo Hills</option>
-                    <option>South West Garo Hills</option>
-                    <option>West Garo Hills</option>
+                  <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span class="text-green-400 text-xs font-medium">Live Data</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3">
+                  <label class="text-slate-400 text-sm font-medium">Show:</label>
+                  <select id="placeFilter" class="input-field min-w-[160px]">
+                    <option value="all">🏥 All Services</option>
+                    <option value="police">🚔 Police Stations</option>
+                    <option value="hospital">🏥 Hospitals</option>
                   </select>
                 </div>
-                
-                <div class="flex items-center gap-2">
-                  <label class="text-slate-400 text-sm font-medium">Tourist Type:</label>
-                  <select id="filterType" class="input-field">
-                    <option value="all">All Types</option>
-                    <option value="domestic">Domestic</option>
-                    <option value="foreign">International</option>
-                  </select>
+                <div class="flex items-center gap-4 text-sm">
+                  <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-blue-500 rounded"></div>
+                    <span class="text-blue-400" id="policeCount">Loading...</span>
+                    <span class="text-slate-400">Police</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-red-500 rounded"></div>
+                    <span class="text-red-400" id="hospitalCount">Loading...</span>
+                    <span class="text-slate-400">Hospitals</span>
+                  </div>
                 </div>
-                
-                <div class="flex items-center gap-2">
-                  <label class="text-slate-400 text-sm font-medium">Risk Level:</label>
-                  <select id="filterRisk" class="input-field">
-                    <option value="all">All Levels</option>
-                    <option value="low">Low Risk</option>
-                    <option value="medium">Medium Risk</option>
-                    <option value="high">High Risk</option>
-                  </select>
-                </div>
-                
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input id="filterHighRisk" type="checkbox" class="w-4 h-4 text-red-600 bg-slate-700 border-slate-600 rounded focus:ring-red-500" /> 
-                  <span class="text-slate-400 text-sm font-medium">High-risk zones only</span>
-                </label>
-                
-                <button id="applyFilters" class="btn-primary text-sm">
-                  <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd"/>
-                  </svg>
-                  Apply Filters
-                </button>
               </div>
             </div>
 
-            <!-- Live Risk Map -->
+            <!-- Police Stations & Hospitals Map -->
             <div class="metric-card">
               <div class="flex items-center justify-between mb-6">
                 <div>
-                  <h3 class="font-semibold text-xl text-white">Live Risk Map</h3>
-                  <p class="text-white/60 text-sm">Real-time tourist locations and safety zones</p>
+                  <h3 class="font-semibold text-xl text-white">Police Stations & Hospitals</h3>
+                  <p class="text-white/60 text-sm">Emergency services across Meghalaya</p>
                 </div>
                 <div class="flex items-center gap-3">
                   <div class="flex items-center gap-2">
@@ -743,103 +720,41 @@
               <div class="relative rounded-2xl overflow-hidden border border-gray-700" style="height: 600px;">
                 <div id="map" class="w-full h-full"></div>
                 
-                <!-- Enhanced Map Legend -->
-                <div id="mapLegend" class="absolute right-6 bottom-6 bg-black/90 backdrop-blur-xl rounded-xl border border-gray-700 p-4 shadow-2xl min-w-[320px] max-h-[400px] overflow-y-auto">
+                <!-- Emergency Services Legend -->
+                <div id="mapLegend" class="absolute right-6 bottom-6 bg-black/90 backdrop-blur-xl rounded-xl border border-gray-700 p-4 shadow-2xl min-w-[280px]">
                   <div class="flex items-center justify-between mb-4">
-                    <h4 class="font-bold text-white text-lg">Map Legend</h4>
+                    <h4 class="font-bold text-white text-lg">Emergency Services</h4>
                     <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                   </div>
                   
-                  <!-- Alert Categories -->
+                  <!-- Service Types -->
                   <div class="mb-4">
-                    <h5 class="text-white/80 text-sm font-semibold mb-2">Alert Categories</h5>
+                    <h5 class="text-white/80 text-sm font-semibold mb-2">Service Types</h5>
                     <div class="space-y-2">
                       <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
-                        <div class="w-4 h-4 rounded-full bg-red-500 shadow-lg border border-white/20 animate-pulse"></div>
-                        <span class="text-white text-sm">Emergency Alert</span>
-                        <span class="text-red-400 text-xs bg-red-500/20 px-2 py-1 rounded ml-auto">CRITICAL</span>
-                      </div>
-                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
-                        <div class="w-4 h-4 rounded-full bg-orange-500 shadow-lg border border-white/20"></div>
-                        <span class="text-white text-sm">Weather Alert</span>
-                        <span class="text-orange-400 text-xs bg-orange-500/20 px-2 py-1 rounded ml-auto">HIGH</span>
-                      </div>
-                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
-                        <div class="w-4 h-4 rounded-full bg-yellow-500 shadow-lg border border-white/20"></div>
-                        <span class="text-white text-sm">Wildlife Alert</span>
-                        <span class="text-yellow-400 text-xs bg-yellow-500/20 px-2 py-1 rounded ml-auto">MEDIUM</span>
-                      </div>
-                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
-                        <div class="w-4 h-4 rounded-full bg-purple-500 shadow-lg border border-white/20"></div>
-                        <span class="text-white text-sm">Traffic Alert</span>
-                        <span class="text-purple-400 text-xs bg-purple-500/20 px-2 py-1 rounded ml-auto">INFO</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Risk Zones -->
-                  <div class="mb-4">
-                    <h5 class="text-white/80 text-sm font-semibold mb-2">Risk Zones</h5>
-                    <div class="space-y-2">
-                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
-                        <div class="w-4 h-4 rounded-full bg-green-500 shadow-lg border border-white/20"></div>
-                        <div class="flex-1">
-                          <span class="text-white text-sm">Low Risk</span>
-                          <div class="text-green-400 text-xs">0-2 incidents/month</div>
-                        </div>
-                      </div>
-                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
-                        <div class="w-4 h-4 rounded-full bg-yellow-500 shadow-lg border border-white/20"></div>
-                        <div class="flex-1">
-                          <span class="text-white text-sm">Medium Risk</span>
-                          <div class="text-yellow-400 text-xs">3-5 incidents/month</div>
-                        </div>
-                      </div>
-                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
-                        <div class="w-4 h-4 rounded-full bg-red-500 shadow-lg border border-white/20"></div>
-                        <div class="flex-1">
-                          <span class="text-white text-sm">High Risk</span>
-                          <div class="text-red-400 text-xs">6+ incidents/month</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Map Markers -->
-                  <div class="mb-4">
-                    <h5 class="text-white/80 text-sm font-semibold mb-2">Map Markers</h5>
-                    <div class="space-y-2">
-                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
-                        <div class="w-4 h-4 rounded-full bg-blue-500 shadow-lg border border-white/20 flex items-center justify-center">
-                          <div class="w-2 h-2 bg-white rounded-full"></div>
-                        </div>
-                        <span class="text-white text-sm">Tourist Groups</span>
-                        <span class="text-blue-400 text-xs bg-blue-500/20 px-2 py-1 rounded ml-auto">ACTIVE</span>
-                      </div>
-                      <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
-                        <div class="w-4 h-4 bg-red-600 rounded flex items-center justify-center">
+                        <div class="w-4 h-4 bg-blue-500 rounded flex items-center justify-center">
                           <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M8.257 3.099c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                            <path fill-rule="evenodd" d="M10 2L3 7v11a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V7l-7-5z" clip-rule="evenodd"/>
                           </svg>
                         </div>
-                        <span class="text-white text-sm">Emergency Points</span>
-                        <span class="text-red-400 text-xs bg-red-500/20 px-2 py-1 rounded ml-auto">URGENT</span>
+                        <span class="text-white text-sm">Police Stations</span>
+                        <span class="text-blue-400 text-xs bg-blue-500/20 px-2 py-1 rounded ml-auto">28</span>
                       </div>
                       <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5">
-                        <div class="w-4 h-4 bg-green-600 rounded flex items-center justify-center">
+                        <div class="w-4 h-4 bg-red-500 rounded flex items-center justify-center">
                           <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            <path d="M10 2L3 2a1 1 0 00-1 1v1.323l7.5 2.5 7.5-2.5V3a1 1 0 00-1-1h-7zM4 7.323V15a1 1 0 001 1h10a1 1 0 001-1V7.323l-7 2.334-7-2.334z"/>
                           </svg>
                         </div>
-                        <span class="text-white text-sm">Safe Checkpoints</span>
-                        <span class="text-green-400 text-xs bg-green-500/20 px-2 py-1 rounded ml-auto">SAFE</span>
+                        <span class="text-white text-sm">Hospitals</span>
+                        <span class="text-red-400 text-xs bg-red-500/20 px-2 py-1 rounded ml-auto">16</span>
                       </div>
                     </div>
                   </div>
 
                   <div class="pt-3 border-t border-white/10">
                     <div class="text-xs text-white/60 text-center">
-                      <span class="font-medium">Last Updated:</span> <span id="lastUpdateTime">Just now</span>
+                      <span class="font-medium">Coverage:</span> All 11 districts of Meghalaya
                     </div>
                   </div>
                 </div>
@@ -1146,8 +1061,8 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
 
   <!-- Firebase (optional) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -1161,7 +1076,7 @@
   <script src="./assets/js/api.js"></script>
   <script src="./assets/js/i18n.js"></script>
   <script src="./assets/js/auth.js"></script>
-  <script src="./assets/js/dashboard.js"></script>
+  <script src="./assets/js/map.js"></script>
   
   <script>
     // Apply saved theme
@@ -1172,299 +1087,8 @@
       I18N.apply();
     }
 
-    // Initialize Leaflet map focused on Meghalaya with enhanced legends and labels
-    let map;
-    let markers = [];
-    let markerClusterGroup;
-    let riskZoneLayers = {};
-    let currentTheme = 'dark';
+    // Mapbox map is now initialized in map.js
     
-    function initializeMap() {
-      if (map) return;
-      
-      // Initialize map
-      map = L.map('map', {
-        center: [25.4670, 91.3662], // Shillong, Meghalaya
-        zoom: 8,
-        zoomControl: false,
-        attributionControl: false,
-        maxBounds: [[24.5, 89.5], [26.5, 93.5]], // Restrict to Meghalaya region
-        maxBoundsViscosity: 1.0
-      });
-
-      // Add custom zoom control
-      L.control.zoom({
-        position: 'bottomright'
-      }).addTo(map);
-
-      // Initialize marker cluster group
-      markerClusterGroup = L.markerClusterGroup({
-        chunkedLoading: true,
-        spiderfyOnMaxZoom: true,
-        showCoverageOnHover: false,
-        zoomToBoundsOnClick: true,
-        maxClusterRadius: 50
-      });
-
-      // Add tile layer based on theme
-      updateMapTheme();
-
-      // Comprehensive Meghalaya tourist locations with enhanced data
-      const meghalayaLocations = [
-        // East Khasi Hills - Major Tourist Destinations
-        { lat: 25.5788, lng: 91.8933, name: "Cherrapunji Falls", risk: "medium", count: 24, district: "East Khasi Hills", type: "domestic", lastUpdate: "1 min ago" },
-        { lat: 25.4670, lng: 91.3662, name: "Shillong City Center", risk: "low", count: 67, district: "East Khasi Hills", type: "foreign", lastUpdate: "30 sec ago" },
-        { lat: 25.4625, lng: 91.3958, name: "Ward's Lake", risk: "low", count: 32, district: "East Khasi Hills", type: "domestic", lastUpdate: "2 min ago" },
-        { lat: 25.5744, lng: 91.8878, name: "Nohkalikai Falls", risk: "high", count: 18, district: "East Khasi Hills", type: "foreign", lastUpdate: "45 sec ago" },
-        { lat: 25.4500, lng: 91.3700, name: "Elephant Falls", risk: "medium", count: 28, district: "East Khasi Hills", type: "domestic", lastUpdate: "3 min ago" },
-        { lat: 25.4400, lng: 91.3800, name: "Shillong Peak", risk: "low", count: 41, district: "East Khasi Hills", type: "foreign", lastUpdate: "2 min ago" },
-        { lat: 25.4300, lng: 91.3900, name: "Don Bosco Museum", risk: "low", count: 29, district: "East Khasi Hills", type: "domestic", lastUpdate: "4 min ago" },
-        { lat: 25.5600, lng: 91.8700, name: "Seven Sisters Falls", risk: "medium", count: 21, district: "East Khasi Hills", type: "foreign", lastUpdate: "3 min ago" },
-        { lat: 25.5500, lng: 91.8600, name: "Mawsmai Cave", risk: "medium", count: 16, district: "East Khasi Hills", type: "domestic", lastUpdate: "5 min ago" },
-        
-        // West Khasi Hills
-        { lat: 25.5167, lng: 91.1333, name: "Nongstoin Market", risk: "low", count: 15, district: "West Khasi Hills", type: "domestic", lastUpdate: "4 min ago" },
-        { lat: 25.4800, lng: 91.0500, name: "Langshiang Falls", risk: "medium", count: 12, district: "West Khasi Hills", type: "foreign", lastUpdate: "6 min ago" },
-        { lat: 25.5000, lng: 91.1200, name: "Weinia Falls", risk: "low", count: 9, district: "West Khasi Hills", type: "domestic", lastUpdate: "8 min ago" },
-        { lat: 25.4900, lng: 91.1100, name: "Nongkhnum Island", risk: "low", count: 14, district: "West Khasi Hills", type: "foreign", lastUpdate: "7 min ago" },
-        
-        // West Jaintia Hills
-        { lat: 25.4522, lng: 92.2058, name: "Jowai Town", risk: "medium", count: 22, district: "West Jaintia Hills", type: "foreign", lastUpdate: "2 min ago" },
-        { lat: 25.4200, lng: 92.1800, name: "Krang Suri Falls", risk: "high", count: 16, district: "West Jaintia Hills", type: "domestic", lastUpdate: "1 min ago" },
-        { lat: 25.4100, lng: 92.1900, name: "Tyrshi Falls", risk: "medium", count: 11, district: "West Jaintia Hills", type: "foreign", lastUpdate: "4 min ago" },
-        { lat: 25.4300, lng: 92.2200, name: "Thadlaskein Lake", risk: "low", count: 18, district: "West Jaintia Hills", type: "domestic", lastUpdate: "6 min ago" },
-        
-        // East Jaintia Hills
-        { lat: 25.4800, lng: 92.3500, name: "Khliehriat", risk: "low", count: 9, district: "East Jaintia Hills", type: "domestic", lastUpdate: "8 min ago" },
-        { lat: 25.4600, lng: 92.3300, name: "Ialong Park", risk: "low", count: 7, district: "East Jaintia Hills", type: "foreign", lastUpdate: "10 min ago" },
-        { lat: 25.4700, lng: 92.3400, name: "Syntu Ksiar", risk: "medium", count: 5, district: "East Jaintia Hills", type: "domestic", lastUpdate: "12 min ago" },
-        
-        // West Garo Hills
-        { lat: 25.5900, lng: 90.2167, name: "Tura Hill Station", risk: "high", count: 11, district: "West Garo Hills", type: "domestic", lastUpdate: "1 min ago" },
-        { lat: 25.5200, lng: 90.1500, name: "Nokrek National Park", risk: "medium", count: 8, district: "West Garo Hills", type: "foreign", lastUpdate: "12 min ago" },
-        { lat: 25.5800, lng: 90.2000, name: "Tura Peak", risk: "medium", count: 6, district: "West Garo Hills", type: "domestic", lastUpdate: "15 min ago" },
-        { lat: 25.5700, lng: 90.1900, name: "Pelga Falls", risk: "low", count: 4, district: "West Garo Hills", type: "foreign", lastUpdate: "18 min ago" },
-        
-        // East Garo Hills
-        { lat: 25.4167, lng: 90.6333, name: "Williamnagar", risk: "low", count: 19, district: "East Garo Hills", type: "foreign", lastUpdate: "3 min ago" },
-        { lat: 25.3800, lng: 90.7200, name: "Simsang River", risk: "medium", count: 14, district: "East Garo Hills", type: "domestic", lastUpdate: "5 min ago" },
-        { lat: 25.4000, lng: 90.6500, name: "Dikge Valley", risk: "low", count: 8, district: "East Garo Hills", type: "foreign", lastUpdate: "9 min ago" },
-        { lat: 25.3900, lng: 90.6800, name: "Siju Cave", risk: "medium", count: 12, district: "East Garo Hills", type: "domestic", lastUpdate: "7 min ago" },
-        
-        // South Garo Hills
-        { lat: 25.2500, lng: 90.4700, name: "Baghmara", risk: "low", count: 7, district: "South Garo Hills", type: "domestic", lastUpdate: "15 min ago" },
-        { lat: 25.2300, lng: 90.4500, name: "Balpakram National Park", risk: "medium", count: 5, district: "South Garo Hills", type: "foreign", lastUpdate: "20 min ago" },
-        { lat: 25.2400, lng: 90.4600, name: "Baghmara Reserve Forest", risk: "low", count: 3, district: "South Garo Hills", type: "domestic", lastUpdate: "25 min ago" },
-        
-        // North Garo Hills
-        { lat: 25.8000, lng: 90.5000, name: "Resubelpara", risk: "medium", count: 6, district: "North Garo Hills", type: "domestic", lastUpdate: "18 min ago" },
-        { lat: 25.8200, lng: 90.5200, name: "Mendipathar", risk: "low", count: 4, district: "North Garo Hills", type: "foreign", lastUpdate: "22 min ago" },
-        
-        // Ri-Bhoi
-        { lat: 25.8167, lng: 91.7667, name: "Nongpoh Junction", risk: "medium", count: 13, district: "Ri-Bhoi", type: "domestic", lastUpdate: "2 min ago" },
-        { lat: 25.7500, lng: 91.8000, name: "Umiam Lake", risk: "low", count: 35, district: "Ri-Bhoi", type: "foreign", lastUpdate: "1 min ago" },
-        { lat: 25.7800, lng: 91.7800, name: "Lum Nehru Park", risk: "low", count: 17, district: "Ri-Bhoi", type: "domestic", lastUpdate: "4 min ago" },
-        { lat: 25.7600, lng: 91.7900, name: "Umiam Orchid Lake Resort", risk: "low", count: 23, district: "Ri-Bhoi", type: "foreign", lastUpdate: "3 min ago" },
-        
-        // South West Khasi Hills
-        { lat: 25.3000, lng: 91.2000, name: "Mawkyrwat", risk: "low", count: 8, district: "South West Khasi Hills", type: "domestic", lastUpdate: "10 min ago" },
-        { lat: 25.2800, lng: 91.1800, name: "Ranikor", risk: "low", count: 6, district: "South West Khasi Hills", type: "foreign", lastUpdate: "14 min ago" },
-        { lat: 25.2900, lng: 91.1900, name: "Mawlynnong Village", risk: "low", count: 26, district: "South West Khasi Hills", type: "foreign", lastUpdate: "2 min ago" },
-        
-        // South West Garo Hills
-        { lat: 25.1500, lng: 90.2500, name: "Ampati", risk: "low", count: 5, district: "South West Garo Hills", type: "domestic", lastUpdate: "22 min ago" },
-        { lat: 25.1300, lng: 90.2300, name: "Mahendraganj", risk: "low", count: 3, district: "South West Garo Hills", type: "foreign", lastUpdate: "28 min ago" },
-        
-        // Border Areas - Special Monitoring
-        { lat: 25.2200, lng: 92.0000, name: "Dawki Border", risk: "high", count: 12, district: "West Jaintia Hills", type: "foreign", lastUpdate: "3 min ago" },
-        { lat: 25.4000, lng: 92.3800, name: "Tamabil Border", risk: "medium", count: 8, district: "East Jaintia Hills", type: "foreign", lastUpdate: "7 min ago" },
-        
-        // Additional Popular Tourist Spots
-        { lat: 25.4800, lng: 91.3500, name: "Golf Course Shillong", risk: "low", count: 19, district: "East Khasi Hills", type: "domestic", lastUpdate: "5 min ago" },
-        { lat: 25.4750, lng: 91.3550, name: "Lady Hydari Park", risk: "low", count: 22, district: "East Khasi Hills", type: "foreign", lastUpdate: "4 min ago" },
-        { lat: 25.4850, lng: 91.3450, name: "All Saints Cathedral", risk: "low", count: 15, district: "East Khasi Hills", type: "domestic", lastUpdate: "6 min ago" },
-        { lat: 25.4900, lng: 91.3600, name: "Police Bazar", risk: "medium", count: 38, district: "East Khasi Hills", type: "foreign", lastUpdate: "2 min ago" },
-        { lat: 25.5900, lng: 91.8800, name: "Eco Park Cherrapunji", risk: "low", count: 13, district: "East Khasi Hills", type: "domestic", lastUpdate: "8 min ago" }
-      ];
-
-      // Create enhanced markers with proper labels and popups
-      meghalayaLocations.forEach((location, index) => {
-        const color = location.risk === 'high' ? '#dc2626' : 
-                     location.risk === 'medium' ? '#f59e0b' : '#22c55e';
-        
-        // Create risk zone circle
-        const riskZone = L.circle([location.lat, location.lng], {
-          radius: 3000 + (location.count * 100), // Radius based on tourist count
-          color: color,
-          fillColor: color,
-          fillOpacity: 0.2,
-          weight: 2,
-          opacity: 0.8
-        });
-
-        // Create custom marker icon
-        const markerIcon = L.divIcon({
-          className: 'custom-marker',
-          html: `
-            <div class="marker-container" style="background: ${color}; border: 2px solid #ffffff; border-radius: 50%; width: ${20 + (location.count / 3)}px; height: ${20 + (location.count / 3)}px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
-              <span style="color: white; font-weight: bold; font-size: 10px;">${location.count}</span>
-            </div>
-          `,
-          iconSize: [20 + (location.count / 3), 20 + (location.count / 3)],
-          iconAnchor: [10 + (location.count / 6), 10 + (location.count / 6)]
-        });
-
-        // Create marker
-        const marker = L.marker([location.lat, location.lng], { icon: markerIcon });
-
-        // Enhanced popup with detailed information
-        const popupContent = `
-          <div class="custom-popup" style="background: ${currentTheme === 'dark' ? '#1a1a1a' : '#ffffff'}; color: ${currentTheme === 'dark' ? '#ffffff' : '#000000'}; padding: 15px; border-radius: 8px; min-width: 250px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-            <div style="border-bottom: 1px solid ${currentTheme === 'dark' ? '#333' : '#eee'}; padding-bottom: 10px; margin-bottom: 10px;">
-              <h3 style="margin: 0; font-size: 16px; font-weight: bold; color: ${color};">${location.name}</h3>
-              <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.7;">District: ${location.district}</p>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-              <div>
-                <p style="margin: 0; font-size: 11px; opacity: 0.7;">Active Tourists</p>
-                <p style="margin: 2px 0 0 0; font-size: 18px; font-weight: bold;">${location.count}</p>
-              </div>
-              <div>
-                <p style="margin: 0; font-size: 11px; opacity: 0.7;">Risk Level</p>
-                <p style="margin: 2px 0 0 0; font-size: 14px; font-weight: bold; color: ${color};">${location.risk.toUpperCase()}</p>
-              </div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-              <div>
-                <p style="margin: 0; font-size: 11px; opacity: 0.7;">Tourist Type</p>
-                <p style="margin: 2px 0 0 0; font-size: 12px; text-transform: capitalize;">${location.type}</p>
-              </div>
-              <div>
-                <p style="margin: 0; font-size: 11px; opacity: 0.7;">Last Update</p>
-                <p style="margin: 2px 0 0 0; font-size: 12px;">${location.lastUpdate}</p>
-              </div>
-            </div>
-            <div style="border-top: 1px solid ${currentTheme === 'dark' ? '#333' : '#eee'}; padding-top: 10px;">
-              <button onclick="viewDetails('${location.name}')" style="background: ${color}; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-right: 8px;">View Details</button>
-              <button onclick="trackLocation('${location.name}')" style="background: transparent; color: ${color}; border: 1px solid ${color}; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">Track</button>
-            </div>
-          </div>
-        `;
-
-        marker.bindPopup(popupContent, {
-          maxWidth: 300,
-          className: 'custom-popup-container'
-        });
-
-        riskZone.bindPopup(popupContent, {
-          maxWidth: 300,
-          className: 'custom-popup-container'
-        });
-
-        // Store markers and layers for filtering
-        markers.push({
-          marker: marker,
-          riskZone: riskZone,
-          data: location
-        });
-
-        // Add to cluster group
-        markerClusterGroup.addLayer(marker);
-        
-        // Store risk zone layers
-        riskZoneLayers[`zone-${index}`] = riskZone;
-      });
-
-      // Add marker cluster to map
-      map.addLayer(markerClusterGroup);
-
-      // Add all risk zones to map initially
-      Object.values(riskZoneLayers).forEach(layer => {
-        map.addLayer(layer);
-      });
-
-      // Add Meghalaya state boundary with enhanced styling
-      const meghalayaBoundary = [
-        [25.0, 89.8], [25.0, 92.8], [26.0, 92.8], [26.0, 89.8], [25.0, 89.8]
-      ];
-      
-      const boundaryLayer = L.polygon(meghalayaBoundary, {
-        color: '#dc2626',
-        weight: 3,
-        opacity: 0.8,
-        fillOpacity: 0.1,
-        fillColor: '#dc2626',
-        dashArray: '10, 5'
-      }).addTo(map);
-
-      // Add boundary label
-      const boundaryCenter = [25.5, 91.4];
-      const boundaryLabel = L.marker(boundaryCenter, {
-        icon: L.divIcon({
-          className: 'boundary-label',
-          html: '<div style="background: rgba(220, 38, 38, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; white-space: nowrap;">MEGHALAYA STATE</div>',
-          iconSize: [120, 20],
-          iconAnchor: [60, 10]
-        })
-      }).addTo(map);
-
-      // Add district labels
-      const districtLabels = [
-        { name: "East Khasi Hills", lat: 25.5, lng: 91.7 },
-        { name: "West Khasi Hills", lat: 25.5, lng: 91.1 },
-        { name: "West Jaintia Hills", lat: 25.4, lng: 92.2 },
-        { name: "West Garo Hills", lat: 25.6, lng: 90.2 },
-        { name: "East Garo Hills", lat: 25.4, lng: 90.6 },
-        { name: "Ri-Bhoi", lat: 25.8, lng: 91.7 }
-      ];
-
-      districtLabels.forEach(district => {
-        L.marker([district.lat, district.lng], {
-          icon: L.divIcon({
-            className: 'district-label',
-            html: `<div style="background: rgba(0, 0, 0, 0.7); color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; white-space: nowrap; border: 1px solid #333;">${district.name}</div>`,
-            iconSize: [100, 16],
-            iconAnchor: [50, 8]
-          })
-        }).addTo(map);
-      });
-    }
-
-    // Function to update map theme
-    function updateMapTheme() {
-      if (!map) return;
-      
-      // Remove existing tile layers
-      map.eachLayer(function(layer) {
-        if (layer._url) {
-          map.removeLayer(layer);
-        }
-      });
-      
-      // Add appropriate tile layer based on theme
-      const tileUrl = currentTheme === 'light' ? 
-        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png' :
-        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-        
-      L.tileLayer(tileUrl, {
-        attribution: '© OpenStreetMap contributors © CARTO',
-        subdomains: 'abcd',
-        maxZoom: 19,
-        minZoom: 7
-      }).addTo(map);
-    }
-
-    // Helper functions for popup buttons
-    function viewDetails(locationName) {
-      alert(`Viewing details for ${locationName}`);
-      // Here you would typically open a detailed view or modal
-    }
-
-    function trackLocation(locationName) {
-      alert(`Tracking location: ${locationName}`);
-      // Here you would typically start real-time tracking
-    }
-
     // Update last update time
     function updateLastUpdateTime() {
       const now = new Date();
@@ -1475,268 +1099,26 @@
       }
     }
 
-    // Layer control variables
-    let baseLayers = {};
-    let overlayLayers = {};
-    let heatmapLayer = null;
-    let weatherLayer = null;
-    let trafficLayer = null;
-    let emergencyLayer = null;
+    // Initialize update timer
+    setInterval(updateLastUpdateTime, 30000); // Update every 30 seconds
+    updateLastUpdateTime(); // Initial update
 
-    // Initialize layer controls
-    function initializeLayerControls() {
-      // Base map layers
-      baseLayers.street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 19
-      });
-
-      baseLayers.satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: '© Esri',
-        maxZoom: 19
-      });
-
-      baseLayers.terrain = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenTopoMap contributors',
-        maxZoom: 17
-      });
-
-      // Initialize with street map
-      baseLayers.street.addTo(map);
-
-      // Create overlay layers
-      createOverlayLayers();
-
-      // Add event listeners for layer controls
-      setupLayerControlEvents();
-    }
-
-    // Create overlay layers
-    function createOverlayLayers() {
-      // Heatmap layer (simulated)
-      const heatmapData = meghalayaLocations.map(loc => [loc.lat, loc.lng, loc.count / 10]);
-      
-      // Weather layer (simulated weather alerts)
-      weatherLayer = L.layerGroup();
-      const weatherAlerts = [
-        { lat: 25.5788, lng: 91.8933, type: 'Heavy Rain', severity: 'high' },
-        { lat: 25.4670, lng: 91.3662, type: 'Fog', severity: 'medium' },
-        { lat: 25.7500, lng: 91.8000, type: 'Clear', severity: 'low' }
-      ];
-
-      weatherAlerts.forEach(alert => {
-        const color = alert.severity === 'high' ? '#dc2626' : alert.severity === 'medium' ? '#f59e0b' : '#10b981';
-        const weatherMarker = L.circleMarker([alert.lat, alert.lng], {
-          radius: 15,
-          fillColor: color,
-          color: color,
-          weight: 2,
-          opacity: 0.8,
-          fillOpacity: 0.3
-        }).bindPopup(`<strong>Weather Alert</strong><br>${alert.type}<br>Severity: ${alert.severity}`);
-        
-        weatherLayer.addLayer(weatherMarker);
-      });
-
-      // Traffic layer (simulated)
-      trafficLayer = L.layerGroup();
-      const trafficData = [
-        { lat: 25.4670, lng: 91.3662, density: 'high', color: '#dc2626' },
-        { lat: 25.7500, lng: 91.8000, density: 'medium', color: '#f59e0b' },
-        { lat: 25.5788, lng: 91.8933, density: 'low', color: '#10b981' }
-      ];
-
-      trafficData.forEach(traffic => {
-        const trafficMarker = L.circleMarker([traffic.lat, traffic.lng], {
-          radius: 20,
-          fillColor: traffic.color,
-          color: traffic.color,
-          weight: 3,
-          opacity: 0.6,
-          fillOpacity: 0.2
-        }).bindPopup(`<strong>Traffic Density</strong><br>Level: ${traffic.density}`);
-        
-        trafficLayer.addLayer(trafficMarker);
-      });
-
-      // Emergency layer
-      emergencyLayer = L.layerGroup();
-      const emergencyPoints = [
-        { lat: 25.5788, lng: 91.8933, type: 'Medical Emergency', priority: 'critical' },
-        { lat: 25.4200, lng: 92.1800, type: 'Missing Tourist', priority: 'high' }
-      ];
-
-      emergencyPoints.forEach(emergency => {
-        const emergencyIcon = L.divIcon({
-          className: 'emergency-marker',
-          html: `<div style="background: #dc2626; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; animation: pulse 2s infinite;">${emergency.type}</div>`,
-          iconSize: [100, 20],
-          iconAnchor: [50, 10]
-        });
-        
-        const emergencyMarker = L.marker([emergency.lat, emergency.lng], { icon: emergencyIcon })
-          .bindPopup(`<strong>Emergency Alert</strong><br>${emergency.type}<br>Priority: ${emergency.priority}`);
-        
-        emergencyLayer.addLayer(emergencyMarker);
-      });
-    }
-
-    // Setup layer control event listeners
-    function setupLayerControlEvents() {
-      // Base map controls
-      document.getElementById('baseMapStreet').addEventListener('change', function() {
-        if (this.checked) {
-          map.eachLayer(layer => {
-            if (layer === baseLayers.satellite || layer === baseLayers.terrain) {
-              map.removeLayer(layer);
-            }
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
           });
-          baseLayers.street.addTo(map);
-          updateLayerStatus('baseMapStreet', true);
         }
       });
-
-      document.getElementById('baseMapSatellite').addEventListener('change', function() {
-        if (this.checked) {
-          map.eachLayer(layer => {
-            if (layer === baseLayers.street || layer === baseLayers.terrain) {
-              map.removeLayer(layer);
-            }
-          });
-          baseLayers.satellite.addTo(map);
-          updateLayerStatus('baseMapSatellite', true);
-        }
-      });
-
-      document.getElementById('baseMapTerrain').addEventListener('change', function() {
-        if (this.checked) {
-          map.eachLayer(layer => {
-            if (layer === baseLayers.street || layer === baseLayers.satellite) {
-              map.removeLayer(layer);
-            }
-          });
-          baseLayers.terrain.addTo(map);
-          updateLayerStatus('baseMapTerrain', true);
-        }
-      });
-
-      // Overlay controls
-      document.getElementById('layerTourists').addEventListener('change', function() {
-        if (this.checked) {
-          map.addLayer(markerClusterGroup);
-        } else {
-          map.removeLayer(markerClusterGroup);
-        }
-        updateLayerStatus('layerTourists', this.checked);
-      });
-
-      document.getElementById('layerRiskZones').addEventListener('change', function() {
-        Object.values(riskZoneLayers).forEach(layer => {
-          if (this.checked) {
-            map.addLayer(layer);
-          } else {
-            map.removeLayer(layer);
-          }
-        });
-        updateLayerStatus('layerRiskZones', this.checked);
-      });
-
-      document.getElementById('layerHeatmap').addEventListener('change', function() {
-        if (this.checked && heatmapLayer) {
-          map.addLayer(heatmapLayer);
-        } else if (heatmapLayer) {
-          map.removeLayer(heatmapLayer);
-        }
-        updateLayerStatus('layerHeatmap', this.checked);
-      });
-
-      document.getElementById('layerWeather').addEventListener('change', function() {
-        if (this.checked) {
-          map.addLayer(weatherLayer);
-        } else {
-          map.removeLayer(weatherLayer);
-        }
-        updateLayerStatus('layerWeather', this.checked);
-      });
-
-      document.getElementById('layerTraffic').addEventListener('change', function() {
-        if (this.checked) {
-          map.addLayer(trafficLayer);
-        } else {
-          map.removeLayer(trafficLayer);
-        }
-        updateLayerStatus('layerTraffic', this.checked);
-      });
-
-      document.getElementById('layerEmergency').addEventListener('change', function() {
-        if (this.checked) {
-          map.addLayer(emergencyLayer);
-        } else {
-          map.removeLayer(emergencyLayer);
-        }
-        updateLayerStatus('layerEmergency', this.checked);
-      });
-
-      // Control buttons
-      document.getElementById('refreshAllLayers').addEventListener('click', function() {
-        // Refresh all layers
-        createOverlayLayers();
-        updateLastUpdateTime();
-        
-        // Show feedback
-        this.innerHTML = '<svg class="w-3 h-3 mr-2 inline animate-spin" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1z" clip-rule="evenodd"/></svg>Refreshing...';
-        
-        setTimeout(() => {
-          this.innerHTML = '<svg class="w-3 h-3 mr-2 inline" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1z" clip-rule="evenodd"/></svg>Refresh All Layers';
-        }, 2000);
-      });
-
-      document.getElementById('resetView').addEventListener('click', function() {
-        map.setView([25.4670, 91.3662], 8);
-      });
-    }
-
-    // Update layer status indicators
-    function updateLayerStatus(layerId, isActive) {
-      const label = document.querySelector(`label[for="${layerId}"] span:last-child`);
-      if (label) {
-        if (isActive) {
-          label.textContent = layerId.includes('baseMap') ? 'ACTIVE' : 'ON';
-          label.className = layerId.includes('baseMap') ? 'text-green-400 text-xs font-bold' : 'text-blue-400 text-xs font-bold bg-blue-500/20 px-2 py-1 rounded';
-        } else {
-          label.textContent = 'OFF';
-          label.className = 'text-gray-400 text-xs font-bold';
-        }
-      }
-    }
-
-    // Initialize map when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-      // Check user authentication
-      const user = localStorage.getItem('user');
-      const language = localStorage.getItem('language');
-      
-      if (!user) {
-        // Redirect to login if no user session
-        window.location.href = './login.html';
-        return;
-      }
-      
-      if (!language) {
-        // Redirect to language selection if no language preference
-        window.location.href = './language.html';
-        return;
-      }
-      
-      // Display user info
-      try {
-        const userData = JSON.parse(user);
-        const languageData = JSON.parse(language);
-        
-        // Update user info in header
-        const userNameElement = document.getElementById('userName');
-        const userLanguageElement = document.getElementById('userLanguage');
-        const userInfoElement = document.getElementById('userInfo');
+    });
+  </script>
+</body>
+</html>
         
         if (userNameElement && userLanguageElement && userInfoElement) {
           userNameElement.textContent = userData.username || 'User';
@@ -2085,5 +1467,8 @@
       });
     });
   </script>
+
+  <!-- Map Module -->
+  <script src="./assets/js/map.js"></script>
 </body>
 </html>
