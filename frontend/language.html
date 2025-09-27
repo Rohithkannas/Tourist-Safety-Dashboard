@@ -74,8 +74,14 @@
       border-radius: 12px;
       padding: 2rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-      max-width: 500px;
+      max-width: 700px;
       width: 100%;
+    }
+
+    .language-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
     }
 
     .language-option {
@@ -203,7 +209,7 @@
         </p>
       </div>
 
-      <div id="languageOptions">
+      <div id="languageOptions" class="language-grid">
         <div class="language-option" data-lang="en" data-name="English">
           <div style="display: flex; align-items: center;">
             <span class="language-flag">🇺🇸</span>
@@ -223,6 +229,110 @@
             <div>
               <div class="language-name">Hindi</div>
               <div class="language-native">हिन्दी</div>
+            </div>
+          </div>
+          <div style="width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 10px; height: 10px; background: #dc2626; border-radius: 50%; display: none;" class="selected-indicator"></div>
+          </div>
+        </div>
+
+        <div class="language-option" data-lang="fr" data-name="French">
+          <div style="display: flex; align-items: center;">
+            <span class="language-flag">🇫🇷</span>
+            <div>
+              <div class="language-name">French</div>
+              <div class="language-native">Français</div>
+            </div>
+          </div>
+          <div style="width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 10px; height: 10px; background: #dc2626; border-radius: 50%; display: none;" class="selected-indicator"></div>
+          </div>
+        </div>
+
+        <div class="language-option" data-lang="de" data-name="German">
+          <div style="display: flex; align-items: center;">
+            <span class="language-flag">🇩🇪</span>
+            <div>
+              <div class="language-name">German</div>
+              <div class="language-native">Deutsch</div>
+            </div>
+          </div>
+          <div style="width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 10px; height: 10px; background: #dc2626; border-radius: 50%; display: none;" class="selected-indicator"></div>
+          </div>
+        </div>
+
+        <div class="language-option" data-lang="as" data-name="Assamese">
+          <div style="display: flex; align-items: center;">
+            <span class="language-flag">🇮🇳</span>
+            <div>
+              <div class="language-name">Assamese</div>
+              <div class="language-native">অসমীয়া</div>
+            </div>
+          </div>
+          <div style="width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 10px; height: 10px; background: #dc2626; border-radius: 50%; display: none;" class="selected-indicator"></div>
+          </div>
+        </div>
+
+        <div class="language-option" data-lang="zh" data-name="Mandarin Chinese">
+          <div style="display: flex; align-items: center;">
+            <span class="language-flag">🇨🇳</span>
+            <div>
+              <div class="language-name">Mandarin Chinese</div>
+              <div class="language-native">中文</div>
+            </div>
+          </div>
+          <div style="width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 10px; height: 10px; background: #dc2626; border-radius: 50%; display: none;" class="selected-indicator"></div>
+          </div>
+        </div>
+
+        <div class="language-option" data-lang="ne" data-name="Nepali">
+          <div style="display: flex; align-items: center;">
+            <span class="language-flag">🇳🇵</span>
+            <div>
+              <div class="language-name">Nepali</div>
+              <div class="language-native">नेपाली</div>
+            </div>
+          </div>
+          <div style="width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 10px; height: 10px; background: #dc2626; border-radius: 50%; display: none;" class="selected-indicator"></div>
+          </div>
+        </div>
+
+        <div class="language-option" data-lang="bn" data-name="Bengali">
+          <div style="display: flex; align-items: center;">
+            <span class="language-flag">🇮🇳</span>
+            <div>
+              <div class="language-name">Bengali</div>
+              <div class="language-native">বাংলা</div>
+            </div>
+          </div>
+          <div style="width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 10px; height: 10px; background: #dc2626; border-radius: 50%; display: none;" class="selected-indicator"></div>
+          </div>
+        </div>
+
+        <div class="language-option" data-lang="bn-bd" data-name="Bangla">
+          <div style="display: flex; align-items: center;">
+            <span class="language-flag">🇧🇩</span>
+            <div>
+              <div class="language-name">Bangla</div>
+              <div class="language-native">বাংলা (Bangla)</div>
+            </div>
+          </div>
+          <div style="width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 10px; height: 10px; background: #dc2626; border-radius: 50%; display: none;" class="selected-indicator"></div>
+          </div>
+        </div>
+
+        <div class="language-option" data-lang="mni" data-name="Meitei">
+          <div style="display: flex; align-items: center;">
+            <span class="language-flag">🇮🇳</span>
+            <div>
+              <div class="language-name">Meitei</div>
+              <div class="language-native">ꯃꯩꯇꯩ ꯂꯣꯟ</div>
             </div>
           </div>
           <div style="width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
