@@ -943,6 +943,7 @@
   <script src="./assets/js/api.js"></script>
   <script src="./assets/js/i18n.js"></script>
   <script src="./assets/js/auth.js"></script>
+  <script src="./assets/js/firestore-api.js"></script>
   <script src="./assets/js/map.js"></script>
   <script>
     (function () {
@@ -965,7 +966,263 @@
           }
         });
       }
+
+      // Tourist Search Functionality
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('keypress', async (e) => {
+          if (e.key === 'Enter') {
+            await searchAndLocateTourist();
+          }
+        });
+      }
     })();
+
+    // Search and locate tourist on map
+    async function searchAndLocateTourist() {
+      const searchInput = document.getElementById('searchInput');
+      const searchValue = searchInput.value.trim().toUpperCase();
+      
+      if (!searchValue) {
+        showNotification('Please enter a Tourist ID', 'error');
+        return;
+      }
+      
+      try {
+        showNotification('Searching for tourist...', 'info');
+        
+        // Fetch tourist from Firestore
+        const tourist = await FirestoreAPI.fetchTouristById(searchValue);
+        
+        if (tourist && tourist.location) {
+          // Locate tourist on map
+          locateTouristOnMap(tourist);
+          
+          // Show success notification
+          showNotification(`Found ${tourist.name} - Locating on map...`, 'success');
+          
+          // Clear search input
+          searchInput.value = '';
+        } else {
+          showNotification(`Tourist ${searchValue} not found`, 'error');
+        }
+      } catch (error) {
+        console.error('Error searching tourist:', error);
+        showNotification(`Tourist ${searchValue} not found in database`, 'error');
+      }
+    }
+
+    // Locate tourist on map
+    function locateTouristOnMap(tourist) {
+      // Get map instance from window (set by map.js)
+      const map = window.dashboardMap;
+      
+      if (!map) {
+        console.error('Map not initialized');
+        showNotification('Map not ready. Please wait...', 'error');
+        return;
+      }
+      
+      const { lat, lng } = tourist.location;
+      
+      // Remove existing tourist marker if any
+      if (window.touristMarker) {
+        window.touristMarker.remove();
+      }
+      
+      // Create custom marker element
+      const el = document.createElement('div');
+      el.className = 'tourist-marker';
+      el.style.cssText = `
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        border: 3px solid white;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.6);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse 2s infinite;
+      `;
+      el.innerHTML = `
+        <svg style="width: 24px; height: 24px; color: white;" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+        </svg>
+      `;
+      
+      // Create popup content
+      const popupContent = `
+        <div style="padding: 12px; min-width: 250px;">
+          <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #dc2626;">${tourist.name}</h3>
+          <div style="space-y: 6px; font-size: 14px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: #666;">Tourist ID:</span>
+              <span style="font-weight: 600;">${tourist.id}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: #666;">Status:</span>
+              <span style="font-weight: 600; color: ${tourist.status === 'active' ? '#10b981' : '#f59e0b'};">${tourist.status.toUpperCase()}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: #666;">Location:</span>
+              <span style="font-weight: 600;">${tourist.location.placeName || tourist.location.district}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: #666;">Phone:</span>
+              <span style="font-weight: 600;">${tourist.phone}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: #666;">Nationality:</span>
+              <span style="font-weight: 600;">${tourist.nationality}</span>
+            </div>
+          </div>
+          <div style="margin-top: 12px; display: flex; gap: 8px;">
+            <button onclick="callTourist('${tourist.phone}')" style="flex: 1; padding: 8px; background: #10b981; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px;">📞 Call</button>
+            <button onclick="viewTouristDetails('${tourist.id}')" style="flex: 1; padding: 8px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px;">👁️ Details</button>
+          </div>
+        </div>
+      `;
+      
+      // Create popup
+      const popup = new mapboxgl.Popup({
+        offset: 25,
+        closeButton: true,
+        closeOnClick: false,
+        maxWidth: '300px'
+      }).setHTML(popupContent);
+      
+      // Add marker to map
+      window.touristMarker = new mapboxgl.Marker(el)
+        .setLngLat([lng, lat])
+        .setPopup(popup)
+        .addTo(map);
+      
+      // Fly to tourist location
+      map.flyTo({
+        center: [lng, lat],
+        zoom: 14,
+        duration: 2000,
+        essential: true
+      });
+      
+      // Open popup after animation
+      setTimeout(() => {
+        window.touristMarker.togglePopup();
+      }, 2100);
+    }
+
+    // Call tourist
+    function callTourist(phone) {
+      window.location.href = `tel:${phone}`;
+    }
+
+    // View tourist details
+    async function viewTouristDetails(touristId) {
+      try {
+        const tourist = await FirestoreAPI.fetchTouristById(touristId);
+        displayTouristModal(tourist);
+      } catch (error) {
+        console.error('Error fetching tourist details:', error);
+        showNotification('Failed to load tourist details', 'error');
+      }
+    }
+
+    // Display tourist details modal
+    function displayTouristModal(tourist) {
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4';
+      modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+      };
+      
+      const lastActive = tourist.lastActive ? new Date(tourist.lastActive).toLocaleString() : 'N/A';
+      
+      modal.innerHTML = `
+        <div class="bg-gray-900 rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-gray-700 shadow-2xl" onclick="event.stopPropagation()">
+          <div class="bg-gradient-to-r from-red-600 to-red-800 px-6 py-4 flex items-center justify-between rounded-t-xl">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-white">${tourist.name}</h2>
+                <p class="text-white/80 text-sm">Tourist ID: ${tourist.id}</p>
+              </div>
+            </div>
+            <button onclick="this.closest('.fixed').remove()" class="text-white/80 hover:text-white transition-colors">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+            </button>
+          </div>
+          <div class="p-6 space-y-6">
+            <div class="flex items-center gap-3">
+              <span class="px-4 py-2 rounded-full text-sm font-semibold ${
+                tourist.status === 'active' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+              }">${tourist.status.toUpperCase()}</span>
+            </div>
+            <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+              <h3 class="text-lg font-semibold text-white mb-4">Personal Information</h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div><p class="text-gray-400 text-sm mb-1">Full Name</p><p class="text-white font-medium">${tourist.name}</p></div>
+                <div><p class="text-gray-400 text-sm mb-1">Nationality</p><p class="text-white font-medium">${tourist.nationality}</p></div>
+                <div><p class="text-gray-400 text-sm mb-1">Age</p><p class="text-white font-medium">${tourist.age} years</p></div>
+                <div><p class="text-gray-400 text-sm mb-1">Gender</p><p class="text-white font-medium">${tourist.gender}</p></div>
+                <div><p class="text-gray-400 text-sm mb-1">Passport</p><p class="text-white font-medium">${tourist.passport}</p></div>
+                <div><p class="text-gray-400 text-sm mb-1">Phone</p><p class="text-white font-medium">${tourist.phone}</p></div>
+              </div>
+            </div>
+            <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+              <h3 class="text-lg font-semibold text-white mb-4">Location Information</h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div><p class="text-gray-400 text-sm mb-1">Location</p><p class="text-white font-medium">${tourist.location.placeName || tourist.location.district}</p></div>
+                <div><p class="text-gray-400 text-sm mb-1">District</p><p class="text-white font-medium">${tourist.location.district}</p></div>
+                <div><p class="text-gray-400 text-sm mb-1">Coordinates</p><p class="text-white font-medium">${tourist.location.lat.toFixed(4)}, ${tourist.location.lng.toFixed(4)}</p></div>
+                <div><p class="text-gray-400 text-sm mb-1">Last Active</p><p class="text-white font-medium">${lastActive}</p></div>
+              </div>
+            </div>
+            <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+              <h3 class="text-lg font-semibold text-white mb-4">Emergency Contact</h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div><p class="text-gray-400 text-sm mb-1">Name</p><p class="text-white font-medium">${tourist.emergencyContact.name}</p></div>
+                <div><p class="text-gray-400 text-sm mb-1">Relation</p><p class="text-white font-medium">${tourist.emergencyContact.relation}</p></div>
+                <div class="col-span-2"><p class="text-gray-400 text-sm mb-1">Phone</p><p class="text-white font-medium">${tourist.emergencyContact.phone}</p></div>
+              </div>
+            </div>
+            <div class="flex gap-3 pt-4">
+              <button onclick="callTourist('${tourist.phone}')" class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">📞 Call Tourist</button>
+              <button onclick="this.closest('.fixed').remove()" class="px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors">Close</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+    }
+
+    // Show notification
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600';
+      notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-[10000] transition-all duration-300`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 3000);
+    }
   </script>
 </body>
 </html>

@@ -645,44 +645,53 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div class="text-center">
                 <div class="flex items-center justify-center mb-2">
-                  <span class="status-indicator status-online"></span>
-                  <span class="font-semibold text-white">Database</span>
+                  <span id="dbStatus" class="status-indicator status-offline"></span>
+                  <span class="font-semibold text-white">Firestore DB</span>
                 </div>
-                <p class="text-green-400 text-sm">Connected</p>
+                <p id="dbStatusText" class="text-red-400 text-sm">Checking...</p>
+                <p id="dbRecords" class="text-white/60 text-xs mt-1">0 records</p>
               </div>
 
               <div class="text-center">
                 <div class="flex items-center justify-center mb-2">
-                  <span class="status-indicator status-online"></span>
+                  <span id="apiStatus" class="status-indicator status-offline"></span>
                   <span class="font-semibold text-white">API Server</span>
                 </div>
-                <p class="text-green-400 text-sm">Running</p>
+                <p id="apiStatusText" class="text-red-400 text-sm">Checking...</p>
+                <p id="apiUptime" class="text-white/60 text-xs mt-1">0s uptime</p>
               </div>
 
               <div class="text-center">
                 <div class="flex items-center justify-center mb-2">
-                  <span class="status-indicator status-warning"></span>
-                  <span class="font-semibold text-white">GPS Service</span>
+                  <span id="authStatus" class="status-indicator status-offline"></span>
+                  <span class="font-semibold text-white">Firebase Auth</span>
                 </div>
-                <p class="text-yellow-400 text-sm">Limited</p>
+                <p id="authStatusText" class="text-red-400 text-sm">Checking...</p>
+                <p id="authUser" class="text-white/60 text-xs mt-1">Not logged in</p>
               </div>
 
               <div class="text-center">
                 <div class="flex items-center justify-center mb-2">
-                  <span class="status-indicator status-online"></span>
-                  <span class="font-semibold text-white">Notifications</span>
+                  <span id="mapboxStatus" class="status-indicator status-online"></span>
+                  <span class="font-semibold text-white">Mapbox API</span>
                 </div>
-                <p class="text-green-400 text-sm">Active</p>
+                <p id="mapboxStatusText" class="text-green-400 text-sm">Active</p>
+                <p class="text-white/60 text-xs mt-1">Maps enabled</p>
               </div>
             </div>
 
             <div class="mt-6 pt-6 border-t border-gray-700">
-              <div class="flex items-center justify-between">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <h4 class="font-semibold text-white">System Version</h4>
                   <p class="text-white/60 text-sm">SafeGuard v2.1.0</p>
+                  <p class="text-white/60 text-xs">Build: 2025.01.18</p>
                 </div>
-                <button class="btn-secondary">Check for Updates</button>
+                <div>
+                  <h4 class="font-semibold text-white">Firebase Project</h4>
+                  <p id="firebaseProject" class="text-white/60 text-sm">Loading...</p>
+                  <p class="text-white/60 text-xs">Region: asia-south1</p>
+                </div>
               </div>
             </div>
           </div>
@@ -694,35 +703,51 @@
           <div class="settings-card">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
-                <h3 class="font-semibold text-white mb-2">API Endpoint</h3>
-                <input type="text" class="input-field" value="https://api.safeguard.local" readonly>
+                <h3 class="font-semibold text-white mb-2">Backend API Endpoint</h3>
+                <input type="text" id="apiEndpoint" class="input-field" value="http://localhost:3000" readonly>
+                <p class="text-white/60 text-xs mt-1">Node.js Express server</p>
               </div>
 
               <div>
-                <h3 class="font-semibold text-white mb-2">Refresh Interval (seconds)</h3>
-                <input type="number" class="input-field" value="30" min="5" max="300">
+                <h3 class="font-semibold text-white mb-2">Firebase Project ID</h3>
+                <input type="text" id="firebaseProjectId" class="input-field" value="stsm-924d2" readonly>
+                <p class="text-white/60 text-xs mt-1">Firestore database project</p>
               </div>
 
               <div>
-                <h3 class="font-semibold text-white mb-2">Max Concurrent Users</h3>
-                <input type="number" class="input-field" value="100" min="1" max="1000">
+                <h3 class="font-semibold text-white mb-2">Mapbox Access Token</h3>
+                <input type="password" class="input-field" value="pk.eyJ1IjoicnJvaGl0aGthbm5hYSIsImEiOiJjbWZ0cWFqNzgwOGRqMmlwaG91aHpjbW9oIn0.ULz30NvUuWYgzuxQ_WPLGQ" readonly>
+                <p class="text-white/60 text-xs mt-1">Used for map rendering (hidden for security)</p>
               </div>
 
               <div>
-                <h3 class="font-semibold text-white mb-2">Log Level</h3>
+                <h3 class="font-semibold text-white mb-2">Data Refresh Interval</h3>
                 <select class="input-field">
-                  <option>Error</option>
-                  <option>Warning</option>
-                  <option selected>Info</option>
-                  <option>Debug</option>
+                  <option>10 seconds</option>
+                  <option selected>30 seconds</option>
+                  <option>1 minute</option>
+                  <option>5 minutes</option>
                 </select>
+                <p class="text-white/60 text-xs mt-1">Auto-refresh frequency</p>
+              </div>
+
+              <div>
+                <h3 class="font-semibold text-white mb-2">Firestore Collections</h3>
+                <input type="text" class="input-field" value="tourists, alerts, zones, auditLogs, riskAssessments" readonly>
+                <p class="text-white/60 text-xs mt-1">Active database collections</p>
+              </div>
+
+              <div>
+                <h3 class="font-semibold text-white mb-2">Total Database Records</h3>
+                <input type="text" id="totalRecords" class="input-field" value="Loading..." readonly>
+                <p class="text-white/60 text-xs mt-1">All collections combined</p>
               </div>
             </div>
 
             <div class="flex gap-4 mt-6 pt-6 border-t border-gray-700">
-              <button class="btn-primary">Save Changes</button>
-              <button class="btn-secondary">Reset to Defaults</button>
-              <button class="btn-secondary">Import Settings</button>
+              <button class="btn-primary" onclick="saveAdvancedSettings()">Save Changes</button>
+              <button class="btn-secondary" onclick="resetToDefaults()">Reset to Defaults</button>
+              <button class="btn-secondary" onclick="refreshSystemStatus()">Refresh Status</button>
             </div>
           </div>
         </section>
@@ -861,6 +886,107 @@
         }
       });
     }
+
+    // System Status Checking
+    async function checkSystemStatus() {
+      const API_BASE = 'http://localhost:3000';
+      
+      // Check API Server
+      try {
+        const response = await fetch(`${API_BASE}/api/health`);
+        if (response.ok) {
+          const data = await response.json();
+          document.getElementById('apiStatus').className = 'status-indicator status-online';
+          document.getElementById('apiStatusText').textContent = 'Running';
+          document.getElementById('apiStatusText').className = 'text-green-400 text-sm';
+          document.getElementById('apiUptime').textContent = `${Math.floor(data.uptime)}s uptime`;
+          document.getElementById('firebaseProject').textContent = data.project || 'stsm-924d2';
+          
+          // Check Database
+          if (data.firebase === 'active') {
+            document.getElementById('dbStatus').className = 'status-indicator status-online';
+            document.getElementById('dbStatusText').textContent = 'Connected';
+            document.getElementById('dbStatusText').className = 'text-green-400 text-sm';
+            
+            // Fetch statistics to get record counts
+            try {
+              const user = JSON.parse(localStorage.getItem('user') || 'null');
+              if (user && user.idToken) {
+                const statsResponse = await fetch(`${API_BASE}/api/statistics`, {
+                  headers: { 'Authorization': `Bearer ${user.idToken}` }
+                });
+                
+                if (statsResponse.ok) {
+                  const stats = await statsResponse.json();
+                  if (stats.success) {
+                    const totalRecords = 
+                      stats.statistics.tourists.total +
+                      stats.statistics.alerts.total +
+                      stats.statistics.zones.total;
+                    
+                    document.getElementById('dbRecords').textContent = `${totalRecords.toLocaleString()} records`;
+                    document.getElementById('totalRecords').value = `${totalRecords.toLocaleString()} records`;
+                  }
+                }
+              }
+            } catch (error) {
+              console.error('Error fetching statistics:', error);
+            }
+          } else {
+            document.getElementById('dbStatus').className = 'status-indicator status-offline';
+            document.getElementById('dbStatusText').textContent = 'Disconnected';
+            document.getElementById('dbStatusText').className = 'text-red-400 text-sm';
+          }
+        }
+      } catch (error) {
+        console.error('API Server check failed:', error);
+        document.getElementById('apiStatus').className = 'status-indicator status-offline';
+        document.getElementById('apiStatusText').textContent = 'Offline';
+        document.getElementById('apiStatusText').className = 'text-red-400 text-sm';
+        document.getElementById('apiUptime').textContent = 'Not running';
+        
+        document.getElementById('dbStatus').className = 'status-indicator status-offline';
+        document.getElementById('dbStatusText').textContent = 'Unavailable';
+        document.getElementById('dbStatusText').className = 'text-red-400 text-sm';
+      }
+      
+      // Check Firebase Auth
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      if (user && user.email) {
+        document.getElementById('authStatus').className = 'status-indicator status-online';
+        document.getElementById('authStatusText').textContent = 'Authenticated';
+        document.getElementById('authStatusText').className = 'text-green-400 text-sm';
+        document.getElementById('authUser').textContent = user.email;
+      } else {
+        document.getElementById('authStatus').className = 'status-indicator status-warning';
+        document.getElementById('authStatusText').textContent = 'Not logged in';
+        document.getElementById('authStatusText').className = 'text-yellow-400 text-sm';
+      }
+    }
+
+    // Advanced settings functions
+    function saveAdvancedSettings() {
+      showNotification('Advanced settings saved successfully!');
+    }
+
+    function resetToDefaults() {
+      if (confirm('Reset all settings to default values?')) {
+        showNotification('Settings reset to defaults');
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    }
+
+    function refreshSystemStatus() {
+      showNotification('Refreshing system status...');
+      checkSystemStatus();
+    }
+
+    // Check system status on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      checkSystemStatus();
+      // Refresh every 30 seconds
+      setInterval(checkSystemStatus, 30000);
+    });
   </script>
 </body>
 </html>

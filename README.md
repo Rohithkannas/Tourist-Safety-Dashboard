@@ -13,7 +13,8 @@ SafeGuard is a modern web application designed to enhance tourist safety in Megh
 ### ✨ Key Features
 
 - **🗺️ Interactive Mapping**: Mapbox-powered maps with real-time location tracking
-- **🚨 Emergency Alerts**: Real-time SOS alert management and response system
+- **🔍 Tourist Search**: Search tourists by ID and locate them on map with GPS coordinates
+- **🚨 Emergency Alerts**: Real-time SOS alert management with Firestore integration
 - **🔒 Geofencing**: Create and manage safety zones (restricted, caution, safe areas)
 - **🏥 Emergency Services**: Interactive map of police stations and hospitals across Meghalaya
 - **🌐 Multilingual Support**: 9 languages including English, Hindi, Assamese, Bengali, Nepali, and more
@@ -21,6 +22,7 @@ SafeGuard is a modern web application designed to enhance tourist safety in Megh
 - **📝 E-FIR Registration**: Digital FIR filing system with PDF export
 - **🔐 Authentication**: Firebase-based secure authentication system
 - **📱 Responsive Design**: Mobile-first design with dark theme
+- **💾 Real-time Database**: Firebase Firestore integration with 10,000+ records
 
 ## 🚀 Quick Start
 
@@ -133,6 +135,7 @@ Tourist-Safety-Dashboard/
 ### Backend
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
+- **Firebase Admin SDK** - Firestore database integration
 - **Socket.IO** - Real-time communication
 - **CORS** - Cross-origin resource sharing
 
@@ -159,9 +162,11 @@ Tourist-Safety-Dashboard/
 
 ### Dashboard
 - Real-time tourist location tracking
-- Police stations and hospitals map
+- **Tourist search with map location** - Search by ID and locate on map
+- Police stations and hospitals map (32 stations, 24 hospitals)
 - Emergency alert notifications
 - Quick statistics overview
+- Custom markers with popups and full details modal
 
 ### Analytics
 - Population density heatmaps
@@ -176,10 +181,12 @@ Tourist-Safety-Dashboard/
 - Regional risk alerts
 
 ### Emergency Alerts
-- Real-time SOS notifications
-- Alert acknowledgment and resolution
-- Tourist details and active alerts
-- Risk assessment overview
+- Real-time SOS notifications from Firestore
+- **Tourist search functionality** - Search and view complete tourist details
+- Alert acknowledgment and resolution (working buttons)
+- Tourist details modal with personal info, location, emergency contact
+- Risk assessment overview with real statistics
+- All data fetched from Firebase database (2,000+ alerts)
 
 ## 🔒 Security
 
@@ -220,6 +227,9 @@ For issues, questions, or suggestions:
 
 ## 🗺️ Roadmap
 
+- [x] Firebase Firestore integration
+- [x] Tourist search with map location
+- [x] Real-time alert management
 - [ ] Mobile application (iOS/Android)
 - [ ] Advanced analytics and ML-based risk prediction
 - [ ] Integration with local emergency services

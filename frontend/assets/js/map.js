@@ -48,6 +48,9 @@
       minZoom: CONFIG.minZoom,
       maxZoom: CONFIG.maxZoom
     });
+    
+    // Expose map instance globally for search functionality
+    window.dashboardMap = map;
   }
 
   // Add map controls

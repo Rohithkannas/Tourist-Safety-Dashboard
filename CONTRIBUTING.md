@@ -43,6 +43,8 @@ We are committed to providing a welcoming and inclusive environment for all cont
 - Code editor (VS Code recommended)
 - Basic knowledge of HTML, CSS, JavaScript
 - Familiarity with Git and GitHub
+- Firebase account (for Firestore database)
+- Understanding of Firebase Admin SDK (for backend contributions)
 
 ### Fork and Clone
 
@@ -385,6 +387,8 @@ Test your changes in multiple scenarios:
 2. **Different screen sizes**: Desktop, tablet, mobile
 3. **Different user roles**: Admin, regular user
 4. **Edge cases**: Empty data, network errors, etc.
+5. **Database Integration**: Test with real Firestore data
+6. **Search Functionality**: Test tourist search on dashboard and alerts pages
 
 ### Testing Checklist
 
@@ -394,6 +398,33 @@ Test your changes in multiple scenarios:
 - [ ] Works in all supported browsers
 - [ ] Handles errors gracefully
 - [ ] Performance is acceptable
+- [ ] Database queries are optimized
+- [ ] Real-time updates work correctly
+- [ ] Search functionality returns accurate results
+
+### Testing New Features
+
+#### Tourist Search (Dashboard):
+1. Open `dashboard.html`
+2. Type tourist ID (e.g., T000001) in search bar
+3. Press Enter
+4. Verify map flies to location
+5. Check marker appears with correct info
+6. Test popup and details modal
+
+#### Tourist Search (Alerts):
+1. Open `alerts.html`
+2. Type tourist ID in search bar
+3. Press Enter
+4. Verify modal shows complete details
+5. Test all data fields are populated
+
+#### Database Integration:
+1. Start backend server
+2. Verify Firestore connection
+3. Test all API endpoints
+4. Check data fetching and updates
+5. Verify error handling
 
 ## Documentation
 

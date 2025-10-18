@@ -32,6 +32,7 @@ Tourist-Safety-Dashboard/
 │   │   │   ├── 📄 auth.js         # Authentication logic
 │   │   │   ├── 📄 dashboard.js    # Dashboard functionality
 │   │   │   ├── 📄 map.js          # Map utilities and Mapbox integration
+│   │   │   ├── 📄 firestore-api.js # Firestore API client (NEW)
 │   │   │   ├── 📄 i18n.js         # Internationalization (9 languages)
 │   │   │   ├── 📄 data.js         # Mock data (fallback)
 │   │   │   └── 📄 firebase-config.js  # Firebase configuration
@@ -52,7 +53,9 @@ Tourist-Safety-Dashboard/
 │
 ├── 📁 backend/                     # Backend server (Node.js + Express)
 │   │
-│   ├── 📄 index.js                # Main server file (Express + Socket.IO)
+│   ├── 📄 index.js                # Main server file (Express + Firebase Admin)
+│   ├── 📄 seedDatabase.js         # Firestore database seeder (NEW)
+│   ├── 📄 serviceAccountKey.json  # Firebase service account (gitignored)
 │   ├── 📄 mockData.js             # Mock data generator
 │   ├── 📄 package.json            # Backend dependencies
 │   ├── 📄 package-lock.json       # Dependency lock file
@@ -87,9 +90,9 @@ Tourist-Safety-Dashboard/
 |------|---------|--------------|
 | `index.html` | Landing page | Animated background, CTA buttons, project overview |
 | `login.html` | Authentication | Firebase auth, demo login, form validation |
-| `dashboard.html` | Main dashboard | Mapbox maps, police stations, hospitals, statistics |
+| `dashboard.html` | Main dashboard | Mapbox maps, **tourist search with GPS location**, police stations, hospitals, statistics |
 | `analytics.html` | Analytics | Population heatmaps, risk analysis, demo cases |
-| `alerts.html` | Emergency alerts | SOS management, alert acknowledgment, tourist details |
+| `alerts.html` | Emergency Alerts | **Tourist search**, SOS management from Firestore, alert acknowledgment/resolution, full tourist details modal |
 | `geofence.html` | Geofencing | Zone creation (polygon/circle/square), color coding |
 | `audit.html` | Audit logs | Activity tracking, user actions, system logs |
 | `efir.html` | E-FIR registration | Digital FIR form, PDF export, auto-save |
@@ -103,6 +106,7 @@ Tourist-Safety-Dashboard/
 | Module | Purpose | Key Functions |
 |--------|---------|---------------|
 | `api.js` | API communication | `fetchTourists()`, `fetchAlerts()`, `connectSocket()` |
+| `firestore-api.js` | Firestore API client | `fetchTouristById()`, `fetchAlerts()`, `updateAlert()`, `createAuditLog()` (NEW) |
 | `auth.js` | Authentication | `login()`, `logout()`, `checkAuth()`, `getUser()` |
 | `dashboard.js` | Dashboard logic | `initMap()`, `updateStats()`, `handleFilters()` |
 | `map.js` | Map utilities | `MeghalayaMap` class, marker management, popups |
@@ -114,7 +118,8 @@ Tourist-Safety-Dashboard/
 
 | File | Purpose | Key Components |
 |------|---------|----------------|
-| `index.js` | Main server | Express app, Socket.IO, REST API endpoints |
+| `index.js` | Main server | Express app, Firebase Admin SDK, 15 REST API endpoints, Firestore integration |
+| `seedDatabase.js` | Database seeder | Generates 10,000 records (tourists, alerts, zones, audit logs, risk assessments) (NEW) |
 | `mockData.js` | Data generation | Mock tourist data, alerts, zones |
 
 ### Documentation
@@ -141,6 +146,7 @@ Tourist-Safety-Dashboard/
 ### Backend
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
+- **Firebase Admin SDK** - Firestore database integration (NEW)
 - **Socket.IO** - Real-time communication
 - **CORS** - Cross-origin resource sharing
 

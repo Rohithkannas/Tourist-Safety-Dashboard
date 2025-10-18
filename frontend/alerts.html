@@ -378,14 +378,26 @@
           <div class="flex items-center gap-4 animate-slide-up">
             <div class="flex items-center gap-2 px-3 py-2 bg-red-500/20 rounded-lg border border-red-500/30">
               <div class="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-              <span class="text-red-400 text-sm font-medium">8 Active Alerts</span>
+              <span id="activeAlertsCount" class="text-red-400 text-sm font-medium">8 Active Alerts</span>
             </div>
-            <button class="btn-primary">
-              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
-              </svg>
-              Export Report
-            </button>
+            <!-- Tourist Search Bar -->
+            <div class="relative">
+              <input 
+                type="text" 
+                id="touristSearchInput" 
+                placeholder="Search Tourist ID (e.g., T000001)" 
+                class="px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-500 w-64"
+                onkeypress="if(event.key === 'Enter') searchTourist()"
+              />
+              <button 
+                onclick="searchTourist()" 
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -758,9 +770,12 @@
     </main>
   </div>
 
+  <!-- Firestore API -->
+  <script src="./assets/js/firestore-api.js"></script>
+  
   <script>
     // Apply saved theme on load
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
       // Check user authentication
       const user = localStorage.getItem('user');
       if (!user) {
@@ -772,11 +787,485 @@
       if (savedTheme === 'light') {
         document.body.classList.add('light');
       }
+
+      // Initialize Firestore API and load real data
+      await loadRealAlerts();
     });
+
+    // Load real alerts from Firestore
+    async function loadRealAlerts() {
+      try {
+        console.log('🔄 Loading real alerts from Firestore...');
+        
+        // Initialize Firestore API
+        await FirestoreAPI.init();
+        
+        // Get statistics
+        const stats = await FirestoreAPI.fetchStatistics();
+        
+        // Update risk overview cards
+        updateRiskOverview(stats);
+        
+        // Get all alerts
+        const allAlerts = await FirestoreAPI.fetchAlerts({ limit: 100 });
+        
+        // Get critical alerts
+        const criticalAlerts = allAlerts.filter(a => a.priority === 'critical' && a.status === 'pending');
+        const warningAlerts = allAlerts.filter(a => a.priority === 'high' && a.status === 'pending');
+        const infoAlerts = allAlerts.filter(a => a.priority === 'medium' && a.status === 'pending');
+        
+        // Update active alerts count
+        const activeCount = criticalAlerts.length + warningAlerts.length;
+        document.querySelectorAll('.text-red-400').forEach(el => {
+          if (el.textContent.includes('Active Alerts')) {
+            el.textContent = `${activeCount} Active Alerts`;
+          }
+        });
+        
+        // Update filter buttons
+        updateFilterButtons(criticalAlerts.length, warningAlerts.length, infoAlerts.length);
+        
+        // Display alerts
+        displayAlerts(allAlerts);
+        
+        console.log('✅ Alerts loaded successfully');
+        console.log(`   📊 Total: ${allAlerts.length}`);
+        console.log(`   🚨 Critical: ${criticalAlerts.length}`);
+        console.log(`   ⚠️  Warning: ${warningAlerts.length}`);
+        
+      } catch (error) {
+        console.error('❌ Error loading alerts:', error);
+        showNotification('Failed to load alerts. Please refresh the page.', 'error');
+      }
+    }
+
+    // Update risk overview cards
+    function updateRiskOverview(stats) {
+      // Update high risk areas (tourists in restricted zones)
+      const highRiskCard = document.querySelector('.border-red-500');
+      if (highRiskCard) {
+        const countEl = highRiskCard.querySelector('.text-red-400');
+        if (countEl) countEl.textContent = stats.tourists.inRestrictedZones || 0;
+      }
+      
+      // Update medium risk areas (inactive tourists)
+      const mediumRiskCard = document.querySelector('.border-yellow-500');
+      if (mediumRiskCard) {
+        const countEl = mediumRiskCard.querySelector('.text-yellow-400');
+        if (countEl) countEl.textContent = stats.tourists.inactive || 0;
+      }
+      
+      // Update safe areas (active tourists)
+      const safeCard = document.querySelector('.border-green-500');
+      if (safeCard) {
+        const countEl = safeCard.querySelector('.text-green-400');
+        if (countEl) countEl.textContent = stats.zones.active || 0;
+      }
+      
+      // Update active tourists
+      const touristsCard = document.querySelector('.border-blue-500');
+      if (touristsCard) {
+        const countEl = touristsCard.querySelector('.text-blue-400');
+        if (countEl) countEl.textContent = stats.tourists.active.toLocaleString() || 0;
+      }
+    }
+
+    // Update filter buttons
+    function updateFilterButtons(critical, warning, info) {
+      const buttons = document.querySelectorAll('.px-3.py-1');
+      buttons.forEach(btn => {
+        if (btn.textContent.includes('Critical')) {
+          btn.textContent = `Critical (${critical})`;
+        } else if (btn.textContent.includes('Warning')) {
+          btn.textContent = `Warning (${warning})`;
+        } else if (btn.textContent.includes('Info')) {
+          btn.textContent = `Info (${info})`;
+        }
+      });
+    }
+
+    // Display alerts
+    function displayAlerts(alerts) {
+      const container = document.getElementById('touristAlertsList');
+      if (!container) return;
+      
+      container.innerHTML = '';
+      
+      // Sort by priority and timestamp
+      const sortedAlerts = alerts.sort((a, b) => {
+        const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+        if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+          return priorityOrder[a.priority] - priorityOrder[b.priority];
+        }
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
+      
+      // Display top 10 alerts
+      sortedAlerts.slice(0, 10).forEach(alert => {
+        const alertCard = createAlertCard(alert);
+        container.appendChild(alertCard);
+      });
+    }
+
+    // Create alert card
+    function createAlertCard(alert) {
+      const div = document.createElement('div');
+      
+      // Determine card style based on priority
+      let cardClass = 'alert-card';
+      let borderColor = '';
+      let bgColor = '';
+      let iconBg = '';
+      let textColor = '';
+      
+      switch(alert.priority) {
+        case 'critical':
+          cardClass += ' critical border-l-4 border-red-500';
+          iconBg = 'bg-red-600';
+          textColor = 'text-red-400';
+          break;
+        case 'high':
+          cardClass += ' warning border-l-4 border-orange-500';
+          iconBg = 'bg-orange-600';
+          textColor = 'text-orange-400';
+          break;
+        case 'medium':
+          cardClass += ' border-l-4 border-yellow-500';
+          iconBg = 'bg-yellow-600';
+          textColor = 'text-yellow-400';
+          break;
+        default:
+          cardClass += ' border-l-4 border-blue-500';
+          iconBg = 'bg-blue-600';
+          textColor = 'text-blue-400';
+      }
+      
+      div.className = cardClass;
+      
+      // Format timestamp
+      const timeAgo = getTimeAgo(alert.timestamp);
+      
+      // Get tourist name from ID (simplified)
+      const touristName = `Tourist ${alert.touristId}`;
+      
+      div.innerHTML = `
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 ${iconBg} rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="font-semibold text-white text-lg">${touristName}</h4>
+              <p class="${textColor} text-sm font-medium">${alert.type.toUpperCase()} - ${alert.priority.toUpperCase()}</p>
+            </div>
+          </div>
+          <span class="text-xs text-white/60 bg-${alert.priority === 'critical' ? 'red' : alert.priority === 'high' ? 'orange' : 'yellow'}-500/20 px-2 py-1 rounded">${timeAgo}</span>
+        </div>
+        <div class="mb-4">
+          <p class="text-white/90 mb-2">${alert.message}</p>
+          <div class="flex items-center gap-4 text-sm text-white/70">
+            <span>📍 ${alert.location.address}</span>
+            <span>🆔 ${alert.touristId}</span>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="acknowledgeAlert('${alert.id}')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors">
+            Acknowledge
+          </button>
+          <button onclick="resolveAlert('${alert.id}')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition-colors">
+            Resolve
+          </button>
+          <button onclick="viewAlertDetails('${alert.id}')" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm transition-colors">
+            View Details
+          </button>
+        </div>
+      `;
+      
+      return div;
+    }
+
+    // Get time ago string
+    function getTimeAgo(timestamp) {
+      const now = new Date();
+      const time = new Date(timestamp);
+      const diff = Math.floor((now - time) / 1000); // seconds
+      
+      if (diff < 60) return `${diff}s ago`;
+      if (diff < 3600) return `${Math.floor(diff / 60)}min ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+      return `${Math.floor(diff / 86400)}d ago`;
+    }
+
+    // Acknowledge alert
+    async function acknowledgeAlert(alertId) {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        await FirestoreAPI.updateAlert(alertId, {
+          status: 'acknowledged',
+          acknowledgedBy: user.email,
+          acknowledgedAt: new Date().toISOString()
+        });
+        
+        showNotification('Alert acknowledged successfully', 'success');
+        await loadRealAlerts(); // Reload alerts
+      } catch (error) {
+        console.error('Error acknowledging alert:', error);
+        showNotification('Failed to acknowledge alert', 'error');
+      }
+    }
+
+    // Resolve alert
+    async function resolveAlert(alertId) {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        await FirestoreAPI.updateAlert(alertId, {
+          status: 'resolved',
+          resolvedBy: user.email,
+          resolvedAt: new Date().toISOString()
+        });
+        
+        showNotification('Alert resolved successfully', 'success');
+        await loadRealAlerts(); // Reload alerts
+      } catch (error) {
+        console.error('Error resolving alert:', error);
+        showNotification('Failed to resolve alert', 'error');
+      }
+    }
+
+    // View alert details
+    function viewAlertDetails(alertId) {
+      showNotification(`Viewing details for alert ${alertId}`, 'info');
+      // TODO: Implement modal or redirect to details page
+    }
+
+    // Show notification
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600';
+      notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => document.body.removeChild(notification), 300);
+      }, 3000);
+    }
+
+    // Search tourist by ID
+    async function searchTourist() {
+      const searchInput = document.getElementById('touristSearchInput');
+      const touristId = searchInput.value.trim().toUpperCase();
+      
+      if (!touristId) {
+        showNotification('Please enter a Tourist ID', 'error');
+        return;
+      }
+      
+      try {
+        showNotification('Searching...', 'info');
+        
+        // Fetch tourist details from database
+        const tourist = await FirestoreAPI.fetchTouristById(touristId);
+        
+        // Display tourist details in modal
+        displayTouristDetails(tourist);
+        
+      } catch (error) {
+        console.error('Error searching tourist:', error);
+        showNotification(`Tourist ${touristId} not found in database`, 'error');
+      }
+    }
+
+    // Display tourist details in modal
+    function displayTouristDetails(tourist) {
+      // Create modal
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4';
+      modal.onclick = (e) => {
+        if (e.target === modal) closeModal();
+      };
+      
+      // Format last active time
+      const lastActive = tourist.lastActive ? new Date(tourist.lastActive).toLocaleString() : 'N/A';
+      
+      modal.innerHTML = `
+        <div class="bg-gray-900 rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-gray-700 shadow-2xl" onclick="event.stopPropagation()">
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-red-600 to-red-800 px-6 py-4 flex items-center justify-between rounded-t-xl">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-white">${tourist.name}</h2>
+                <p class="text-white/80 text-sm">Tourist ID: ${tourist.id}</p>
+              </div>
+            </div>
+            <button onclick="closeModal()" class="text-white/80 hover:text-white transition-colors">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Content -->
+          <div class="p-6 space-y-6">
+            <!-- Status Badge -->
+            <div class="flex items-center gap-3">
+              <span class="px-4 py-2 rounded-full text-sm font-semibold ${
+                tourist.status === 'active' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                tourist.status === 'inactive' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                'bg-red-500/20 text-red-400 border border-red-500/30'
+              }">
+                ${tourist.status.toUpperCase()}
+              </span>
+              ${tourist.inRestrictedZone ? '<span class="px-4 py-2 rounded-full text-sm font-semibold bg-red-500/20 text-red-400 border border-red-500/30">⚠️ IN RESTRICTED ZONE</span>' : ''}
+            </div>
+            
+            <!-- Personal Information -->
+            <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+              <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                </svg>
+                Personal Information
+              </h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <p class="text-gray-400 text-sm mb-1">Full Name</p>
+                  <p class="text-white font-medium">${tourist.name}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 text-sm mb-1">Nationality</p>
+                  <p class="text-white font-medium">${tourist.nationality}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 text-sm mb-1">Age</p>
+                  <p class="text-white font-medium">${tourist.age} years</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 text-sm mb-1">Gender</p>
+                  <p class="text-white font-medium">${tourist.gender}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 text-sm mb-1">Passport Number</p>
+                  <p class="text-white font-medium">${tourist.passport}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 text-sm mb-1">Phone Number</p>
+                  <p class="text-white font-medium">${tourist.phone}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Location Information -->
+            <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+              <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                </svg>
+                Location Information
+              </h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <p class="text-gray-400 text-sm mb-1">Current Location</p>
+                  <p class="text-white font-medium">${tourist.location.address}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 text-sm mb-1">District</p>
+                  <p class="text-white font-medium">${tourist.location.district}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 text-sm mb-1">Coordinates</p>
+                  <p class="text-white font-medium">${tourist.location.lat.toFixed(4)}, ${tourist.location.lng.toFixed(4)}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 text-sm mb-1">Last Active</p>
+                  <p class="text-white font-medium">${lastActive}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Emergency Contact -->
+            <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+              <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                </svg>
+                Emergency Contact
+              </h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <p class="text-gray-400 text-sm mb-1">Contact Name</p>
+                  <p class="text-white font-medium">${tourist.emergencyContact.name}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 text-sm mb-1">Relationship</p>
+                  <p class="text-white font-medium">${tourist.emergencyContact.relationship}</p>
+                </div>
+                <div class="col-span-2">
+                  <p class="text-gray-400 text-sm mb-1">Phone Number</p>
+                  <p class="text-white font-medium">${tourist.emergencyContact.phone}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex gap-3 pt-4">
+              <button onclick="trackTourist('${tourist.id}')" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                </svg>
+                Track on Map
+              </button>
+              <button onclick="contactTourist('${tourist.phone}')" class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                </svg>
+                Call Tourist
+              </button>
+              <button onclick="closeModal()" class="px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Clear search input
+      document.getElementById('touristSearchInput').value = '';
+    }
+
+    // Close modal
+    function closeModal() {
+      const modal = document.querySelector('.fixed.inset-0');
+      if (modal) {
+        modal.remove();
+      }
+    }
+
+    // Track tourist on map
+    function trackTourist(touristId) {
+      showNotification(`Tracking tourist ${touristId} on map...`, 'info');
+      // TODO: Implement map tracking
+    }
+
+    // Contact tourist
+    function contactTourist(phone) {
+      window.location.href = `tel:${phone}`;
+    }
 
     // Coming soon notification
     function showComingSoon(feature) {
-      alert(`${feature} feature is coming soon! Stay tuned for updates.`);
+      showNotification(`${feature} feature is coming soon!`, 'info');
     }
   </script>
 </body>

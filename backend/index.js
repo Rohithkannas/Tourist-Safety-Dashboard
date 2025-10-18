@@ -76,6 +76,9 @@ const authenticate = async (req, res, next) => {
   }
 };
 
+// Get Firestore instance
+const db = firebaseInitialized ? admin.firestore() : null;
+
 const app = express();
 const port = 3000;
 
@@ -147,11 +150,20 @@ app.get('/api/user/profile', authenticate, (req, res) => {
 
 // --- PROTECTED ROUTES ---
 
-// Get all zones
-let zones = [];
-let zoneIdCounter = 1;
-app.get('/api/zones', authenticate, (req, res) => {
+// Get all zones from Firestore
+app.get('/api/zones', authenticate, async (req, res) => {
   try {
+    if (!db) {
+      return res.status(503).json({ success: false, error: 'Database not available' });
+    }
+
+    const zonesSnapshot = await db.collection('zones').get();
+    const zones = [];
+    
+    zonesSnapshot.forEach(doc => {
+      zones.push({ ...doc.data(), firestoreId: doc.id });
+    });
+
     res.json({
       success: true,
       data: zones,
@@ -166,30 +178,41 @@ app.get('/api/zones', authenticate, (req, res) => {
   }
 });
 
-// Create a new zone
-app.post('/api/zones', authenticate, (req, res) => {
+// Create a new zone in Firestore
+app.post('/api/zones', authenticate, async (req, res) => {
   try {
-    const { name, type, geometry, properties } = req.body;
+    if (!db) {
+      return res.status(503).json({ success: false, error: 'Database not available' });
+    }
+
+    const { name, type, geometry, properties, center, radius, district, color } = req.body;
     
-    if (!name || !type || !geometry) {
+    if (!name || !type) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: name, type, geometry'
+        error: 'Missing required fields: name, type'
       });
     }
 
     const newZone = {
-      id: zoneIdCounter++,
       name,
       type,
-      geometry,
+      geometry: typeof geometry === 'string' ? geometry : JSON.stringify(geometry),
       properties: properties || {},
+      center: center || null,
+      radius: radius || 0,
+      district: district || 'Unknown',
+      color: color || '#ff0000',
+      active: true,
+      touristsInside: 0,
+      alertsTriggered: 0,
       createdBy: req.user.email,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
-    zones.push(newZone);
+    const docRef = await db.collection('zones').add(newZone);
+    newZone.id = docRef.id;
 
     res.status(201).json({
       success: true,
@@ -205,34 +228,43 @@ app.post('/api/zones', authenticate, (req, res) => {
   }
 });
 
-// Update a zone
-app.put('/api/zones/:id', authenticate, (req, res) => {
+// Update a zone in Firestore
+app.put('/api/zones/:id', authenticate, async (req, res) => {
   try {
-    const zoneId = parseInt(req.params.id);
-    const { name, type, geometry, properties } = req.body;
+    if (!db) {
+      return res.status(503).json({ success: false, error: 'Database not available' });
+    }
+
+    const zoneId = req.params.id;
+    const { name, type, geometry, properties, active } = req.body;
     
-    const zoneIndex = zones.findIndex(zone => zone.id === zoneId);
+    const zoneRef = db.collection('zones').doc(zoneId);
+    const zoneDoc = await zoneRef.get();
     
-    if (zoneIndex === -1) {
+    if (!zoneDoc.exists) {
       return res.status(404).json({
         success: false,
         error: 'Zone not found'
       });
     }
 
-    zones[zoneIndex] = {
-      ...zones[zoneIndex],
-      name: name || zones[zoneIndex].name,
-      type: type || zones[zoneIndex].type,
-      geometry: geometry || zones[zoneIndex].geometry,
-      properties: properties || zones[zoneIndex].properties,
+    const updateData = {
       updatedBy: req.user.email,
       updatedAt: new Date().toISOString()
     };
 
+    if (name) updateData.name = name;
+    if (type) updateData.type = type;
+    if (geometry) updateData.geometry = typeof geometry === 'string' ? geometry : JSON.stringify(geometry);
+    if (properties) updateData.properties = properties;
+    if (active !== undefined) updateData.active = active;
+
+    await zoneRef.update(updateData);
+    const updatedZone = { ...zoneDoc.data(), ...updateData, id: zoneId };
+
     res.json({
       success: true,
-      data: zones[zoneIndex],
+      data: updatedZone,
       message: 'Zone updated successfully'
     });
   } catch (error) {
@@ -244,20 +276,26 @@ app.put('/api/zones/:id', authenticate, (req, res) => {
   }
 });
 
-// Delete a zone
-app.delete('/api/zones/:id', authenticate, (req, res) => {
+// Delete a zone from Firestore
+app.delete('/api/zones/:id', authenticate, async (req, res) => {
   try {
-    const zoneId = parseInt(req.params.id);
-    const zoneIndex = zones.findIndex(zone => zone.id === zoneId);
+    if (!db) {
+      return res.status(503).json({ success: false, error: 'Database not available' });
+    }
+
+    const zoneId = req.params.id;
+    const zoneRef = db.collection('zones').doc(zoneId);
+    const zoneDoc = await zoneRef.get();
     
-    if (zoneIndex === -1) {
+    if (!zoneDoc.exists) {
       return res.status(404).json({
         success: false,
         error: 'Zone not found'
       });
     }
 
-    const deletedZone = zones.splice(zoneIndex, 1)[0];
+    const deletedZone = { ...zoneDoc.data(), id: zoneId };
+    await zoneRef.delete();
 
     res.json({
       success: true,
@@ -273,90 +311,343 @@ app.delete('/api/zones/:id', authenticate, (req, res) => {
   }
 });
 
-// Get tourist data (mock endpoint)
-app.get('/api/tourists', authenticate, (req, res) => {
+// Get tourists from Firestore
+app.get('/api/tourists', authenticate, async (req, res) => {
   try {
-    const mockTourists = [
-      {
-        id: 1,
-        name: "Tourist Group A",
-        location: { lng: 91.8800, lat: 25.5700 },
-        count: 8,
-        status: "active",
-        lastUpdate: new Date().toISOString()
-      },
-      {
-        id: 2,
-        name: "Tourist Group B",
-        location: { lng: 91.3500, lat: 25.4600 },
-        count: 12,
-        status: "active",
-        lastUpdate: new Date().toISOString()
-      },
-      {
-        id: 3,
-        name: "Tourist Group C",
-        location: { lng: 91.1900, lat: 25.2800 },
-        count: 25,
-        status: "active",
-        lastUpdate: new Date().toISOString()
-      }
-    ];
+    if (!db) {
+      return res.status(503).json({ success: false, error: 'Database not available' });
+    }
+
+    const { status, limit = 50 } = req.query;
+    let query = db.collection('tourists');
+
+    // Apply filters
+    if (status) query = query.where('status', '==', status);
+
+    // Limit results
+    query = query.limit(parseInt(limit));
+
+    const touristsSnapshot = await query.get();
+    const tourists = [];
+    
+    touristsSnapshot.forEach(doc => {
+      tourists.push({ ...doc.data(), firestoreId: doc.id });
+    });
 
     res.json({
       success: true,
-      data: mockTourists,
-      count: mockTourists.length
+      data: tourists,
+      count: tourists.length
     });
   } catch (error) {
     console.error('Error fetching tourists:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch tourist data'
+      error: 'Failed to fetch tourists'
     });
   }
 });
 
-// Get risk alerts (mock endpoint)
-app.get('/api/alerts', authenticate, (req, res) => {
+// Get single tourist by ID
+app.get('/api/tourists/:id', authenticate, async (req, res) => {
   try {
-    const mockAlerts = [
-      {
-        id: 1,
-        region: "East Khasi Hills",
-        riskLevel: "high",
-        message: "Flash flood warning in effect. Heavy rainfall expected.",
-        touristsAffected: 12,
-        updatedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString() // 5 minutes ago
-      },
-      {
-        id: 2,
-        region: "West Garo Hills",
-        riskLevel: "medium",
-        message: "Road construction ongoing. Traffic delays expected.",
-        touristsAffected: 5,
-        updatedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString() // 15 minutes ago
-      },
-      {
-        id: 3,
-        region: "South West Khasi Hills",
-        riskLevel: "low",
-        message: "All clear. Normal tourist activities can proceed.",
-        touristsAffected: 45,
-        updatedAt: new Date(Date.now() - 2 * 60 * 1000).toISOString() // 2 minutes ago
-      }
-    ];
+    if (!db) {
+      return res.status(503).json({ success: false, error: 'Database not available' });
+    }
+
+    const touristId = req.params.id;
+    
+    // Query by tourist ID field (not Firestore document ID)
+    const touristsSnapshot = await db.collection('tourists')
+      .where('id', '==', touristId)
+      .limit(1)
+      .get();
+
+    if (touristsSnapshot.empty) {
+      return res.status(404).json({
+        success: false,
+        error: 'Tourist not found'
+      });
+    }
+
+    const touristDoc = touristsSnapshot.docs[0];
+    const tourist = { ...touristDoc.data(), firestoreId: touristDoc.id };
 
     res.json({
       success: true,
-      data: mockAlerts,
-      count: mockAlerts.length
+      data: tourist
+    });
+  } catch (error) {
+    console.error('Error fetching tourist:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch tourist details'
+    });
+  }
+});
+
+// Get alerts from Firestore
+app.get('/api/alerts', authenticate, async (req, res) => {
+  try {
+    if (!db) {
+      return res.status(503).json({ success: false, error: 'Database not available' });
+    }
+
+    const { priority, status, type, limit = 100 } = req.query;
+    let query = db.collection('alerts');
+
+    // Apply filters
+    if (priority) query = query.where('priority', '==', priority);
+    if (status) query = query.where('status', '==', status);
+    if (type) query = query.where('type', '==', type);
+
+    // Order by timestamp descending and limit
+    query = query.orderBy('timestamp', 'desc').limit(parseInt(limit));
+
+    const alertsSnapshot = await query.get();
+    const alerts = [];
+    
+    alertsSnapshot.forEach(doc => {
+      alerts.push({ ...doc.data(), firestoreId: doc.id });
+    });
+
+    res.json({
+      success: true,
+      data: alerts,
+      count: alerts.length
     });
   } catch (error) {
     console.error('Error fetching alerts:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to fetch alerts'
+    });
+  }
+});
+
+// Get risk assessments from Firestore
+app.get('/api/risk-assessments', authenticate, async (req, res) => {
+  try {
+    if (!db) {
+      return res.status(503).json({ success: false, error: 'Database not available' });
+    }
+
+    const { district, riskLevel, limit = 100 } = req.query;
+    let query = db.collection('riskAssessments');
+
+    // Apply filters
+    if (district) query = query.where('location.district', '==', district);
+    if (riskLevel) query = query.where('riskLevel', '==', riskLevel);
+
+    query = query.limit(parseInt(limit));
+
+    const assessmentsSnapshot = await query.get();
+    const assessments = [];
+    
+    assessmentsSnapshot.forEach(doc => {
+      assessments.push({ ...doc.data(), firestoreId: doc.id });
+    });
+
+    res.json({
+      success: true,
+      data: assessments,
+      count: assessments.length
+    });
+  } catch (error) {
+    console.error('Error fetching risk assessments:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch risk assessments'
+    });
+  }
+});
+
+// Get audit logs from Firestore
+app.get('/api/audit-logs', authenticate, async (req, res) => {
+  try {
+    if (!db) {
+      return res.status(503).json({ success: false, error: 'Database not available' });
+    }
+
+    const { action, userId, limit = 100 } = req.query;
+    let query = db.collection('auditLogs');
+
+    // Apply filters
+    if (action) query = query.where('action', '==', action);
+    if (userId) query = query.where('userId', '==', userId);
+
+    // Order by timestamp descending
+    query = query.orderBy('timestamp', 'desc').limit(parseInt(limit));
+
+    const logsSnapshot = await query.get();
+    const logs = [];
+    
+    logsSnapshot.forEach(doc => {
+      logs.push({ ...doc.data(), firestoreId: doc.id });
+    });
+
+    res.json({
+      success: true,
+      data: logs,
+      count: logs.length
+    });
+  } catch (error) {
+    console.error('Error fetching audit logs:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch audit logs'
+    });
+  }
+});
+
+// Create audit log
+app.post('/api/audit-logs', authenticate, async (req, res) => {
+  try {
+    if (!db) {
+      return res.status(503).json({ success: false, error: 'Database not available' });
+    }
+
+    const logData = {
+      ...req.body,
+      timestamp: new Date().toISOString()
+    };
+
+    const docRef = await db.collection('auditLogs').add(logData);
+    logData.id = docRef.id;
+
+    res.status(201).json({
+      success: true,
+      data: logData,
+      message: 'Audit log created successfully'
+    });
+  } catch (error) {
+    console.error('Error creating audit log:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to create audit log'
+    });
+  }
+});
+
+// Update alert status
+app.put('/api/alerts/:id', authenticate, async (req, res) => {
+  try {
+    if (!db) {
+      return res.status(503).json({ success: false, error: 'Database not available' });
+    }
+
+    const alertId = req.params.id;
+    const { status, acknowledgedBy, resolvedBy } = req.body;
+    
+    const alertRef = db.collection('alerts').doc(alertId);
+    const alertDoc = await alertRef.get();
+    
+    if (!alertDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        error: 'Alert not found'
+      });
+    }
+
+    const updateData = {
+      updatedAt: new Date().toISOString()
+    };
+
+    if (status) updateData.status = status;
+    if (acknowledgedBy) updateData.acknowledgedBy = acknowledgedBy;
+    if (resolvedBy) updateData.resolvedBy = resolvedBy;
+
+    await alertRef.update(updateData);
+    const updatedAlert = { ...alertDoc.data(), ...updateData, id: alertId };
+
+    res.json({
+      success: true,
+      data: updatedAlert,
+      message: 'Alert updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating alert:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update alert'
+    });
+  }
+});
+
+// Get dashboard statistics
+app.get('/api/statistics', authenticate, async (req, res) => {
+  try {
+    if (!db) {
+      return res.status(503).json({ success: false, error: 'Database not available' });
+    }
+
+    // Get counts from each collection
+    const [touristsSnapshot, alertsSnapshot, zonesSnapshot] = await Promise.all([
+      db.collection('tourists').get(),
+      db.collection('alerts').get(),
+      db.collection('zones').get()
+    ]);
+
+    // Calculate statistics
+    let activeTourists = 0;
+    let touristsInRestrictedZones = 0;
+    let sosAlerts = 0;
+    
+    touristsSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.status === 'active') activeTourists++;
+      if (data.inRestrictedZone) touristsInRestrictedZones++;
+      if (data.sosActive) sosAlerts++;
+    });
+
+    let pendingAlerts = 0;
+    let criticalAlerts = 0;
+    
+    alertsSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.status === 'pending') pendingAlerts++;
+      if (data.priority === 'critical') criticalAlerts++;
+    });
+
+    let activeZones = 0;
+    let restrictedZones = 0;
+    
+    zonesSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.active) activeZones++;
+      if (data.type === 'restricted') restrictedZones++;
+    });
+
+    res.json({
+      success: true,
+      statistics: {
+        tourists: {
+          total: touristsSnapshot.size,
+          active: activeTourists,
+          inactive: touristsSnapshot.size - activeTourists,
+          inRestrictedZones: touristsInRestrictedZones,
+          withSOS: sosAlerts
+        },
+        alerts: {
+          total: alertsSnapshot.size,
+          pending: pendingAlerts,
+          critical: criticalAlerts,
+          resolved: alertsSnapshot.size - pendingAlerts
+        },
+        zones: {
+          total: zonesSnapshot.size,
+          active: activeZones,
+          restricted: restrictedZones,
+          inactive: zonesSnapshot.size - activeZones
+        }
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error fetching statistics:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch statistics'
     });
   }
 });
@@ -397,15 +688,21 @@ app.listen(port, () => {
   }
   
   console.log(`\n📋 Available endpoints:`);
-  console.log(`   GET  /api/health        - Health check (Public)`);
-  console.log(`   GET  /api/auth/test     - Test Firebase auth (Protected)`);
-  console.log(`   GET  /api/user/profile  - Get user profile (Protected)`);
-  console.log(`   GET  /api/zones         - Get all zones (Protected)`);
-  console.log(`   POST /api/zones         - Create new zone (Protected)`);
-  console.log(`   PUT  /api/zones/:id     - Update zone (Protected)`);
-  console.log(`   DEL  /api/zones/:id     - Delete zone (Protected)`);
-  console.log(`   GET  /api/tourists      - Get tourist data (Protected)`);
-  console.log(`   GET  /api/alerts        - Get risk alerts (Protected)`);
+  console.log(`   GET  /api/health             - Health check (Public)`);
+  console.log(`   GET  /api/auth/test          - Test Firebase auth (Protected)`);
+  console.log(`   GET  /api/user/profile       - Get user profile (Protected)`);
+  console.log(`   GET  /api/statistics         - Get dashboard statistics (Protected)`);
+  console.log(`   GET  /api/zones              - Get all zones (Protected)`);
+  console.log(`   POST /api/zones              - Create new zone (Protected)`);
+  console.log(`   PUT  /api/zones/:id          - Update zone (Protected)`);
+  console.log(`   DEL  /api/zones/:id          - Delete zone (Protected)`);
+  console.log(`   GET  /api/tourists           - Get tourist data (Protected)`);
+  console.log(`   GET  /api/tourists/:id       - Get tourist by ID (Protected)`);
+  console.log(`   GET  /api/alerts             - Get alerts (Protected)`);
+  console.log(`   PUT  /api/alerts/:id         - Update alert (Protected)`);
+  console.log(`   GET  /api/risk-assessments   - Get risk assessments (Protected)`);
+  console.log(`   GET  /api/audit-logs         - Get audit logs (Protected)`);
+  console.log(`   POST /api/audit-logs         - Create audit log (Protected)`);
 });
 
 export default app;

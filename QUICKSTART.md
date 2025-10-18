@@ -61,18 +61,22 @@ Use these credentials to test the application:
 
 ### 1. Dashboard
 - View police stations and hospitals on map
+- **Search tourists by ID** - Type tourist ID (e.g., T000001) and press Enter
+- **Locate on map** - Tourist marker appears with GPS coordinates
 - Filter by location type
-- See real-time statistics
+- See real-time statistics from Firestore
 
-### 2. Analytics
+### 2. Emergency Alerts
+- View active SOS alerts from database (2,000+ alerts)
+- **Search tourists** - Find complete tourist details by ID
+- Acknowledge and resolve alerts (working buttons)
+- View full tourist modal with personal info, location, emergency contact
+- All data fetched from Firebase Firestore
+
+### 3. Analytics
 - Population density heatmap
 - Risk assessment cases
 - Regional analysis
-
-### 3. Emergency Alerts
-- View active SOS alerts
-- Acknowledge and resolve alerts
-- Tourist details
 
 ### 4. Geofencing
 - Draw safety zones (polygon, circle, square)
@@ -121,12 +125,14 @@ Tourist-Safety-Dashboard/
 ## Key Features
 
 ✨ **Interactive Maps** - Mapbox-powered visualization  
-🚨 **Emergency Alerts** - Real-time SOS management  
+🔍 **Tourist Search** - Search by ID and locate on map with GPS  
+🚨 **Emergency Alerts** - Real-time SOS management with Firestore  
 🔒 **Geofencing** - Safety zone creation  
 🏥 **Emergency Services** - 32 police stations, 24 hospitals  
 🌐 **Multilingual** - 9 language support  
 📊 **Analytics** - Population density heatmaps  
 📝 **E-FIR** - Digital FIR registration  
+💾 **Real Database** - Firebase Firestore with 10,000+ records  
 
 ## Configuration
 
@@ -164,11 +170,32 @@ taskkill /PID <process_id> /F
 - Verify Mapbox token
 - Check browser console
 
+## Testing the New Features
+
+### Tourist Search on Dashboard:
+1. Open `http://localhost:8080/frontend/dashboard.html`
+2. Type **T000001** in search bar
+3. Press Enter
+4. Watch map fly to tourist location in Shillong
+5. See red pulsing marker with tourist info
+6. Click "Details" for full information
+
+### Tourist Search on Alerts Page:
+1. Open `http://localhost:8080/frontend/alerts.html`
+2. Type **T000001** in search bar
+3. Press Enter
+4. View complete tourist details modal
+
+### Available Tourist IDs:
+- T000001 to T005000 (5,000 tourists in database)
+- All have real GPS coordinates from Meghalaya
+
 ## Next Steps
 
 📖 Read [SETUP.md](docs/SETUP.md) for detailed configuration  
-🏗️ Check [ARCHITECTURE.md](docs/ARCHITECTURE.md) for system design  
+🏭 Check [ARCHITECTURE.md](docs/ARCHITECTURE.md) for system design  
 📡 Review [API.md](docs/API.md) for API reference  
+📝 See [CHANGELOG.md](CHANGELOG.md) for recent updates  
 🤝 See [CONTRIBUTING.md](CONTRIBUTING.md) to contribute  
 
 ## Support
