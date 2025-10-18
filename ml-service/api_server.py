@@ -13,6 +13,7 @@ import json
 import time
 from threading import Thread
 import queue
+import tensorflow as tf
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend access
@@ -200,6 +201,8 @@ def train_model_background(epochs, batch_size):
                 })
         
         from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+        # Ensure model directory exists
+        os.makedirs('models', exist_ok=True)
         
         early_stopping = EarlyStopping(
             monitor='val_loss',
