@@ -1,105 +1,232 @@
-# Tourist Safety Dashboard (MVP)
+# 🛡️ SafeGuard - Tourist Safety Dashboard
 
-A three-page MVP web app for real-time tourist visualization and SOS management.
+> A comprehensive real-time tourist safety management system for Meghalaya, India.
 
-- Landing with animated 3D clouds (Vanta.js) using blue/black/orange theme
-- Login (Firebase Email/Password) with simple redirect
-- Map dashboard (Leaflet + clustering) with SOS side panel and profile modal
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Mapbox](https://img.shields.io/badge/Mapbox-000000?logo=mapbox&logoColor=white)](https://www.mapbox.com/)
 
-## Pages
-- `index.html` — Landing page with Vanta.js clouds background and CTA
-- `login.html` — Email/Password login (Firebase optional) + demo login button
-- `dashboard.html` — Map, clusters, restricted zone, SOS list, profile modal
+## 📋 Overview
 
-## Tech
-- Tailwind (CDN) for styling
-- Vanta.js + Three.js for clouds animation
-- Leaflet + MarkerCluster for map and clustering
-- Optional Firebase (v9 compat) for Auth/DB
+SafeGuard is a modern web application designed to enhance tourist safety in Meghalaya through real-time monitoring, emergency alerts, geofencing, and multilingual support. The system provides comprehensive tools for authorities to manage tourist safety zones, track emergency situations, and coordinate with local police stations and hospitals.
 
-## Running Locally
-Just open `index.html` in a modern browser. For best results, serve via a local server (to avoid some browsers blocking local file requests).
+### ✨ Key Features
 
-- VS Code Live Server
-- `python -m http.server` (if you have Python)
+- **🗺️ Interactive Mapping**: Mapbox-powered maps with real-time location tracking
+- **🚨 Emergency Alerts**: Real-time SOS alert management and response system
+- **🔒 Geofencing**: Create and manage safety zones (restricted, caution, safe areas)
+- **🏥 Emergency Services**: Interactive map of police stations and hospitals across Meghalaya
+- **🌐 Multilingual Support**: 9 languages including English, Hindi, Assamese, Bengali, Nepali, and more
+- **📊 Analytics Dashboard**: Population density heatmaps and risk assessment tools
+- **📝 E-FIR Registration**: Digital FIR filing system with PDF export
+- **🔐 Authentication**: Firebase-based secure authentication system
+- **📱 Responsive Design**: Mobile-first design with dark theme
 
-## Folder Structure
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- Modern web browser (Chrome, Firefox, Edge, Safari)
+- Firebase account (optional, for authentication)
+- Mapbox account (for map features)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Rohithkannas/Tourist-Safety-Dashboard.git
+   cd Tourist-Safety-Dashboard
+   ```
+
+2. **Install backend dependencies**
+   ```bash
+   cd backend
+   npm install
+   ```
+
+3. **Install frontend dependencies** (optional, for dev server)
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+4. **Configure Firebase** (optional)
+   - Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+   - Enable Email/Password authentication
+   - Copy your Firebase config to `frontend/assets/js/firebase-config.js`
+
+5. **Start the backend server**
+   ```bash
+   cd backend
+   npm start
+   # Server runs on http://localhost:4000
+   ```
+
+6. **Start the frontend**
+   ```bash
+   cd frontend
+   npm start
+   # Or use any static file server
+   # python -m http.server 8080
+   # Or VS Code Live Server extension
+   ```
+
+7. **Open the application**
+   - Navigate to `http://localhost:8080/frontend/` (or your server URL)
+   - Default demo credentials: `demo@safeguard.com` / `demo123`
+
+## 📁 Project Structure
+
 ```
 Tourist-Safety-Dashboard/
-├─ frontend/                # All client-side files (open these in the browser)
-│  ├─ index.html
-│  ├─ login.html
-│  ├─ dashboard.html
-│  └─ assets/
-│     ├─ css/styles.css
-│     └─ js/{api.js, auth.js, data.js, dashboard.js, firebase-config.js}
-└─ backend/                 # Node.js Express + Socket.IO server
-   ├─ index.js
-   ├─ mockData.js
-   └─ package.json
+├── frontend/                    # Frontend application
+│   ├── index.html              # Landing page
+│   ├── login.html              # Authentication page
+│   ├── dashboard.html          # Main dashboard
+│   ├── analytics.html          # Analytics & heatmaps
+│   ├── alerts.html             # Emergency alerts management
+│   ├── geofence.html           # Geofencing tools
+│   ├── audit.html              # Audit logs
+│   ├── efir.html               # E-FIR registration
+│   ├── settings.html           # User settings
+│   ├── language.html           # Language selection
+│   └── assets/
+│       ├── css/                # Stylesheets
+│       ├── js/                 # JavaScript modules
+│       │   ├── api.js          # API client
+│       │   ├── auth.js         # Authentication
+│       │   ├── dashboard.js    # Dashboard logic
+│       │   ├── map.js          # Map utilities
+│       │   ├── i18n.js         # Internationalization
+│       │   └── firebase-config.js
+│       ├── data/               # Static data files
+│       └── images/             # Image assets
+│
+├── backend/                     # Backend server
+│   ├── index.js                # Express server
+│   ├── mockData.js             # Mock data generator
+│   └── package.json
+│
+├── docs/                        # Documentation
+│   ├── SETUP.md                # Detailed setup guide
+│   ├── ARCHITECTURE.md         # System architecture
+│   └── API.md                  # API documentation
+│
+├── .gitignore
+├── .firebaserc                 # Firebase configuration
+├── firebase.json               # Firebase hosting config
+├── package.json
+└── README.md                   # This file
 ```
-Legacy root-level HTML files may remain; use the versions under `frontend/` going forward.
 
-### Local Backend (Node + Express + Socket.IO)
-This project includes a local backend serving mock realtime data and APIs. The frontend will auto-detect the backend at `http://localhost:4000` and switch from demo mode to backend mode.
+## 🛠️ Technology Stack
 
-1) Install Node dependencies
-```
-npm install
-```
+### Frontend
+- **HTML5/CSS3/JavaScript** - Core web technologies
+- **Tailwind CSS** - Utility-first CSS framework
+- **Mapbox GL JS** - Interactive mapping
+- **Firebase** - Authentication and hosting
+- **i18next** - Internationalization
+- **jsPDF** - PDF generation
 
-2) Start the backend server (port 4000)
-```
-npm run start:server
-```
-Backend health: `GET http://localhost:4000/health`
+### Backend
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **Socket.IO** - Real-time communication
+- **CORS** - Cross-origin resource sharing
 
-3) Start or keep your static site server for the frontend
-```
-# if you don't already have one running (from repo root)
-python -m http.server 5500
-```
+## 📖 Documentation
 
-Open the app at: `http://127.0.0.1:5500/frontend/`
+- [Setup Guide](docs/SETUP.md) - Detailed installation and configuration
+- [Architecture](docs/ARCHITECTURE.md) - System design and components
+- [API Documentation](docs/API.md) - Backend API reference
+- [Contributing](CONTRIBUTING.md) - Contribution guidelines
 
-The frontend API layer (`assets/js/api.js`) will:
-- Ping `/health` on the backend
-- If available, fetch initial data and connect via Socket.IO for realtime updates
-- Otherwise, fall back to local demo data (`assets/js/data.js`)
+## 🌐 Supported Languages
 
-### API Endpoints
-- `GET /api/tourists` — array of tourists
-- `GET /api/alerts` — array of SOS alerts
-- `GET /api/restricted` — `{ polygon: [[lat,lng], ...] }`
-- `POST /api/alerts/:id/ack` — mark alert acknowledged
-- `POST /api/alerts/:id/resolve` — mark alert resolved
+- 🇬🇧 English
+- 🇮🇳 Hindi (हिन्दी)
+- 🇮🇳 Assamese (অসমীয়া)
+- 🇮🇳 Bengali (বাংলা)
+- 🇳🇵 Nepali (नेपाली)
+- 🇨🇳 Mandarin Chinese (中文)
+- 🇫🇷 French (Français)
+- 🇩🇪 German (Deutsch)
+- 🇮🇳 Meitei (মৈতৈলোন্)
 
-### Realtime (Socket.IO events)
-- `tourists:update` — emits the full tourists array every few seconds
-- `alerts:update` — emits when alert status changes
+## 🔑 Key Components
 
-## Firebase Setup (Optional)
-1. Create a Firebase project.
-2. Enable Email/Password in Authentication.
-3. Create a Web App and copy the config object.
-4. Open `assets/js/firebase-config.js` and replace `const cfg = null;` with your config object, e.g.
-   ```js
-   const cfg = { apiKey: "...", authDomain: "...", projectId: "...", appId: "..." };
-   ```
-5. In `login.html`, use your test credentials to sign in. On success you will be redirected to `dashboard.html`.
+### Dashboard
+- Real-time tourist location tracking
+- Police stations and hospitals map
+- Emergency alert notifications
+- Quick statistics overview
 
-If you leave `cfg` as `null`, the app runs in DEMO mode using local mock data (`assets/js/data.js`). Use the "Demo without Firebase" button on the login page.
+### Analytics
+- Population density heatmaps
+- Risk assessment tools
+- Regional risk analysis
+- Historical data visualization
 
-## Notes
-- Restricted zone is a demo polygon near Jaipur. Adjust in `assets/js/data.js` (`restrictedPolygon`).
-- Colors:
-  - Blue: normal
-  - Orange: in restricted zone
-  - Red: SOS
-- Buttons and navigation are wired. Logout clears local session and returns to landing.
+### Geofencing
+- Interactive zone creation (polygon, circle, square)
+- Color-coded zones (red=restricted, yellow=caution, green=safe)
+- Zone management and storage
+- Regional risk alerts
 
-## Future Enhancements
-- Replace DEMO data with Firestore listeners for tourists and SOS collection
-- Audit trail for acknowledge/resolve actions
-- Role-based access & granular permissions
-- Offline caching and mobile-optimized view
+### Emergency Alerts
+- Real-time SOS notifications
+- Alert acknowledgment and resolution
+- Tourist details and active alerts
+- Risk assessment overview
+
+## 🔒 Security
+
+- Firebase Authentication with email/password
+- Secure API endpoints
+- CORS configuration
+- Session management
+- Input validation and sanitization
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on:
+- Code of conduct
+- Development workflow
+- Pull request process
+- Coding standards
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👥 Team
+
+Developed for tourist safety management in Meghalaya, India.
+
+## 🙏 Acknowledgments
+
+- Mapbox for mapping services
+- Firebase for authentication and hosting
+- OpenStreetMap contributors
+- Tailwind CSS team
+
+## 📞 Support
+
+For issues, questions, or suggestions:
+- Open an issue on GitHub
+- Contact: [Your Contact Information]
+
+## 🗺️ Roadmap
+
+- [ ] Mobile application (iOS/Android)
+- [ ] Advanced analytics and ML-based risk prediction
+- [ ] Integration with local emergency services
+- [ ] Offline mode support
+- [ ] SMS/WhatsApp alert integration
+- [ ] Tourist mobile app companion
+
+---
+
+**Made with ❤️ for safer tourism in Meghalaya**

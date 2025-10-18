@@ -1,14 +1,48 @@
 {
-  "name": "tourist-safety-dashboard",
-  "version": "0.2.0",
+  "name": "safeguard-tourist-safety-dashboard",
+  "version": "1.0.0",
+  "description": "A comprehensive real-time tourist safety management system for Meghalaya, India",
+  "main": "backend/index.js",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev:server": "npm --prefix backend run dev",
-    "start:server": "npm --prefix backend start",
-    "dev:web": "python -m http.server 5500 --directory frontend",
-    "dev": "concurrently \"npm:dev:server\" \"npm:dev:web\"",
-    "deploy": "firebase deploy --only hosting"
+    "start": "npm run start:backend",
+    "start:backend": "npm --prefix backend start",
+    "start:frontend": "npm --prefix frontend start",
+    "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend start",
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "deploy": "firebase deploy --only hosting",
+    "deploy:backend": "echo 'Configure your backend deployment'",
+    "test": "echo 'Tests coming soon'",
+    "lint": "echo 'Linting coming soon'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rohithkannas/Tourist-Safety-Dashboard.git"
+  },
+  "keywords": [
+    "tourist-safety",
+    "meghalaya",
+    "emergency-management",
+    "geofencing",
+    "real-time-tracking",
+    "mapbox",
+    "firebase",
+    "dashboard",
+    "sos-alerts",
+    "multilingual"
+  ],
+  "author": "SafeGuard Development Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Rohithkannas/Tourist-Safety-Dashboard/issues"
+  },
+  "homepage": "https://github.com/Rohithkannas/Tourist-Safety-Dashboard#readme",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
