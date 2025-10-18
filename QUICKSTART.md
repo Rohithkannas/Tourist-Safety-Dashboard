@@ -62,7 +62,6 @@ Use these credentials to test the application:
 ### 1. Dashboard
 - View police stations and hospitals on map
 - **Search tourists by ID** - Type tourist ID (e.g., T000001) and press Enter
-- **Locate on map** - Tourist marker appears with GPS coordinates
 - Filter by location type
 - See real-time statistics from Firestore
 
@@ -73,9 +72,31 @@ Use these credentials to test the application:
 - View full tourist modal with personal info, location, emergency contact
 - All data fetched from Firebase Firestore
 
-### 3. Analytics
-- Population density heatmap
-- Risk assessment cases
+## 🎯 Key Features to Test
+
+### 1. Tourist Search (Dashboard)
+- Enter tourist ID: `T000001` to `T005000`
+- Map flies to location
+- Custom marker with details
+- Full details modal
+
+### 2. Tourist Search (Alerts Page)
+- Search bar in header
+- Complete tourist details
+- Personal info, location, emergency contact
+
+### 3. AI Risk Prediction (NEW!)
+- LSTM-based risk prediction
+- Real-time risk assessment
+- Hotspot detection
+- Color-coded risk levels
+
+### 4. Real Database
+- All data from Firestore
+- 5,000 tourists
+- 2,000 alerts
+- 500 zones
+- 1,000 risk assessments cases
 - Regional analysis
 
 ### 4. Geofencing

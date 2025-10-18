@@ -27,14 +27,14 @@ Tourist-Safety-Dashboard/
 │   │   ├── 📁 css/                # Stylesheets
 │   │   │   └── 📄 styles.css      # Custom CSS styles
 │   │   │
-│   │   ├── 📁 js/                 # JavaScript modules
-│   │   │   ├── 📄 api.js          # API client and data fetching
-│   │   │   ├── 📄 auth.js         # Authentication logic
-│   │   │   ├── 📄 dashboard.js    # Dashboard functionality
-│   │   │   ├── 📄 map.js          # Map utilities and Mapbox integration
-│   │   │   ├── 📄 firestore-api.js # Firestore API client (NEW)
-│   │   │   ├── 📄 i18n.js         # Internationalization (9 languages)
-│   │   │   ├── 📄 data.js         # Mock data (fallback)
+│   │   ├── 📁 js/                 # JavaScript Modules
+│   │   │   ├── 📄 api.js          # API client for backend communication
+│   │   │   ├── 📄 auth.js         # Firebase authentication logic
+│   │   │   ├── 📄 dashboard.js    # Dashboard page functionality
+│   │   │   ├── 📄 firestore-api.js # Firestore API client with 18 methods for database operations
+│   │   │   ├── 📄 ml-api.js       # ML prediction API client for LSTM risk predictions
+│   │   │   ├── 📄 map.js          # Mapbox map utilities and location services
+│   │   │   ├── 📄 i18n.js         # Internationalization and language switching
 │   │   │   └── 📄 firebase-config.js  # Firebase configuration
 │   │   │
 │   │   ├── 📁 data/               # Static data files
@@ -51,15 +51,25 @@ Tourist-Safety-Dashboard/
 │   ├── 📄 package-lock.json       # Dependency lock file
 │   └── 📄 DEV-SERVER-GUIDE.md     # Development server guide
 │
-├── 📁 backend/                     # Backend server (Node.js + Express)
-│   │
-│   ├── 📄 index.js                # Main server file (Express + Firebase Admin)
-│   ├── 📄 seedDatabase.js         # Firestore database seeder (NEW)
-│   ├── 📄 serviceAccountKey.json  # Firebase service account (gitignored)
-│   ├── 📄 mockData.js             # Mock data generator
-│   ├── 📄 package.json            # Backend dependencies
-│   ├── 📄 package-lock.json       # Dependency lock file
-│   └── 📄 README.md               # Backend documentation
+├── backend/                     # Backend server
+│   ├── index.js                # Express server
+│   ├── mockData.js             # Mock data generator
+│   ├── seedDatabase.js         # Database seeder for Firestore
+│   ├── serviceAccountKey.json  # Firebase Admin credentials
+│   └── package.json
+│
+├── ml-service/                  # Machine Learning Service
+│   ├── lstm_predictor.py       # LSTM model implementation
+│   ├── api_server.py           # Flask API server
+│   ├── train_model.py          # Model training script
+│   ├── requirements.txt        # Python dependencies
+│   ├── .env.example            # Environment configuration
+│   ├── models/                 # Trained models directory
+│   │   ├── lstm_model.h5       # Saved LSTM model
+│   │   ├── scaler.pkl          # Feature scaler
+│   │   └── feature_columns.pkl # Feature metadata
+│   ├── README.md               # ML service documentation
+│   └── INTEGRATION_GUIDE.md    # Frontend integration guide
 │
 ├── 📁 docs/                        # Documentation
 │   │

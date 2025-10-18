@@ -19,6 +19,7 @@ SafeGuard is a modern web application designed to enhance tourist safety in Megh
 - **🏥 Emergency Services**: Interactive map of police stations and hospitals across Meghalaya
 - **🌐 Multilingual Support**: 9 languages including English, Hindi, Assamese, Bengali, Nepali, and more
 - **📊 Analytics Dashboard**: Population density heatmaps and risk assessment tools
+- **🧠 AI Risk Prediction**: LSTM-based machine learning for predicting tourist safety risks
 - **📝 E-FIR Registration**: Digital FIR filing system with PDF export
 - **🔐 Authentication**: Firebase-based secure authentication system
 - **📱 Responsive Design**: Mobile-first design with dark theme
@@ -122,20 +123,21 @@ Tourist-Safety-Dashboard/
 └── README.md                   # This file
 ```
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Frontend
-- **HTML5/CSS3/JavaScript** - Core web technologies
-- **Tailwind CSS** - Utility-first CSS framework
-- **Mapbox GL JS** - Interactive mapping
-- **Firebase** - Authentication and hosting
-- **i18next** - Internationalization
-- **jsPDF** - PDF generation
+- HTML5, CSS3, JavaScript (ES6+), Tailwind CSS
+- Mapbox GL JS
+- Firebase
+- i18next
+- jsPDF
 
 ### Backend
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **Firebase Admin SDK** - Firestore database integration
+- Node.js
+- Express.js
+- Firebase Admin SDK
+- Socket.IO
+- CORS
 - **Socket.IO** - Real-time communication
 - **CORS** - Cross-origin resource sharing
 
@@ -230,12 +232,13 @@ For issues, questions, or suggestions:
 - [x] Firebase Firestore integration
 - [x] Tourist search with map location
 - [x] Real-time alert management
+- [x] LSTM-based AI risk prediction system
 - [ ] Mobile application (iOS/Android)
-- [ ] Advanced analytics and ML-based risk prediction
 - [ ] Integration with local emergency services
 - [ ] Offline mode support
 - [ ] SMS/WhatsApp alert integration
 - [ ] Tourist mobile app companion
+- [ ] Real-time ML model retraining
 
 ---
 

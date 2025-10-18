@@ -5,6 +5,71 @@ All notable changes to the SafeGuard Tourist Safety Dashboard will be documented
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-10-18
+
+### 🧠 Major Update - LSTM AI Risk Prediction System
+
+Implemented machine learning-based risk prediction using LSTM neural networks trained on Firebase Firestore data.
+
+### ✨ Added
+
+#### ML Prediction System
+- **LSTM Neural Network** - Bidirectional LSTM model for risk prediction
+  - 128 → 64 → 32 LSTM units with dropout layers
+  - Trained on 10,000+ records from Firestore
+  - Predicts risk scores (0-1) and risk levels (low/medium/high/critical)
+  - Sequence length: 24 hours of temporal data
+- **Python ML Service** - Flask API server for predictions
+  - 6 REST API endpoints for predictions
+  - Real-time risk assessment
+  - Batch prediction support
+  - Hotspot prediction for next 24 hours
+- **Frontend ML API Client** - `ml-api.js` for easy integration
+  - `predictTouristRisk()` - Predict risk for specific tourist
+  - `predictLocationRisk()` - Predict risk for any location
+  - `predictHotspots()` - Identify high-risk areas
+  - `predictBatchRisk()` - Batch predictions for multiple tourists
+  - Helper functions for risk colors, emojis, and UI components
+
+#### ML Features
+- **7 Input Features**: lat, lng, hour, day_of_week, day_of_month, month, historical risk_score
+- **Model Training**: Automated training script with early stopping
+- **Model Persistence**: Save/load trained models
+- **Risk Visualization**: Color-coded markers and progress bars
+- **Real-time Monitoring**: Auto-refresh risk assessments
+- **Hotspot Detection**: Predict high-risk areas 24 hours ahead
+
+#### ML API Endpoints
+- `GET /api/ml/health` - Check ML service status
+- `POST /api/ml/train` - Train model on Firebase data
+- `POST /api/ml/predict/risk` - Predict risk for location
+- `POST /api/ml/predict/tourist` - Predict risk for tourist by ID
+- `POST /api/ml/predict/hotspots` - Predict risk hotspots
+- `POST /api/ml/predict/batch` - Batch predictions
+
+#### Documentation
+- **ML Service README** - Complete ML system documentation
+- **Integration Guide** - Step-by-step frontend integration examples
+- **Training Script** - Standalone model training utility
+- **Requirements File** - Python dependencies
+
+### 🔧 Changed
+
+- Enhanced dashboard to support ML risk indicators
+- Updated tourist search to show AI-predicted risk levels
+- Added risk color coding throughout the application
+
+### 📦 Dependencies Added
+
+- TensorFlow 2.15.0 - Deep learning framework
+- NumPy 1.24.3 - Numerical computing
+- Pandas 2.1.0 - Data manipulation
+- Scikit-learn 1.3.0 - Data preprocessing
+- Flask 3.0.0 - ML API server
+- Flask-CORS 4.0.0 - Cross-origin requests
+
+---
+
 ## [1.1.0] - 2025-10-18
 
 ### 🎉 Major Update - Firebase Firestore Integration
