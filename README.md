@@ -1,8 +1,6 @@
 # 🛡️ SafeGuard - Tourist Safety Dashboard
 
 > A comprehensive real-time tourist safety management system for Meghalaya, India.
->
-> ![SafeGuard Banner]("C:/Users/ROHITH KANNA S/Downloads/RealTimeTouristDB.jpg")
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
