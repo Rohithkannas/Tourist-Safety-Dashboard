@@ -214,36 +214,9 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for deta
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👥 Team
-
-Developed for tourist safety management in Meghalaya, India.
-
-## 🙏 Acknowledgments
-
-- Mapbox for mapping services
-- Firebase for authentication and hosting
-- OpenStreetMap contributors
-- Tailwind CSS team
-
 ## 📞 Support
 
 For issues, questions, or suggestions:
-- Open an issue on GitHub
-- Contact: [Your Contact Information]
-
-## 🗺️ Roadmap
-
-- [x] Firebase Firestore integration
-- [x] Tourist search with map location
-- [x] Real-time alert management
-- [x] LSTM-based AI risk prediction system
-- [ ] Mobile application (iOS/Android)
-- [ ] Integration with local emergency services
-- [ ] Offline mode support
-- [ ] SMS/WhatsApp alert integration
-- [ ] Tourist mobile app companion
-- [ ] Real-time ML model retraining
-
----
-
-**Made with ❤️ for safer tourism in Meghalaya**
+* Open an issue on GitHub
+* **LinkedIn:** [rohith4510](https://www.linkedin.com/in/rohith4510/)
+* **Email:** [rohithkanna.ss@gmail.com](rohithkanna.ss@gmail.com)
