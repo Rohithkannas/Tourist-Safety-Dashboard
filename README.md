@@ -3,7 +3,7 @@
 > A comprehensive real-time tourist safety management system for Meghalaya, India.
 >
 > <p align="center">
-  <img src="[docs1/images/RealTimeTouristDB.jpg](https://github.com/Rohithkannas/Tourist-Safety-Dashboard/blob/cdaff63a624208a54d8083bdd40b5f0d8b2b4ca4/ToursistDashboardCoverPage.png)" alt="SafeGuard Dashboard Banner" width="100%">
+  <img src="https://github.com/Rohithkannas/Tourist-Safety-Dashboard/blob/cdaff63a624208a54d8083bdd40b5f0d8b2b4ca4/ToursistDashboardCoverPage.png" alt="SafeGuard Dashboard Banner" width="100%">
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
