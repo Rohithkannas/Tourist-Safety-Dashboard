@@ -14,20 +14,20 @@
 
 SafeGuard is a modern web application designed to enhance tourist safety in Meghalaya through real-time monitoring, emergency alerts, geofencing, and multilingual support. The system provides comprehensive tools for authorities to manage tourist safety zones, track emergency situations, and coordinate with local police stations and hospitals.
 
-### ✨ Key Features
+### Key Features
 
-- **🗺️ Interactive Mapping**: Mapbox-powered maps with real-time location tracking
-- **🔍 Tourist Search**: Search tourists by ID and locate them on map with GPS coordinates
-- **🚨 Emergency Alerts**: Real-time SOS alert management with Firestore integration
-- **🔒 Geofencing**: Create and manage safety zones (restricted, caution, safe areas)
-- **🏥 Emergency Services**: Interactive map of police stations and hospitals across Meghalaya
-- **🌐 Multilingual Support**: 9 languages including English, Hindi, Assamese, Bengali, Nepali, and more
-- **📊 Analytics Dashboard**: Population density heatmaps and risk assessment tools
-- **🧠 AI Risk Prediction**: LSTM-based machine learning for predicting tourist safety risks
-- **📝 E-FIR Registration**: Digital FIR filing system with PDF export
-- **🔐 Authentication**: Firebase-based secure authentication system
-- **📱 Responsive Design**: Mobile-first design with dark theme
-- **💾 Real-time Database**: Firebase Firestore integration with 10,000+ records
+- ** Interactive Mapping**: Mapbox-powered maps with real-time location tracking
+- ** Tourist Search**: Search tourists by ID and locate them on map with GPS coordinates
+- ** Emergency Alerts**: Real-time SOS alert management with Firestore integration
+- ** Geofencing**: Create and manage safety zones (restricted, caution, safe areas)
+- ** Emergency Services**: Interactive map of police stations and hospitals across Meghalaya
+- ** Multilingual Support**: 9 languages including English, Hindi, Assamese, Bengali, Nepali, and more
+- ** Analytics Dashboard**: Population density heatmaps and risk assessment tools
+- ** AI Risk Prediction**: LSTM-based machine learning for predicting tourist safety risks
+- ** E-FIR Registration**: Digital FIR filing system with PDF export
+- ** Authentication**: Firebase-based secure authentication system
+- ** Responsive Design**: Mobile-first design with dark theme
+- ** Real-time Database**: Firebase Firestore integration with 10,000+ records
 
 ## 🚀 Quick Start
 
